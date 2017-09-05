@@ -22,24 +22,13 @@
             android:layout_height="match_parent"
             android:layout_weight="1.3"
             android:background="@android:color/transparent"
-            android:gravity="center"
             android:hint="Search Prayer"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:scrollHorizontally="false"
             android:textColorHint="#687787"
-            android:textSize="15sp" />
-
-        <FrameLayout
-            android:layout_width="40dp"
-            android:layout_height="match_parent">
-
-            <ImageButton
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_gravity="center|right"
-                android:background="@drawable/search_icon" />
-        </FrameLayout>
+            android:textSize="15sp"
+            android:drawableRight="@drawable/search_icon"/>
     </LinearLayout>
 
     <LinearLayout
@@ -65,12 +54,11 @@
             android:background="@drawable/overflow_icon" />
     </LinearLayout>
 
-    <include layout="@layout/search_prayer_list_item" />
-
     <ListView
+        android:id="@+id/lv_prayer_list"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="#55000000">
-
-    </ListView>
+        android:layout_height="match_parent"
+        android:paddingBottom="5dp"
+        android:dividerHeight="15dp"
+        android:scrollbars="none"></ListView>
 </LinearLayout>

@@ -113,7 +113,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_prayer"
+            android:id="@+id/btn_post_prayer"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"

@@ -10,6 +10,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -17,6 +19,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+
 }
 
 dependencies {
@@ -31,10 +35,35 @@ dependencies {
     compile 'me.srodrigo:androidhintspinner:1.0.0'
     compile 'com.android.support:design:25.3.1'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile 'com.mcxiaoke.volley:library-aar:1.0.0'
-    //compile 'com.ramotion.foldingcell:folding-cell:1.2.1'
+    //  compile 'com.mcxiaoke.volley:library-aar:1.0.0'
+    //  compile 'com.android.volley:volley:1.0.0'
 
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.google.android.gms:play-services-maps:11.0.4'
+    compile 'com.google.android.gms:play-services-location:11.0.4'
+
     testCompile 'junit:junit:4.12'
     compile 'com.github.androidquery:androidquery:0.26.9'
+    compile 'dev.dworks.libs:volleyplus:0.1.4'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:support-annotations:25.3.1'
+    compile('org.apache.httpcomponents:httpmime:4.3.6') {
+        exclude module: 'httpclient'
+    }
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
+
+    //  compile 'org.apache.httpcomponents:httpclient-android:4.3.5'
 }
+//throws error at postAudio when removed
+android {
+    useLibrary 'org.apache.http.legacy'
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/ASL2.0'
+    }
+}
+

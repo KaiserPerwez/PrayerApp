@@ -26,10 +26,9 @@ import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 public class RegnThreeActivity extends AppCompatActivity implements View.OnClickListener {
     Context m_ctx;
     public int[] i = {0};
-    public static String txt_mission_trip;
     CheckBox txt_chk_new_to_mission;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
-
+    String new_to_mission="0",participation_status="YES",country_mission;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +36,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
 
         setCustomDesign();
         // setCustomClickListeners();
-        Toast.makeText(getApplicationContext(), userclass.getTxt_classes_attended() + "" + userclass.getTxt_classes_attended(), Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), userclass.getList_classes_attended() + "" , Toast.LENGTH_LONG).show();
         txt_chk_new_to_mission = (CheckBox) findViewById(R.id.chk_new_to_mission);
         txt_chk_new_to_mission.setOnClickListener(this);
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
@@ -57,63 +56,6 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-   /* private void setCustomClickListeners() {
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
-        imageButtonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RegnThreeActivity.this, RegnFourActivity.class);
-                startActivity(intent);
-            }
-        });
-        FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
-        imageButtonPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-
-
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) findViewById(R.id.toggle_switch_btn);
-        final int[] i = {0};
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_rLayoutInner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-    }*/
-
-   //TODO: Embedd custom toggle button as sent on skype
     public void toggleYesNo(int i) {
         final RelativeLayout toggle_switch_rLayout = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
         if (i % 2 == 0) {
@@ -121,13 +63,21 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
             Toast.makeText(RegnThreeActivity.this, "YES:" + i, Toast.LENGTH_SHORT).show();
             findViewById(R.id.relativeLayoutYes).setVisibility(View.VISIBLE);
             findViewById(R.id.relativeLayoutNo).setVisibility(View.GONE);
+            participation_status="YES";
+
+            Spinner spinner_countryYes = (Spinner) findViewById(R.id.spinner_countryYes);
+            spinner_countryYes.setSelection(0);
         } else {
             toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
             Toast.makeText(RegnThreeActivity.this, "NO:" + i, Toast.LENGTH_SHORT).show();
             findViewById(R.id.relativeLayoutNo).setVisibility(View.VISIBLE);
             findViewById(R.id.relativeLayoutYes).setVisibility(View.GONE);
+            participation_status="NO";
+            Spinner spinner_countryNo = (Spinner) findViewById(R.id.spinner_countryNo);
+            spinner_countryNo.setSelection(0);
         }
     }
+
     private void setCustomDesign() {
         m_ctx = RegnThreeActivity.this;
         addItemsOnCountrySpinner();
@@ -139,9 +89,9 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
         ((TextView) findViewById(R.id.tv_YES)).setTypeface(regular_font);
         ((TextView) findViewById(R.id.tv_NO)).setTypeface(regular_font);
         ((TextView) findViewById(R.id.chk_new_to_mission)).setTypeface(regular_font);
+
     }
 
-    //TODO:To hit a country list API
     private void addItemsOnCountrySpinner() {
         List<String> list = new ArrayList<String>();
         list.add("California");
@@ -168,11 +118,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onItemSelected(int position, String itemAtPosition) {
                         // Here you handle the on item selected event (this skips the hint selected event)
-                        txt_mission_trip = itemAtPosition.toString();
-                        userclass.setTxt_mission_trip(txt_mission_trip);
-                        userclass.setTxt_newto_mission("0");
-
-                        Toast.makeText(getApplicationContext(), txt_mission_trip, Toast.LENGTH_LONG).show();
+                        country_mission = itemAtPosition;
                     }
                 });
         hintSpinnerYes.init();
@@ -189,11 +135,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                     @Override
                     public void onItemSelected(int position, String itemAtPosition) {
                         // Here you handle the on item selected event (this skips the hint selected event)
-                        txt_mission_trip = itemAtPosition.toString();
-                        userclass.setTxt_mission_trip(txt_mission_trip);
-                        userclass.setTxt_newto_mission("0");
-
-                        Toast.makeText(getApplicationContext(), txt_mission_trip, Toast.LENGTH_LONG).show();
+                        country_mission = itemAtPosition;
                     }
                 });
         hintSpinnerNo.init();
@@ -202,9 +144,15 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
     @Override
     public void onClick(View v) {
         int item = v.getId();
+        // final int[] i = {0};
 
         switch (item) {
             case R.id.imageButtonNext:
+                userclass.setTxt_mission_trip_participation_status(participation_status);
+                userclass.setTxt_newto_mission(new_to_mission);
+                userclass.setTxt_mission_trip_countries(country_mission);
+                String user=userclass.toString();
+               // Toast.makeText(this,userclass.toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegnThreeActivity.this, RegnFourActivity.class);
                 startActivity(intent);
                 break;
@@ -212,16 +160,22 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                 finish();
                 break;
             case R.id.toggle_switch_rLayoutOuter:
+                toggleYesNo(i[0]++);
+                break;
             case R.id.toggle_switch_rLayoutInner:
+                toggleYesNo(i[0]++);
+                break;
             case R.id.toggle_switch_text:
+                toggleYesNo(i[0]++);
+                break;
             case R.id.toggle_switch_btn:
                 toggleYesNo(i[0]++);
                 break;
             case R.id.chk_new_to_mission:
                 if (txt_chk_new_to_mission.isChecked())
-                    userclass.setTxt_newto_mission("Yes");
+                    userclass.setTxt_newto_mission("1");
                 else
-                    userclass.setTxt_newto_mission("No");
+                    userclass.setTxt_newto_mission("0");
                 break;
         }
     }

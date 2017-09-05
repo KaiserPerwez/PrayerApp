@@ -105,28 +105,25 @@
             android:textColorHint="#687787"
             android:textSize="15sp" />
     </LinearLayout>
+
     <TextView
         android:id="@+id/txt_pwdcheck"
         android:layout_below="@id/linearLayout_txtPasswordRetype"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
         android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
         android:textSize="15sp"
-        android:text="Passwords did not match.Please Retry"
-        android:textColor="@android:color/holo_orange_dark"
-        android:visibility="gone"/>
+        android:text="" />
+
     <Button
         android:id="@+id/btn_signUp"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:layout_below="@+id/linearLayout_txtPasswordRetype"
+        android:layout_below="@+id/txt_pwdcheck"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/login_button"
         android:text="Sign Up"
         android:textColor="@android:color/white"

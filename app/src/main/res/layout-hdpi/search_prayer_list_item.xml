@@ -1,45 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="100dp"
-    android:background="@drawable/search_prayer_list_border_bg"
+    android:layout_height="wrap_content"
+    android:background="#0000"
     android:gravity="top|center"
     android:orientation="vertical"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp">
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:gravity="right"
-        android:text="28/07/2017 8:14pm"
-        android:textColor="@android:color/white" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:background="@drawable/prayer_list_audio_icon" />
-
-        <TextView
+    android:padding="10dp">
+<TextView
+    android:id="@+id/post_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    />
+        <LinearLayout
+            android:id="@+id/linearLayout_play"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="left|center_vertical"
-            android:paddingLeft="10dp"
-            android:text="Audio"
-            android:textColor="@android:color/white"
-            android:textSize="20sp" />
-    </LinearLayout>
+            android:layout_height="20dp"
+            android:orientation="horizontal"
+            android:paddingLeft="30dp">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="30dp"
-        android:gravity="left|center_horizontal"
-        android:paddingLeft="30dp"
-        android:text="Prayer Details"
-        android:textColor="@android:color/white" />
-</LinearLayout>
+            <ImageView
+                android:id="@+id/img_play"
+                android:layout_width="20dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/icon_play" />
+
+            <TextView
+                android:id="@+id/tv_play"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="left|center_vertical"
+                android:paddingLeft="10dp"
+                android:text="Play Audio"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+        <CheckBox
+            android:id="@+id/chk_answered"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text=" Answered"
+            android:textColor="@android:color/white"
+            app:buttonTint="@android:color/white" />
+        <TextView
+            android:id="@+id/answered_date"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:gravity="left"
+            android:paddingLeft="30dp"
+            android:text=""
+            android:textColor="@android:color/white" />
+    </LinearLayout>

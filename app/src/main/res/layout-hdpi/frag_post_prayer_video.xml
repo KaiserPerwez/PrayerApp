@@ -93,6 +93,7 @@
             android:layout_height="150dp">
 
             <ImageView
+                android:id="@+id/img_record_video"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"
@@ -122,14 +123,15 @@
                 android:textSize="18sp" />
         </LinearLayout>
 
+
         <Button
-            android:id="@+id/btn_prayer"
+            android:id="@+id/btn_post_prayer"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/login_button"
             android:text="Post Prayer"
-            android:textColor="@android:color/white"
+            android:textColor="#fff"
             android:textSize="20sp" />
 
         <TextView

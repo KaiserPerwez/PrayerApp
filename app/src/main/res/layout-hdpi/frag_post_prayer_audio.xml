@@ -89,12 +89,14 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/audio_record"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_gravity="center"
             android:background="@drawable/mic" />
 
         <ImageView
+            android:id="@+id/audio_stop_record"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
@@ -124,7 +126,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/btn_prayer"
+            android:id="@+id/btn_post_prayer"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:layout_marginTop="20dp"

@@ -205,7 +205,7 @@
                 android:orientation="horizontal">
 
                 <Spinner
-                    android:id="@+id/txt_country"
+                    android:id="@+id/spinner_country_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -224,7 +224,7 @@
                 android:orientation="horizontal">
 
                 <EditText
-                    android:id="@+id/txt_state"
+                    android:id="@+id/txt_city"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -244,7 +244,7 @@
                 android:orientation="horizontal">
 
                 <Spinner
-                    android:id="@+id/spinner_city"
+                    android:id="@+id/spinner_state"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
@@ -268,7 +268,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:hint="Phone*"
-                    android:inputType="text"
+                    android:inputType="phone"
                     android:paddingLeft="20dp"
                     android:textColorHint="#687787"
                     android:textSize="15sp" />

@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -22,29 +23,28 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import me.srodrigo.androidhintspinner.HintAdapter;
-import me.srodrigo.androidhintspinner.HintSpinner;
 import webgentechnologies.com.myprayerapp.R;
-import webgentechnologies.com.myprayerapp.model.UserLocationModel;
+import webgentechnologies.com.myprayerapp.model.CountryModel;
+import webgentechnologies.com.myprayerapp.model.StateModel;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
+import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
 public class RegnOneActivity extends AppCompatActivity implements View.OnClickListener {
     Context m_ctx = RegnOneActivity.this;
     EditText txt_fname, txt_lname, txt_email, txt_addr1, txt_addr2, txt_state, txt_phone, txt_city;
-    Spinner txt_country;
+    Spinner spinner_country,spinner_state;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
     /*
     *Adding variable for popup...
@@ -53,32 +53,47 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     ArrayList<String> arrListChurches = new ArrayList<>();
     ArrayAdapter<String> adapter;
     EditText txt_selected_church, txt_search_prayer;
-    String selected_church_name;
+    SharedPreferences sharedpreferences;
+    static final String sharedpreference_key_churchname = "church name";
+    static final String sharedpreferenceName = "pref_prayerApp";
+    static String selected_church_name;
 
     /*
     *Taking variables and arraylist for spinner
      */
-    ArrayList<UserLocationModel> arrayList_country_details = new ArrayList<>();
-    ArrayList<String> arraylist_country_name = new ArrayList<>();
-    ArrayList<UserLocationModel> arraylist_state_details = new ArrayList<>();
-    ArrayList<String> arrayList_state_name = new ArrayList<>();
+   // public static String txt_country_id1, txt_country_name, txt_country_sortname, txt_state_id, txt_state_name, txt_country_id2;
     public static String txt_country_id1, txt_country_name, txt_country_sortname, txt_state_id, txt_state_name, txt_country_id2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regn_one);
+       /* sharedpreferences = getSharedPreferences(sharedpreferenceName, Context.MODE_PRIVATE);
+        String sharedpreferencesString = sharedpreferences.getString(sharedpreference_key_churchname, null);*/
+        //Toast.makeText(getApplicationContext(),sharedpreferencesString,Toast.LENGTH_LONG).show();
+        // if (sharedpreferencesString == null) {
+        // txt_selected_church.setText("Select the church from the given list");
+        // showPopUp();
+        //  }else {
+              /* Intent intent = new Intent(RegnOneActivity.this, LoginActivity.class);
+                startActivity(intent);
+                RegnOneActivity.this.finish();
+            showPopUp();
+    }*/
         showPopUp();
         txt_fname = (EditText) findViewById(R.id.txt_fname);
         txt_lname = (EditText) findViewById(R.id.txt_lname);
         txt_email = (EditText) findViewById(R.id.txt_email);
         txt_addr1 = (EditText) findViewById(R.id.txt_addr1);
         txt_addr2 = (EditText) findViewById(R.id.txt_addr2);
-        txt_city = (EditText) findViewById(R.id.txt_state);
+        txt_city = (EditText) findViewById(R.id.txt_city);
         txt_phone = (EditText) findViewById(R.id.txt_phone);
 
 
         setCustomDesign();
+        userclass.setTxt_country_id("-1");//default
+        userclass.setTxt_state_id("-1");//default
+
         sendrequest_to_spinner();
         //setCustomClickListeners();
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
@@ -88,6 +103,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void settingvalues() {
+//TODO:
         userclass.setTxt_fname(txt_fname.getText().toString());
         userclass.setTxt_lname(txt_lname.getText().toString());
         userclass.setTxt_email(txt_email.getText().toString());
@@ -114,43 +130,9 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         ((TextView) findViewById(R.id.txt_addr2)).setTypeface(regular_font);
         // ((TextView)findViewById(R.id.txt_city)).setTypeface(regular_font);
 
-        ((TextView) findViewById(R.id.txt_state)).setTypeface(regular_font);
+        ((TextView) findViewById(R.id.txt_city)).setTypeface(regular_font);
         ((TextView) findViewById(R.id.txt_phone)).setTypeface(regular_font);
 
-    }
-
-    private void addItemsOnStateSpinner() {
-        final Spinner spinner_city = (Spinner) findViewById(R.id.spinner_city);
-        //spinner_city.setPrompt("Choose State");
-        List<String> list = new ArrayList<String>();
-        list.add("California");
-        list.add("Florida");
-        list.add("Hawaii");
-        list.add("Indiana");
-        list.add("Mississippi");
-        list.add("New Hampshire");
-        list.add("New Jersey");
-        list.add("New Mexico");
-        list.add("New York");
-        list.add("Texas");
-        list.add("Washington");
-        final HintSpinner<String> hintSpinner = new HintSpinner<>(
-                spinner_city,
-                // Default layout - You don't need to pass in any layout id, just your hint text and
-                // your list data
-                new HintAdapter<>(this, "Select City*", list),
-                new HintSpinner.Callback<String>() {
-                    @Override
-                    public void onItemSelected(int position, String itemAtPosition) {
-                        // Here you handle the on item selected event (this skips the hint selected event)
-                        String txt_selected_countryposition = itemAtPosition.toString();
-                        //country = txt_selected_countryposition;
-                        userclass.setTxt_country(txt_selected_countryposition);
-                        Toast.makeText(getApplicationContext(), txt_selected_countryposition, Toast.LENGTH_LONG).show();
-                    }
-
-                });
-        hintSpinner.init();
     }
 
     @Override
@@ -159,6 +141,16 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         switch (item) {
             case R.id.imageButtonNext:
                 settingvalues();
+                if(userclass.getTxt_country_id().equals("-1"))
+                {
+                    Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(userclass.getTxt_state_id().equals("-1"))
+                {
+                    Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 Intent intent = new Intent(m_ctx, RegnTwoActivity.class);
                 startActivity(intent);
                 break;
@@ -197,7 +189,9 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                 alertDialog.dismiss();
 
                 String txt_selected_church_name = txt_selected_church.getText().toString();
-                userclass.setTxt_selected_church_name(txt_selected_church_name);
+              //  userclass.setTxt_selected_church_name(txt_selected_church_name);
+                userclass.setChurch_name(txt_selected_church_name);
+
 
 
             }
@@ -238,8 +232,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                 progressDialog.hide();
             }
         });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequestChurchList);
+        VolleyUtils.getInstance(RegnOneActivity.this).addToRequestQueue(stringRequestChurchList);//
       /*  progressDialog.show(m_ctx, "", "Loading data...", true, true);
         if (str != null)
             progressDialog.dismiss();*/
@@ -301,7 +294,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     Volley code for spinner
      */
     public void sendrequest_to_spinner() {
-        StringRequest stringRequest = new StringRequest(UrlConstants._URL_GET_COUNTRY, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(UrlConstants._URL_GET_COUNTRY_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 showjson_to_spinner(response);
@@ -312,53 +305,60 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                 Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
+        VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
+    public void showjson_to_spinner(String response_str) {
+        final CountryModel countryModel = new CountryModel();
 
-    public void showjson_to_spinner(String spinner_json) {
         try {
-            UserLocationModel userLocationModel = new UserLocationModel();
-            JSONObject jsonObject_Country = new JSONObject(spinner_json);
-            JSONObject jsonObject_country = jsonObject_Country.getJSONObject("data");
-            arraylist_country_name.add(jsonObject_country.getString("name"));
-           /* arrayList_country_details.add(txt_editone_country_id1);
-            arrayList_country_details.add(txt_editone_country_name);
-            arrayList_country_details.add(txt_editone_country_sortname);*/
-            userLocationModel.setTxt_country_id1(jsonObject_country.getString("id"));
-            userLocationModel.setTxt_country(jsonObject_country.getString("name"));
-            userLocationModel.setTxt_country_sortname(jsonObject_country.getString("sortname"));
-            arrayList_country_details.add(userLocationModel);
-            JSONArray jsonArray = jsonObject_country.getJSONArray("state");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject_state = jsonArray.getJSONObject(i);
-                UserLocationModel userLocationModel1 = new UserLocationModel();
-                arrayList_state_name.add(jsonObject_state.getString("name"));
-               /* arraylist_state_details.add(txt_editone_state_id);
-                arraylist_state_details.add(txt_editone_state_name);
-                arraylist_state_details.add(txt_editone_country_id2);
-                arrayList_state_name.add(txt_editone_state_name);*/
-                userLocationModel1.setTxt_state_id(jsonObject_state.getString("id"));
-                userLocationModel1.setTxt_state(jsonObject_state.getString("name"));
-                userLocationModel1.setTxt_country_id2(jsonObject_state.getString("country_id"));
-                arraylist_state_details.add(userLocationModel1);
-                //  arraylist_country_name.add(j.getString("sortname"));
+            JSONObject jsonObject = new JSONObject(response_str);
+            JSONObject jsonObject_country = jsonObject.getJSONObject("data");
+
+            countryModel.setCountry_id(jsonObject_country.getString("id"));
+            countryModel.setCountry_name(jsonObject_country.getString("name"));
+            countryModel.setCountry_short_name(jsonObject_country.getString("sortname"));
+
+            JSONArray jsonArrayStates = jsonObject_country.getJSONArray("state");
+            for (int i = 0; i < jsonArrayStates.length(); i++) {
+                JSONObject jsonObject_state = jsonArrayStates.getJSONObject(i);
+
+                StateModel stateModel = new StateModel();
+                stateModel.setState_id(jsonObject_state.getString("id"));
+                stateModel.setState_name(jsonObject_state.getString("name"));
+                stateModel.setState_country_id(jsonObject_state.getString("country_id"));
+
+                countryModel.addStateModel(stateModel);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Spinner spinner_country = (Spinner) findViewById(R.id.txt_country);
-        spinner_country.setAdapter(new ArrayAdapter<String>(RegnOneActivity.this, android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
-        Spinner spinner_city = (Spinner) findViewById(R.id.spinner_city);
-        spinner_city.setAdapter(new ArrayAdapter<String>(RegnOneActivity.this, android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
+
+        final ArrayList<String> arraylist_country_name = new ArrayList<>();
+        arraylist_country_name.add(countryModel.getCountry_name());
+
+        ArrayList<String> arrayList_state_name = new ArrayList<>();
+        for (StateModel temp_sModel :
+                countryModel.getStateModelList()) {
+            arrayList_state_name.add(temp_sModel.getState_name());
+        }
+
+        spinner_country= (Spinner) findViewById(R.id.spinner_country_name);
+        spinner_country.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,arraylist_country_name ));
+spinner_country.setSelection(0);
+
+        spinner_state= (Spinner) findViewById(R.id.spinner_state);
+        spinner_state.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
+spinner_state.setSelection(0);
+
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_country_id1 = arrayList_country_details.get(position).getTxt_country_id1().toString();
-                txt_country_name = arrayList_country_details.get(position).getTxt_country().toString();
-                txt_country_sortname = arrayList_country_details.get(position).getTxt_country_sortname().toString();
-                Toast.makeText(getApplicationContext(), txt_country_id1 + "/" + txt_country_name, Toast.LENGTH_LONG).show();
-                userclass.setTxt_country_id1(txt_country_id1);
+                txt_country_id1 = countryModel.getCountry_id();
+                txt_country_name = countryModel.getCountry_name();
+                txt_country_sortname = countryModel.getCountry_short_name();
+
+//                Toast.makeText(getApplicationContext(), txt_country_id1 + "\n" + txt_country_name, Toast.LENGTH_LONG).show();
+                userclass.setTxt_country_id(txt_country_id1);
                 userclass.setTxt_country(txt_country_name);
                 userclass.setTxt_country_sortname(txt_country_sortname);
             }
@@ -368,16 +368,15 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-        spinner_city.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_state_id = arraylist_state_details.get(position).getTxt_state_id();
-                txt_state_name = arraylist_state_details.get(position).getTxt_state();
-                txt_country_id2 = arraylist_state_details.get(position).getTxt_country_id2();
-                // Toast.makeText(getApplicationContext(),txt_editone_state_id+"/n"+txt_editone_state_name,Toast.LENGTH_LONG).show();
+                txt_state_id = countryModel.getStateModelList().get(position).getState_id();
+                txt_state_name = countryModel.getStateModelList().get(position).getState_name();
+                txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+           //     Toast.makeText(getApplicationContext(), txt_state_id + "\n" + txt_state_name, Toast.LENGTH_LONG).show();
                 userclass.setTxt_state_id(txt_state_id);
                 userclass.setTxt_state_name(txt_state_name);
-                userclass.setTxt_country_id2(txt_country_id2);
             }
 
             @Override
@@ -388,4 +387,5 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     }
 
 
+//-------------------Volley code for spinner ends--------------------------
 }

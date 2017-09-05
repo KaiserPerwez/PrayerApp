@@ -1,5 +1,6 @@
 package webgentechnologies.com.myprayerapp.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -17,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.fragment.ChangePasswordFrag;
@@ -32,12 +32,13 @@ public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     LinearLayout linearLayout_bar_prayers, linearLayout_bar_edit;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    public static Context _context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
+        _context = HomeActivity.this;
         setCustomClickListeners();
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -52,12 +53,24 @@ public class HomeActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+        if (userclass.getTxt_user_access_token() == null) {
+            Menu nav_Menu = navigationView.getMenu();
+            nav_Menu.setGroupVisible(R.id.group_nav_change_pwd, false);
+        }
         //add this line to display nav_editProfile when the activity is loaded
-        displaySelectedScreen(R.id.nav_editProfile);
-        Toast.makeText(getApplicationContext(), userclass.getTxt_user_login_id() + "\n" + userclass.getTxt_user_access_token(), Toast.LENGTH_LONG).show();
 
+        String choice_id = getIntent().getStringExtra("choice_id");
+        if (choice_id == null)
+            choice_id = "null";
 
+        switch (choice_id) {
+            case "R.id.nav_searchPrayer":
+                displaySelectedScreen(R.id.nav_searchPrayer);
+                break;
+            default:
+                displaySelectedScreen(R.id.nav_searchPrayer);
+
+        }
     }
 
 
@@ -71,13 +84,13 @@ public class HomeActivity extends AppCompatActivity
         imageButtonNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userclass.setTxt_editone_fname(EditOneFrag.txt_fname.getText().toString());
-                userclass.setTxt_editone_lname(EditOneFrag.txt_lname.getText().toString());
-                userclass.setTxt_editone_email(EditOneFrag.txt_email.getText().toString());
-                userclass.setTxt_editone_addr1(EditOneFrag.txt_addr1.getText().toString());
-                userclass.setTxt_editone_addr2(EditOneFrag.txt_addr2.getText().toString());
-                userclass.setTxt_editone_city(EditOneFrag.txt_city.getText().toString());
-                userclass.setTxt_editone_phone(EditOneFrag.txt_phone.getText().toString());
+                userclass.setTxt_fname(EditOneFrag.txt_fname.getText().toString());
+                userclass.setTxt_lname(EditOneFrag.txt_lname.getText().toString());
+                userclass.setTxt_email(EditOneFrag.txt_email.getText().toString());
+                userclass.setTxt_addr1(EditOneFrag.txt_addr1.getText().toString());
+                userclass.setTxt_addr2(EditOneFrag.txt_addr2.getText().toString());
+                userclass.setTxt_city(EditOneFrag.txt_city.getText().toString());
+                userclass.setTxt_phone(EditOneFrag.txt_phone.getText().toString());
                 Intent intent = new Intent(HomeActivity.this, EditTwoActivity.class);
                 startActivity(intent);
             }
@@ -177,6 +190,7 @@ public class HomeActivity extends AppCompatActivity
                 //startActivity(new Intent(HomeActivity.this,ChangePasswordFrag.class));
                 break;
             case R.id.nav_signOut:
+                UserSingletonModelClass.get_userSingletonModelClass().destroyUser();
                 startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                 HomeActivity.this.finish();
                 break;

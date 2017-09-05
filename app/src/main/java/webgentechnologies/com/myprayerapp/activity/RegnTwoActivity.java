@@ -52,11 +52,8 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         //Calling sharedpreference to set churchname value...
        /* sharedpreferences = getSharedPreferences(sharedpreferenceName, Context.MODE_PRIVATE);
         String sharedpreferencesString = sharedpreferences.getString(sharedpreference_key_churchname, null);*/
-        txt_churchname.setText(userclass.getTxt_selected_church_name());
+        txt_churchname.setText(userclass.getChurch_name());
 
-        userclass.setChurch_name(txt_churchname.getText().toString());
-
-        Toast.makeText(getApplicationContext(), userclass.getTxt_country(), Toast.LENGTH_LONG).show();
         setCustomDesign();
         //setCustomClickListeners();
         chk_others = (CheckBox) findViewById(R.id.chk_others);
@@ -118,79 +115,51 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    StringBuffer result = new StringBuffer();
     List list = new ArrayList();
 
     @Override
     public void onClick(View v) {
         int item = v.getId();
         switch (item) {
-            case R.id.chk_alpha:
-                if (chk_alpha.isChecked()) {
-                    // result.append(" Alpha ");
-                    list.add("Alpha");
-                } else
-                    list.remove("Alpha");
-
-                break;
-            case R.id.chk_perspective:
-                if (chk_perspective.isChecked())
-                    list.add("Perspective");
-                else
-                    list.remove("Perspective");
-                break;
-            case R.id.chk_men:
-                if (chk_men.isChecked())
-                    list.add("Men's Fraternity");
-                else
-                    list.remove("Men's Fraternity");
-                break;
-            case R.id.chk_beth_more:
-                if (chk_beth_more.isChecked())
-                    list.add("Beth More");
-                else
-                    list.remove("Beth More");
-                break;
-            case R.id.chk_cbs:
-                if (chk_cbs.isChecked())
-                    list.add("CBS");
-                else
-                    list.remove("CBS");
-                break;
             case R.id.chk_others:
                 LinearLayout layout = (LinearLayout) findViewById(R.id.layout_txt_others);
                 if (chk_others.isChecked()) {
                     layout.setVisibility(View.VISIBLE);
-                    txt_others.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                            // others = txt_others.getText().toString();
-                            // userclass.setTxt_others(txt_others.getText().toString());
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable s) {
-                            list.add(txt_others.getText().toString());
-                        }
-                    });
-                    //  others=txt_others.getText().toString();
-                    //list.add(others);
                 } else {
-                    // list.remove(others);
                     layout.setVisibility(View.GONE);
-                    txt_others.setText("");
-                    //others = txt_others.getText().toString();
-                    list.remove(txt_others.getText().toString());
-                    // userclass.setTxt_others("");
                 }
-
                 break;
             case R.id.imageButtonNext:
+                List list = new ArrayList();
+                if (chk_alpha.isChecked())
+                    list.add("Alpha");
+                if (chk_perspective.isChecked())
+                    list.add("Perspective");
+                if (chk_men.isChecked())
+                    list.add("Men's Fraternity");
+                if (chk_beth_more.isChecked())
+                    list.add("Beth More");
+                if (chk_cbs.isChecked())
+                    list.add("CBS");
+                if(chk_others.isChecked())
+                {
+                    list.add("OTHER");
+                    list.add(txt_others.getText().toString());
+                }
+                if(list.size()==0)
+                {
+                    Toast.makeText(this,"Please select at least one class",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(list.contains("OTHER")&&(txt_others.getText().toString().length()<=1))
+                {
+                    Toast.makeText(this,"Please Enter a valid class-name for \"OTHERS\" category",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                userclass.setList_classes_attended(list);
+                userclass.setChurch_name(txt_churchname.getText().toString());
+                String user=userclass.toString();
+               // Toast.makeText(this,userclass.toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegnTwoActivity.this, RegnThreeActivity.class);
                 startActivity(intent);
                 break;
@@ -198,10 +167,5 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 finish();
                 break;
         }
-        Toast.makeText(getApplicationContext(), list.toString(), Toast.LENGTH_LONG).show();
-        // classes=list.toString();
-        userclass.setTxt_classes_attended(list.toString());
-        //userclass.setTxt_others(others);
-
     }
 }
