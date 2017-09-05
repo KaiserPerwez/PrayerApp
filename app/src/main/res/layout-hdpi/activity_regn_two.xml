@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_screen"
+    tools:context="webgentechnologies.com.myprayerapp.activity.RegnTwoActivity">
+
+    <LinearLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#002f59"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <FrameLayout
+            android:id="@+id/imageButtonPrev"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.22"
+            android:foregroundGravity="center">
+
+            <ImageButton
+                android:layout_width="20dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/left_arrow" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="9.54"
+            android:foregroundGravity="center"
+            android:minWidth="50dp"></FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/imageButtonNext"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.22"
+            android:foregroundGravity="center">
+
+            <ImageButton
+                android:layout_width="20dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/right_arrow" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_regn_two"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/frameLayout"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="Registration"
+        android:textColor="@android:color/white"
+        android:textColorHighlight="@color/black_overlay"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/tv_regn_step2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="Step (2/4)"
+        android:textColor="@android:color/white"
+        android:textSize="15sp"
+        android:layout_below="@+id/tv_regn_two"
+        android:layout_alignParentStart="true" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tv_regn_step2">
+
+        <LinearLayout
+            android:id="@+id/linearLayout_regn_two"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:orientation="vertical"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:weightSum="100">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:background="@drawable/field_area_bg">
+
+                <EditText
+                    android:id="@+id/txt_church_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:ems="15"
+                    android:focusable="false"
+                    android:gravity="center"
+                    android:hint="Church Name"
+                    android:inputType="text"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="0dp"
+                    android:textColorHint="#687787"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_header_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:clickable="false"
+                android:gravity="left"
+                android:text="Indicate any of the following classes that you have gone through:"
+                android:textColor="@android:color/white"
+                android:textColorHighlight="@color/black_overlay"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:id="@+id/chk_alpha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Alpha"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <CheckBox
+                android:id="@+id/chk_perspective"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Perspective"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <CheckBox
+                android:id="@+id/chk_men"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Men's Fraternity"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <CheckBox
+                android:id="@+id/chk_beth_more"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beth More"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <CheckBox
+                android:id="@+id/chk_cbs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CBS"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <CheckBox
+                android:id="@+id/chk_others"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Others"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                app:buttonTint="@android:color/white" />
+
+            <LinearLayout
+                android:id="@+id/layout_txt_others"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="14dp"
+                android:layout_marginRight="14dp"
+                android:background="@drawable/field_area_bg"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <EditText
+                    android:id="@+id/txt_others"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:gravity="center"
+                    android:hint="Class names separated by comma"
+                    android:inputType="text"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:textColorHint="#687787"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

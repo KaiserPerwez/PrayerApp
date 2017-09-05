@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen"
+    tools:context="webgentechnologies.com.myprayerapp.activity.RegnFourActivity">
+
+    <LinearLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:background="#002f59"
+        android:orientation="horizontal"
+        android:weightSum="10">
+
+        <FrameLayout
+            android:id="@+id/imageButtonPrev"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.22"
+            android:foregroundGravity="center">
+
+            <ImageButton
+                android:layout_width="20dp"
+                android:layout_height="15dp"
+                android:layout_gravity="center"
+                android:background="@drawable/left_arrow" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_regn_four"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/frameLayout"
+        android:layout_marginTop="30dp"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="Registration"
+        android:textColor="@android:color/white"
+        android:textColorHighlight="@color/black_overlay"
+        android:textSize="30sp" />
+
+    <TextView
+        android:id="@+id/tv_regn_step4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_regn_four"
+        android:layout_marginBottom="30dp"
+        android:layout_weight="1"
+        android:clickable="false"
+        android:gravity="center"
+        android:text="Step (4/4)"
+        android:textColor="@android:color/white"
+        android:textSize="15sp" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout_txtPassword"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@id/tv_regn_step4"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/field_area_bg"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/txt_reg_pwd"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Set Password"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColorHint="#687787"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout_txtPasswordRetype"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_below="@+id/linearLayout_txtPassword"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/field_area_bg"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/txt_password_retype"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:ems="10"
+            android:hint="Re-enter Password"
+            android:inputType="textPassword"
+            android:paddingLeft="20dp"
+            android:textColorHint="#687787"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_pwdcheck"
+        android:layout_below="@id/linearLayout_txtPasswordRetype"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="Passwords did not match.Please Retry"
+        android:textColor="@android:color/holo_orange_dark"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btn_signUp"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_below="@+id/linearLayout_txtPasswordRetype"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/login_button"
+        android:text="Sign Up"
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/tv_AlreadyRegd"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_signUp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:text="Already Registered?"
+        android:textColor="@android:color/white"
+        android:textSize="13sp" />
+</RelativeLayout>

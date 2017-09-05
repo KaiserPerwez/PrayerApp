@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="webgentechnologies.com.myprayerapp.activity.HomeActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:theme="@style/AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="#002f59"
+            app:popupTheme="@style/PopupOverlay">
+
+            <LinearLayout
+                android:id="@+id/linearLayout_bar_prayers"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right|center"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_post_txt"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/text_icon" />
+
+                <ImageView
+                    android:id="@+id/img_post_audio"
+                    android:layout_width="15dp"
+                    android:layout_height="25dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/audio_icon" />
+
+                <ImageView
+                    android:id="@+id/img_post_video"
+                    android:layout_width="35dp"
+                    android:layout_height="18dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/video_icon" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout_bar_edit"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="right|center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:id="@+id/imageButtonNext"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:foregroundGravity="center">
+
+                    <ImageButton
+                        android:layout_width="20dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/right_arrow" />
+                </FrameLayout>
+
+            </LinearLayout>
+        </android.support.v7.widget.Toolbar>
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include
+        android:id="@+id/include_layout"
+        layout="@layout/content_home" />
+
+</android.support.design.widget.CoordinatorLayout>

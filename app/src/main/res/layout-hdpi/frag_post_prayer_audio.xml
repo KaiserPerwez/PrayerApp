@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
+
+        <LinearLayout
+            android:id="@+id/overflow"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="right|center"
+            android:paddingRight="15dp">
+
+            <TextView
+                android:id="@+id/txt_overflow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Choose Priority Option"
+                android:textColor="@android:color/white"
+                android:textSize="15sp" />
+
+            <ImageView
+                android:id="@+id/img_overflow"
+                android:layout_width="5dp"
+                android:layout_height="20dp"
+                android:layout_marginLeft="10sp"
+                android:background="@drawable/overflow_icon" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:paddingLeft="0dp">
+
+            <RelativeLayout
+                android:id="@+id/toggle_switch_rLayoutOuter"
+                android:layout_width="100dp"
+                android:layout_height="35dp"
+                android:layout_weight="6"
+                android:background="@drawable/togglebutton_white_bg"
+                android:minWidth="200dp"
+                android:paddingBottom="1dp"
+                android:paddingLeft="1dp"
+                android:paddingRight="1dp"
+                android:paddingTop="1dp">
+
+                <TextView
+                    android:id="@+id/toggle_switch_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="-3dp"
+                    android:gravity="center"
+                    android:text="Private Public"
+                    android:textSize="10sp" />
+
+                <RelativeLayout
+                    android:id="@+id/toggle_switch_rLayoutInner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:gravity="left|center"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp">
+
+                    <ImageButton
+                        android:id="@+id/toggle_switch_btn"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentStart="true"
+                        android:background="@drawable/toggleswitch" />
+                </RelativeLayout>
+            </RelativeLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center"
+            android:background="@drawable/mic" />
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:background="@drawable/red_button" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout_txtPrayer"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="13dp"
+            android:background="@drawable/comment_field"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/txt_Prayer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:ems="10"
+                android:gravity="left"
+                android:hint="Describe your Prayer Here.."
+                android:padding="10dp"
+                android:scrollHorizontally="false"
+                android:textColorHint="#687787"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_prayer"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/login_button"
+            android:text="Post Prayer"
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tv_OR"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:gravity="center"
+            android:text="OR"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout_btnFb"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/facebook_login"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginRight="7dp"
+                android:background="@drawable/facebook_icon" />
+
+            <TextView
+                android:id="@+id/tv_fb_login"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="sa"
+                android:gravity="center"
+                android:text="Post to "
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/tv_fb"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="sa"
+                android:gravity="center"
+                android:text="FACEBOOK"
+                android:textColor="@android:color/white" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
