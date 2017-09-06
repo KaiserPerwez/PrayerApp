@@ -86,9 +86,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setCustomDesign();
         m_btn_login = (Button) findViewById(R.id.btn_login);
         m_btn_login.setOnClickListener(this);
+        TextView tv_forgot_pwd = (TextView) findViewById(R.id.tv_forgot_pwd);
+        tv_forgot_pwd.setOnClickListener(this);
+        TextView tv_signUp = (TextView) findViewById(R.id.tv_signUp);
+        tv_signUp.setOnClickListener(this);
 
         progressDialog = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage("Logging in...");
+        progressDialog.setMessage("Authenticating...");
         progressDialog.setCancelable(false);
 
         /*

@@ -27,18 +27,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.Response.ErrorListener;
-//import com.android.volley.VolleyError;
-//import com.android.volley.request.SimpleMultiPartRequest;
-//import com.android.volley.request.SimpleMultiPartRequest;
-//import com.android.volley.toolbox.StringRequest;
-import com.android.volley.error.VolleyError;
-import com.android.volley.request.SimpleMultiPartRequest;
-import com.android.volley.request.StringRequest;
-
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -48,18 +36,13 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
@@ -67,7 +50,6 @@ import webgentechnologies.com.myprayerapp.activity.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
-import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
 /**
  * Created by Kaiser on 25-07-2017.
@@ -106,7 +88,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         setCustomDesign();
         progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
-        //  setCustomClickListeners();
 
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
@@ -137,60 +118,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private void setCustomDesign() {
     }
 
-    private void setCustomClickListeners() {
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) rootView.findViewById(R.id.toggle_switch_btn);
-        final int[] i = {0};
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_rLayoutInner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-
-        final TextView txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
-        txt_overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPriorityPopUp();
-            }
-        });
-        final ImageView img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
-        img_overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPriorityPopUp();
-            }
-        });
-    }
-
     private void showPriorityPopUp() {
         //Creating the instance of PopupMenu
         PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
@@ -200,8 +127,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(rootView.getContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
-                //  userclass.setTxt_post_priority_txtfrag(item.getTitle().toString());
                 postPrayerModelClass.setPost_priority(item.getTitle().toString());
 
                 return true;
@@ -219,14 +144,12 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
             tv_OR.setVisibility(View.GONE);
             linearLayout_btnFb.setVisibility(View.GONE);
-            Toast.makeText(rootView.getContext(), "PRIVATE:" + i, Toast.LENGTH_SHORT).show();
             postPrayerModelClass.setAccessibility("PRIVATE");
 
         } else {
             toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
             tv_OR.setVisibility(View.VISIBLE);
             linearLayout_btnFb.setVisibility(View.VISIBLE);
-            Toast.makeText(rootView.getContext(), "PUBLIC:" + i, Toast.LENGTH_SHORT).show();
             postPrayerModelClass.setAccessibility("PUBLIC");
 
         }
@@ -289,6 +212,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         }
 
     }
+
     /**
      * Receiving activity result method will be called after closing the camera
      * *
@@ -524,7 +448,11 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 postvideo2(userclass.getTxt_user_login_id(),userclass.getTxt_fname() + " " + userclass.getTxt_lname(), userclass.getTxt_email(),
                        "satabhisha.wgt@gmail.com","ddrhd",txtPrayer.getText().toString(),"Medium","Video", postPrayerModelClass.getPost_priority(),
                         userclass.getTxt_user_access_token(),formattedDate1);*/
-                new UploadFileToServer().execute();
+                if (txtPrayer.getText().length() <= 30) {
+                    txtPrayer.setError("Minimum 30 characters required for your prayer description.");
+                    return;
+                } else
+                    new UploadFileToServer().execute();
                 // postvideo3();
                 break;
             case R.id.img_record_video:

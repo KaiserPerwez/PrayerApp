@@ -118,7 +118,7 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="left"
-                android:hint="Describe your Prayer Here.."
+                android:hint="Describe your Prayer Here (Minimum 30 characters).."
                 android:padding="10dp"
                 android:scrollHorizontally="false"
                 android:textColorHint="#687787"

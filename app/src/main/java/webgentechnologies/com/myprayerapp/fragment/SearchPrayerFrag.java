@@ -1,6 +1,5 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -67,7 +66,7 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
         _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
         loadAllPrayersFromDatabase();
 
-        final EditText txt_search= (EditText) rootView.findViewById(R.id.search_Prayer);
+        final EditText txt_search = (EditText) rootView.findViewById(R.id.search_Prayer);
         txt_search.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -76,10 +75,23 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                 final int DRAWABLE_RIGHT = 2;
                 final int DRAWABLE_BOTTOM = 3;
 
-                if(event.getAction() == MotionEvent.ACTION_UP) {
-                    if(event.getRawX() >= (txt_search.getRight() - txt_search.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (txt_search.getRight() - txt_search.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         // your action here
-                        Toast.makeText(getContext(), "Search begins", Toast.LENGTH_SHORT).show();
+                        List<PostPrayerModelClass> postPrayerModelClassList = new ArrayList<PostPrayerModelClass>();
+                        for (PostPrayerModelClass postPrayerModelClass :
+                                _postPrayerModelClassList) {
+                            if (postPrayerModelClass.getPost_description().contains(txt_search.getText()))
+                                postPrayerModelClassList.add(postPrayerModelClass);
+                        }
+                        ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);
+                        ListView lv_prayer_list = (ListView) rootView.findViewById(R.id.lv_prayer_list);
+                        lv_prayer_list.setAdapter(listViewPrayerListAdapter);
+                        lv_prayer_list.invalidateViews();
+
+                        if (postPrayerModelClassList.size() == 0)
+                            Toast.makeText(getContext(), "NO PRAYER FOUND", Toast.LENGTH_SHORT).show();
+
                         return true;
                     }
                 }
@@ -173,6 +185,7 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
+                ((EditText) rootView.findViewById(R.id.search_Prayer)).setText("");
                 List<PostPrayerModelClass> postPrayerModelClassList = new ArrayList<PostPrayerModelClass>();
                 if (item.getTitle().equals("Answered")) {
                     for (PostPrayerModelClass postPrayerModelClass :
@@ -181,29 +194,25 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                             postPrayerModelClassList.add(postPrayerModelClass);
 
                     }
-                }
-                else if (item.getTitle().equals("UnAnswered")) {
+                } else if (item.getTitle().equals("UnAnswered")) {
                     for (PostPrayerModelClass postPrayerModelClass :
                             _postPrayerModelClassList) {
                         if (postPrayerModelClass.getAnswered_status().equals("0"))
                             postPrayerModelClassList.add(postPrayerModelClass);
                     }
-                }
-                else if (item.getTitle().equals("Text")) {
+                } else if (item.getTitle().equals("Text")) {
                     for (PostPrayerModelClass postPrayerModelClass :
                             _postPrayerModelClassList) {
                         if (postPrayerModelClass.getPost_type().toUpperCase().equals("TEXT"))
                             postPrayerModelClassList.add(postPrayerModelClass);
                     }
-                }
-                else if (item.getTitle().equals("Audio")) {
+                } else if (item.getTitle().equals("Audio")) {
                     for (PostPrayerModelClass postPrayerModelClass :
                             _postPrayerModelClassList) {
                         if (postPrayerModelClass.getPost_type().toUpperCase().equals("AUDIO"))
                             postPrayerModelClassList.add(postPrayerModelClass);
                     }
-                }
-                else if (item.getTitle().equals("Video")) {
+                } else if (item.getTitle().equals("Video")) {
                     for (PostPrayerModelClass postPrayerModelClass :
                             _postPrayerModelClassList) {
                         if (postPrayerModelClass.getPost_type().toUpperCase().equals("VIDEO"))
@@ -216,7 +225,6 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                 lv_prayer_list.setAdapter(listViewPrayerListAdapter);
                 lv_prayer_list.invalidateViews();
 
-                Toast.makeText(rootView.getContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 return true;
             }
         });

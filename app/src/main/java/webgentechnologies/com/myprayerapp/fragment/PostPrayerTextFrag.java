@@ -59,7 +59,6 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_post_prayer_text, container, false);
         setCustomDesign();
-        // setCustomClickListeners();
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txtPrayer);
 
@@ -90,70 +89,15 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     private void setCustomDesign() {
     }
 
-    private void setCustomClickListeners() {
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) rootView.findViewById(R.id.toggle_switch_btn);
-        final int[] i = {0};
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_rLayoutInner.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_text.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-        toggle_switch_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleYesNo(i[0]++);
-            }
-        });
-
-        final TextView txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
-        txt_overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPriorityPopUp();
-            }
-        });
-        final ImageView img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
-        img_overflow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showPriorityPopUp();
-            }
-        });
-    }
-
     private void showPriorityPopUp() {
         //Creating the instance of PopupMenu
         PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
         //Inflating the Popup using xml file
         popup.getMenuInflater().inflate(R.menu.post_priority_menu, popup.getMenu());
-        popup.getMenu().getItem(2).setChecked(true);
+        popup.getMenu().getItem(1).setChecked(true);
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(rootView.getContext(), "You Clicked : " + item.getTitle(), Toast.LENGTH_SHORT).show();
                 postPrayerModelClass.setPost_priority(item.getTitle().toString());
                 return true;
             }
@@ -171,13 +115,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
             tv_OR.setVisibility(View.GONE);
             linearLayout_btnFb.setVisibility(View.GONE);
-            Toast.makeText(rootView.getContext(), "PRIVATE:" + i, Toast.LENGTH_SHORT).show();
             postPrayerModelClass.setAccessibility("PRIVATE");
         } else {
             toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
             tv_OR.setVisibility(View.VISIBLE);
             linearLayout_btnFb.setVisibility(View.VISIBLE);
-            Toast.makeText(rootView.getContext(), "PUBLIC:" + i, Toast.LENGTH_SHORT).show();
             postPrayerModelClass.setAccessibility("PUBLIC");
 
         }
@@ -194,14 +136,16 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 toggleYesNo(i[0]++);
                 break;
             case R.id.txt_overflow:
-                showPriorityPopUp();
-                break;
             case R.id.img_overflow:
                 showPriorityPopUp();
                 break;
             case R.id.btn_post_prayer:
-              //  userclass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
-               // userclass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
+              if(txtPrayer.getText().length()<=30)
+              {
+                  txtPrayer.setError("Minimum 30 characters required for your prayer description.");
+                  return;
+              }
+              else
                 posttextprayer();
                 break;
 
