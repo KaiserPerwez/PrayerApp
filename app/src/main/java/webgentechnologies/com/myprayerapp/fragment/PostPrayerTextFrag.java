@@ -1,5 +1,6 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -127,6 +129,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.toggle_switch_rLayoutOuter:
@@ -210,5 +213,9 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 //----------Volley code for posting text prayer ends------------
+void hideSoftKeyboard() {
+    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+}
 }
 

@@ -6,7 +6,9 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -143,6 +145,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         // final int[] i = {0};
 
@@ -152,7 +155,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                 userclass.setTxt_newto_mission(new_to_mission);
                 userclass.setTxt_mission_trip_countries(country_mission);
                 String user=userclass.toString();
-               // Toast.makeText(this,userclass.toString(),Toast.LENGTH_LONG).show();
+               // Toast.makeText(this,_userSingletonModelClass.toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegnThreeActivity.this, RegnFourActivity.class);
                 startActivity(intent);
                 break;
@@ -178,5 +181,15 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                     userclass.setTxt_newto_mission("0");
                 break;
         }
+    }
+
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideSoftKeyboard();
+        return super.onTouchEvent(event);
     }
 }

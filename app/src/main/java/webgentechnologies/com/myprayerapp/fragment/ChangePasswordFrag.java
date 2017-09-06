@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -71,6 +72,7 @@ public class ChangePasswordFrag extends Fragment {
             @Override
             public void onClick(View view) {
                 //Volley method calling for getting otp to email
+                hideSoftKeyboard();
                 getOtpToemailTochngpswd();
                 // get prompts.xml view
                 LayoutInflater li = LayoutInflater.from(m_ctx);
@@ -92,14 +94,16 @@ public class ChangePasswordFrag extends Fragment {
                 btn_back.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        hideSoftKeyboard();
                         alertDialog.dismiss();
                     }
                 });
                 btn_verify.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        hideSoftKeyboard();
                         alertDialog.dismiss();
-                        //  userclass.setTxt_otp_from_email_to_change_pswd(txt_otp.getText().toString());
+                        //  _userSingletonModelClass.setTxt_otp_from_email_to_change_pswd(txt_otp.getText().toString());
                         txt_otp_verify = txt_otp.getText().toString();
                         //Volley method to verify otp is calling
                         verifyOtp();
@@ -127,10 +131,10 @@ public class ChangePasswordFrag extends Fragment {
                     if (status.equals("true")) {
                        // startActivity(new Intent(ForgotPasswordOneActivity.this, HomeActivity.class));
                         JSONObject jobdata = job.getJSONObject("data");
-                        userclass.setTxt_user_login_id(jobdata.getString("id"));
-                        userclass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        userclass.setTxt_temp_user_login_email(jobdata.getString("email"));
-                        userclass.setTxt_fcbk_login_and_normal_login_email(userclass.getTxt_temp_user_login_email());
+                        _userSingletonModelClass.setTxt_user_login_id(jobdata.getString("id"));
+                        _userSingletonModelClass.setTxt_user_access_token(jobdata.getString("accessToken"));
+                        _userSingletonModelClass.setTxt_temp_user_login_email(jobdata.getString("email"));
+                        _userSingletonModelClass.setTxt_fcbk_login_and_normal_login_email(_userSingletonModelClass.getTxt_temp_user_login_email());
                     } else
                         Toast.makeText(getApplicationContext(), "Incorrect email_id or password", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -150,7 +154,7 @@ public class ChangePasswordFrag extends Fragment {
               /*  params.put(KEY_USERNAME,username);
                 params.put(KEY_PASSWORD,password);
                 params.put(KEY_EMAIL, email);*/
-               // params.put("email", userclass.getTxt_temp_user_login_email());
+               // params.put("email", _userSingletonModelClass.getTxt_temp_user_login_email());
                 params.put("email", userclass.getTxt_email());
                 params.put("user_id", userclass.getTxt_user_login_id());
                 params.put("access_token", userclass.getTxt_user_access_token());
@@ -180,10 +184,10 @@ public class ChangePasswordFrag extends Fragment {
                     if (status.equals("true")) {
                        // startActivity(new Intent(ForgotPasswordOneActivity.this, HomeActivity.class));
                         JSONObject jobdata = job.getJSONObject("data");
-                        userclass.setTxt_user_login_id(jobdata.getString("id"));
-                        userclass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        userclass.setTxt_temp_user_login_email(jobdata.getString("email"));
-                        userclass.setTxt_fcbk_login_and_normal_login_email(userclass.getTxt_temp_user_login_email());
+                        _userSingletonModelClass.setTxt_user_login_id(jobdata.getString("id"));
+                        _userSingletonModelClass.setTxt_user_access_token(jobdata.getString("accessToken"));
+                        _userSingletonModelClass.setTxt_temp_user_login_email(jobdata.getString("email"));
+                        _userSingletonModelClass.setTxt_fcbk_login_and_normal_login_email(_userSingletonModelClass.getTxt_temp_user_login_email());
                     } else
                         Toast.makeText(getApplicationContext(), "Incorrect email_id or password", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -227,4 +231,8 @@ public class ChangePasswordFrag extends Fragment {
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);//
     }
 //----------Volley code to verify otp ends------------
+void hideSoftKeyboard() {
+    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+    inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+}
 }

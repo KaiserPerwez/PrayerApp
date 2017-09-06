@@ -13,7 +13,6 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -24,8 +23,6 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 import com.facebook.AccessToken;
@@ -58,12 +55,12 @@ import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    UserSingletonModelClass userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
 
-    Context m_ctx;
-    Button m_btn_login;
-    EditText txt_email, txt_password;
-
+    Context _ctx;
+    Button _btn_login;
+    EditText _txt_email, _txt_password;
+    TextView _tv_forgot_pwd, _tv_signUp;
     /*
     Facebook login variables
      */
@@ -72,32 +69,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private ProfileTracker profileTracker;
     private LoginButton loginButtonFB;
     ProgressDialog progressDialog;
-    LinearLayout m_linearLayout_btnFb;
+    LinearLayout _linearLayout_btnFb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        m_ctx=LoginActivity.this;
-        txt_email = (EditText) findViewById(R.id.txt_email);
-        txt_password = (EditText) findViewById(R.id.txt_password);
+        _ctx = LoginActivity.this;
+        _txt_email = (EditText) findViewById(R.id.txt_email);
+        _txt_password = (EditText) findViewById(R.id.txt_password);
+        _btn_login = (Button) findViewById(R.id.btn_login);
+        _tv_forgot_pwd = (TextView) findViewById(R.id.tv_forgot_pwd);
+        _tv_signUp = (TextView) findViewById(R.id.tv_signUp);
+        _linearLayout_btnFb = (LinearLayout) findViewById(R.id.linearLayout_btnFb);
 
-        txt_email.setText("satabhisha.wgt@gmail.com");
-        txt_password.setText("123");
+
+        _btn_login.setOnClickListener(this);
+        _tv_forgot_pwd.setOnClickListener(this);
+        _tv_signUp.setOnClickListener(this);
+        _linearLayout_btnFb.setOnClickListener(this);
+
+        _txt_email.setText("satabhisha.wgt@gmail.com");
+        _txt_password.setText("123");
         setCustomDesign();
-        m_btn_login = (Button) findViewById(R.id.btn_login);
-        m_btn_login.setOnClickListener(this);
-        TextView tv_forgot_pwd = (TextView) findViewById(R.id.tv_forgot_pwd);
-        tv_forgot_pwd.setOnClickListener(this);
-        TextView tv_signUp = (TextView) findViewById(R.id.tv_signUp);
-        tv_signUp.setOnClickListener(this);
+
 
         progressDialog = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Authenticating...");
         progressDialog.setCancelable(false);
 
-        /*
-        *Code to get KeyHash for android app
-         */
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     getPackageName(), PackageManager.GET_SIGNATURES);
@@ -109,33 +109,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         } catch (PackageManager.NameNotFoundException e) {
         } catch (NoSuchAlgorithmException e) {
         }
-        //------------Code for KeyHash ends--------------------
 
-        /*
-        *Facebook Login code---
-         */
-        loginButtonFB = (LoginButton) findViewById(R.id.btnfb);
-
-        //  aQuery = new AQuery(this);
-
-        callbackManager = CallbackManager.Factory.create();
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
-
-            }
-        };
-        profileTracker = new ProfileTracker() {
-            @Override
-            protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
-            }
-        };
-        accessTokenTracker.startTracking();
-        profileTracker.startTracking();
-        loginButtonFB.setReadPermissions(Arrays.asList("public_profile", "email", "user_birthday", "user_friends"));
-        loginButtonFB.setTextLocale(Locale.ENGLISH);
-        loginButtonFB.registerCallback(callbackManager, callback);
-        //---------Facebook code ends inside onCreate()-------------
+        ///---------Facebook code ends inside onCreate()-------------
     }
 
     /*
@@ -149,31 +124,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     new GraphRequest.GraphJSONObjectCallback() {
                         @Override
                         public void onCompleted(JSONObject object, GraphResponse response) {
-                            Log.v("LoginActivity", response.toString());
-
                             // Application code
                             try {
-                                String birthday = "";
-                                if (object.has("birthday")) {
-                                    birthday = object.getString("birthday"); // 01/31/1980 format
-                                }
-
-                           /*  String fnm = object.getString("first_name");
-                             String lnm = object.getString("last_name");
-                             String mail = object.getString("email");
-                             String gender = object.getString("gender");
-                             String fid = object.getString("id");*/
-                                userclass.setTxt_fname(object.getString("first_name"));
-                                userclass.setTxt_lname(object.getString("last_name"));
-                                userclass.setTxt_email(object.getString("email"));
-                                // tvdetails.setText("Name: "+fnm+" "+lnm+" \n"+"Email: "+mail+" \n"+"Gender: "+gender+" \n"+"ID: "+fid+" \n"+"Birth Date: "+birthday);
-                                // aQuery.id(ivpic).image("https://graph.facebook.com/" + fid + "/picture?type=large");
-                                //https://graph.facebook.com/143990709444026/picture?type=large
-                                //  Log.d("aswwww","https://graph.facebook.com/"+fid+"/picture?type=large");
-                           /*  Intent i=new Intent(MainActivity.this,ActivitySecond.class);
-                             startActivity(i);*/
-                           userclass.setReg_type("facebook");
-                                registerFcbkUser();
+                                userSingletonModelClass.setTxt_fname(object.getString("first_name"));
+                                userSingletonModelClass.setTxt_lname(object.getString("last_name"));
+                                userSingletonModelClass.setTxt_email(object.getString("email"));
+                                userSingletonModelClass.setReg_type("facebook");
+                                register_FbUser();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -184,21 +141,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
             request.setParameters(parameters);
             request.executeAsync();
-
         }
 
         @Override
         public void onCancel() {
-
         }
 
         @Override
         public void onError(FacebookException error) {
-
         }
     };
-    //Facebook Login onSuccess code ends---
-
 
     /*
     Facebook login override methods
@@ -212,8 +164,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onStop() {
         super.onStop();
-        accessTokenTracker.stopTracking();
-        profileTracker.stopTracking();
+        if (accessTokenTracker != null)
+            accessTokenTracker.stopTracking();
+        if (profileTracker != null)
+            profileTracker.stopTracking();
     }
 
     @Override
@@ -225,7 +179,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     //-------Facebook login override method ends---------
 
     private void setCustomDesign() {
-        m_ctx = LoginActivity.this;
+        _ctx = LoginActivity.this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         Typeface regular_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
         Typeface semiBold_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-SemiBold.ttf");
@@ -248,58 +202,76 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (item) {
             case R.id.btn_login:
 
-                if (txt_email.getText().toString().length() > 0 && txt_password.getText().toString().length() > 0) {
-                    userclass.setTxt_email(txt_email.getText().toString());
-                    userclass.setTxt_pswd(txt_password.getText().toString());
+                if (_txt_email.getText().toString().length() > 0 && _txt_password.getText().toString().length() > 0) {
+                    userSingletonModelClass.setTxt_email(_txt_email.getText().toString());
+                    userSingletonModelClass.setTxt_pswd(_txt_password.getText().toString());
                     login();
                 } else {
-                    if (txt_email.getText().toString().length() == 0)
-                        txt_email.setError("Email can't be blank");
+                    if (_txt_email.getText().toString().length() == 0)
+                        _txt_email.setError("Email can't be blank");
 
-                    if (txt_password.getText().toString().length() == 0)
-                        txt_email.setError("Password can't be blank");
+                    if (_txt_password.getText().toString().length() == 0)
+                        _txt_email.setError("Password can't be blank");
                 }
                 break;
             case R.id.tv_forgot_pwd:
                 startActivity(new Intent(LoginActivity.this, ForgotPasswordOneActivity.class));
                 break;
             case R.id.tv_signUp:
-                userclass.setReg_type("normal");
+                userSingletonModelClass.setReg_type("normal");
                 startActivity(new Intent(LoginActivity.this, RegnOneActivity.class));
+                break;
+            case R.id.linearLayout_btnFb:
+                loginButtonFB = new LoginButton(this);
+                callbackManager = CallbackManager.Factory.create();
+                accessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldToken, AccessToken newToken) {
+
+                    }
+                };
+                profileTracker = new ProfileTracker() {
+                    @Override
+                    protected void onCurrentProfileChanged(Profile oldProfile, Profile newProfile) {
+                    }
+                };
+                accessTokenTracker.startTracking();
+                profileTracker.startTracking();
+                loginButtonFB.setReadPermissions(Arrays.asList("public_profile", "email"));
+                loginButtonFB.setTextLocale(Locale.ENGLISH);
+                loginButtonFB.registerCallback(callbackManager, callback);
+                loginButtonFB.performClick();
                 break;
         }
     }
 
-
-    /*
-     *Volley code for login
-      */
     public void login() {
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
-                    JSONObject job = new JSONObject(response);
-                    String status = job.getString("status");
+                    JSONObject json_obj = new JSONObject(response);
+                    String status = json_obj.getString("status");
 
                     if (status.equals("true")) {
-                        JSONObject jobdata = job.getJSONObject("data");
-                        userclass.setTxt_user_login_id(jobdata.getString("id"));
-                        userclass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        userclass.setTxt_email(jobdata.getString("email"));
-                        userclass.setTxt_fname(jobdata.getString("firstName"));
-                        userclass.setTxt_lname(jobdata.getString("lastName"));
-                        loadProfiledetails();
+                        JSONObject json_obj_data = json_obj.getJSONObject("data");
+                        userSingletonModelClass.setTxt_user_login_id(json_obj_data.getString("id"));
+                        userSingletonModelClass.setTxt_user_access_token(json_obj_data.getString("accessToken"));
+                        userSingletonModelClass.setTxt_email(json_obj_data.getString("email"));
+                        userSingletonModelClass.setTxt_fname(json_obj_data.getString("firstName"));
+                        userSingletonModelClass.setTxt_lname(json_obj_data.getString("lastName"));
+                        load_ProfileDetails();
                     } else {
                         if (progressDialog.isShowing())
                             progressDialog.cancel();
-                        Toast.makeText(m_ctx, "Incorrect email_id or password", Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Incorrect email_id or password", Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (progressDialog.isShowing())
                         progressDialog.cancel();
+                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -307,40 +279,40 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(m_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                if (error.toString().toUpperCase().contains("NOCONNECTION"))
+                    Toast.makeText(_ctx, "Please check Your Internet Connectivity", Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(_ctx, "VolleyErr:"+error.toString(), Toast.LENGTH_LONG).show();
+
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("email", txt_email.getText().toString());
-                params.put("password", txt_password.getText().toString());
-                params.put("device_id", userclass.getDevice_id());
-                params.put("device_type", userclass.getDevice_type());
+                params.put("email", _txt_email.getText().toString());
+                params.put("password", _txt_password.getText().toString());
+                params.put("device_id", userSingletonModelClass.getDevice_id());
+                params.put("device_type", userSingletonModelClass.getDevice_type());
 
                 return params;
             }
         };
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
-//----------Volley code for login ends------------
 
-    //Volley code to register for facebook users in the api i.e made in php...
-    public void registerFcbkUser() {
+    public void register_FbUser() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_REGISTER_USER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
-                    JSONObject job = new JSONObject(response);
-                    String status = job.getString("status");
+                    JSONObject jsonObject = new JSONObject(response);
+                    String status = jsonObject.getString("status");
 
                     if (status.equals("true")) {
-                        //  startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                        loginforfcbkusers();
+                        login_FbUser();
                     } else if (status.equals("false")) {
-                        Toast.makeText(m_ctx, "Already registered,now edit your profile", Toast.LENGTH_LONG).show();
-                        // startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                        loginforfcbkusers();
+                        Toast.makeText(_ctx, "Already registered.", Toast.LENGTH_LONG).show();
+                        login_FbUser();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -349,18 +321,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(m_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-              /*  params.put(KEY_USERNAME,username);
-                params.put(KEY_PASSWORD,password);
-                params.put(KEY_EMAIL, email);*/
-                params.put("first_name", userclass.getTxt_fname());
-                params.put("last_name", userclass.getTxt_lname());
-                params.put("email", userclass.getTxt_email());
+                params.put("first_name", userSingletonModelClass.getTxt_fname());
+                params.put("last_name", userSingletonModelClass.getTxt_lname());
+                params.put("email", userSingletonModelClass.getTxt_email());
                 params.put("country_id", "");
                 params.put("country_name", "");
                 params.put("address1", "");
@@ -374,12 +343,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 params.put("mission_trip", "");
                 params.put("mission_concept", "");
                 params.put("password", "");
-                params.put("device_id",userclass.getDevice_id());
-                params.put("device_type", userclass.getDevice_type());
-                userclass.setReg_type("Facebook");
-                params.put("reg_type", userclass.getReg_type());
+                params.put("device_id", userSingletonModelClass.getDevice_id());
+                params.put("device_type", userSingletonModelClass.getDevice_type());
+                userSingletonModelClass.setReg_type("Facebook");
+                params.put("reg_type", userSingletonModelClass.getReg_type());
                 return params;
             }
+
             private Map<String, String> checkParams(Map<String, String> map) {
                 Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
                 while (it.hasNext()) {
@@ -394,33 +364,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         };
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
-    //-----------Volley code for registration ends------------------
-
 
     /*
     *Volley code for login for facebook users
     * This is normal login fetched from api made in php.
     * This login() will be called after facebook login
      */
-    public void loginforfcbkusers() {
+    public void login_FbUser() {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
-                    JSONObject job = new JSONObject(response);
-                    String status = job.getString("status");
+                    JSONObject jsonObject = new JSONObject(response);
+                    String status = jsonObject.getString("status");
 
                     if (status.equals("true")) {
-                        JSONObject jobdata = job.getJSONObject("data");
-                        userclass.setTxt_user_login_id(jobdata.getString("id"));
-                        userclass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        userclass.setTxt_fname(jobdata.getString("firstName"));
-                        userclass.setTxt_lname(jobdata.getString("lastName"));
-                        userclass.setTxt_email(jobdata.getString("email"));
+                        JSONObject jsonObject_data = jsonObject.getJSONObject("data");
+                        userSingletonModelClass.setTxt_user_login_id(jsonObject_data.getString("id"));
+                        userSingletonModelClass.setTxt_user_access_token(jsonObject_data.getString("accessToken"));
+                        userSingletonModelClass.setTxt_fname(jsonObject_data.getString("firstName"));
+                        userSingletonModelClass.setTxt_lname(jsonObject_data.getString("lastName"));
+                        userSingletonModelClass.setTxt_email(jsonObject_data.getString("email"));
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
-                        loadProfiledetails();
+                        load_ProfileDetails();
                     } else {
-                        Toast.makeText(m_ctx, "Error"+response.toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Error" + response, Toast.LENGTH_LONG).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -433,16 +401,16 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(m_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("email", userclass.getTxt_email());
+                params.put("email", userSingletonModelClass.getTxt_email());
                 params.put("password", "");
-                params.put("device_id", userclass.getDevice_id());
-                params.put("device_type", userclass.getDevice_type());
+                params.put("device_id", userSingletonModelClass.getDevice_id());
+                params.put("device_type", userSingletonModelClass.getDevice_type());
 
                 return params;
             }
@@ -450,13 +418,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    //-----------Volley code for login for facebook users ends-----------
 
-
-    /*
-Volley code to get registration details
- */
-    public void loadProfiledetails() {
+    public void load_ProfileDetails() {
         if (!(progressDialog.isShowing()))
             progressDialog.show();
 
@@ -471,36 +434,36 @@ Volley code to get registration details
                         {
                             JSONObject jobdata = job.getJSONObject("data");
                             String access_token = jobdata.getString("access_token");
-                            userclass.setTxt_user_access_token(access_token);
+                            userSingletonModelClass.setTxt_user_access_token(access_token);
                             JSONArray userjsonarray = jobdata.getJSONArray("user");
                             for (int i = 0; i < userjsonarray.length(); i++) {
                                 JSONObject jobuser = userjsonarray.getJSONObject(i);
 
-                                userclass.setTxt_user_login_id(jobuser.getString("id"));
-                                userclass.setTxt_fname(jobuser.getString("first_name"));
-                                userclass.setTxt_lname(jobuser.getString("last_name"));
-                                userclass.setTxt_email(jobuser.getString("email"));
+                                userSingletonModelClass.setTxt_user_login_id(jobuser.getString("id"));
+                                userSingletonModelClass.setTxt_fname(jobuser.getString("first_name"));
+                                userSingletonModelClass.setTxt_lname(jobuser.getString("last_name"));
+                                userSingletonModelClass.setTxt_email(jobuser.getString("email"));
 
-                                userclass.setTxt_country_id(jobuser.getString("country_id"));
-                                userclass.setTxt_country(jobuser.getString("country_name"));
-                                userclass.setTxt_addr1(jobuser.getString("address1"));
-                                userclass.setTxt_addr2(jobuser.getString("address2"));
-                                userclass.setTxt_city(jobuser.getString("city"));
-                                userclass.setTxt_state_id(jobuser.getString("state_id"));
-                                userclass.setTxt_state_name(jobuser.getString("state_name"));
-                                userclass.setTxt_phone(jobuser.getString("phone"));
-                                userclass.setChurch_id(jobuser.getString("church_id"));
+                                userSingletonModelClass.setTxt_country_id(jobuser.getString("country_id"));
+                                userSingletonModelClass.setTxt_country(jobuser.getString("country_name"));
+                                userSingletonModelClass.setTxt_addr1(jobuser.getString("address1"));
+                                userSingletonModelClass.setTxt_addr2(jobuser.getString("address2"));
+                                userSingletonModelClass.setTxt_city(jobuser.getString("city"));
+                                userSingletonModelClass.setTxt_state_id(jobuser.getString("state_id"));
+                                userSingletonModelClass.setTxt_state_name(jobuser.getString("state_name"));
+                                userSingletonModelClass.setTxt_phone(jobuser.getString("phone"));
+                                userSingletonModelClass.setChurch_id(jobuser.getString("church_id"));
 
                                 String classes_attended[] = jobuser.getString("classes").split(";");
                                 for (String str :
                                         classes_attended) {
                                     if (str.length() > 0)
-                                        userclass.addClassesAttended(str);
+                                        userSingletonModelClass.addClassesAttended(str);
                                 }
 
-                                userclass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
-                                userclass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
-                                userclass.setTxt_newto_mission(jobuser.getString("mission_concept"));
+                                userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
+                                userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
+                                userSingletonModelClass.setTxt_newto_mission(jobuser.getString("mission_concept"));
                             }
                             startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                             LoginActivity.this.finish();
@@ -527,8 +490,8 @@ Volley code to get registration details
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("user_id", userclass.getTxt_user_login_id());
-                params.put("access_token", userclass.getTxt_user_access_token());
+                params.put("user_id", userSingletonModelClass.getTxt_user_login_id());
+                params.put("access_token", userSingletonModelClass.getTxt_user_access_token());
 
                 return params;
             }
@@ -536,12 +499,10 @@ Volley code to get registration details
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    //--------------------    Volley code to get registration details ends-------------------------
-void hideSoftKeyboard(){
-    /* code to show keyboard on startup.this code is not working.*/
-    InputMethodManager inputMethodManager=(InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-    inputMethodManager.hideSoftInputFromWindow((null==getCurrentFocus())?null:getCurrentFocus().getWindowToken(),InputMethodManager.HIDE_NOT_ALWAYS);
-}
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {

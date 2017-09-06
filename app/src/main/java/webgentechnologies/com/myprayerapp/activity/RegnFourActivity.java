@@ -8,7 +8,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -75,6 +77,7 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.btn_signUp:
@@ -203,6 +206,16 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
 //        VolleyUtils.getInstance(RegnFourActivity.this).addToRequestQueue(stringRequest);
     }
     //-----------Volley code for registration ends------------------
+
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideSoftKeyboard();
+        return super.onTouchEvent(event);
+    }
 }
 
 

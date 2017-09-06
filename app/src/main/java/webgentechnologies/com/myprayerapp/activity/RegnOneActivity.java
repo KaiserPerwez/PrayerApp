@@ -11,8 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -114,7 +116,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setCustomDesign() {
-        //  m_ctx = RegnOneActivity.this;
+        //  _ctx = RegnOneActivity.this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         // addItemsOnStateSpinner();
         Typeface regular_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
@@ -137,6 +139,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.imageButtonNext:
@@ -186,10 +189,11 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideSoftKeyboard();
                 alertDialog.dismiss();
 
                 String txt_selected_church_name = txt_selected_church.getText().toString();
-              //  userclass.setTxt_selected_church_name(txt_selected_church_name);
+              //  _userSingletonModelClass.setTxt_selected_church_name(txt_selected_church_name);
                 userclass.setChurch_name(txt_selected_church_name);
 
 
@@ -200,6 +204,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         btn_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideSoftKeyboard();
                 // RegnOneActivity.this.finish();
                 finish();
             }
@@ -211,7 +216,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     Volley code for popup...
      */
     public void sendRequest() {
-        // final ProgressDialog progressDialog = new ProgressDialog(m_ctx, ProgressDialog.STYLE_SPINNER);
+        // final ProgressDialog progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
 
         // progressDialog.setIndeterminate(true);
         final ProgressDialog progressDialog = new ProgressDialog(RegnOneActivity.this, ProgressDialog.STYLE_SPINNER);
@@ -233,7 +238,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
         VolleyUtils.getInstance(RegnOneActivity.this).addToRequestQueue(stringRequestChurchList);//
-      /*  progressDialog.show(m_ctx, "", "Loading data...", true, true);
+      /*  progressDialog.show(_ctx, "", "Loading data...", true, true);
         if (str != null)
             progressDialog.dismiss();*/
         // Show User a progress dialog while waiting for Volley response
@@ -283,7 +288,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         lv_churches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected_church_name= arrListChurches.get(position);
+                selected_church_name= _arrListChurches.get(position);
                 txt_selected_church.setText(selected_church_name);
             }
         });*/
@@ -388,4 +393,13 @@ spinner_state.setSelection(0);
 
 
 //-------------------Volley code for spinner ends--------------------------
+void hideSoftKeyboard() {
+    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideSoftKeyboard();
+        return super.onTouchEvent(event);
+    }
 }

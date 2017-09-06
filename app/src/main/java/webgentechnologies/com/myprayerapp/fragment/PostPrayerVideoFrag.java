@@ -2,6 +2,7 @@ package webgentechnologies.com.myprayerapp.fragment;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -46,7 +48,7 @@ import java.util.Locale;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
-import webgentechnologies.com.myprayerapp.activity.AndroidMultiPartEntity;
+import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
@@ -110,7 +112,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
-        //  Log.d("VIDEO DATA:", userclass.toString());
+        //  Log.d("VIDEO DATA:", _userSingletonModelClass.toString());
 
         return rootView;
     }
@@ -420,6 +422,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     //------------------Json upload code ends------------------
     @Override
     public void onClick(View view) {
+        hideSoftKeyboard();
         int item = view.getId();
         switch (item) {
             case R.id.toggle_switch_rLayoutOuter:
@@ -437,17 +440,17 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             case R.id.btn_post_prayer:
                 // Checking camera availability
                 //----Checking camera availability code ends-------
-                // userclass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
-                //  userclass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
+                // _userSingletonModelClass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
+                //  _userSingletonModelClass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
                 //  new UploadFileToServer().execute();
                 // postvideo();
               /*  String path = fileUtils.getTxt_video_filepath();
                 SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
                 Calendar c = Calendar.getInstance();
                 String formattedDate1 = df1.format(c.getTime());
-                postvideo2(userclass.getTxt_user_login_id(),userclass.getTxt_fname() + " " + userclass.getTxt_lname(), userclass.getTxt_email(),
+                postvideo2(_userSingletonModelClass.getTxt_user_login_id(),_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname(), _userSingletonModelClass.getTxt_email(),
                        "satabhisha.wgt@gmail.com","ddrhd",txtPrayer.getText().toString(),"Medium","Video", postPrayerModelClass.getPost_priority(),
-                        userclass.getTxt_user_access_token(),formattedDate1);*/
+                        _userSingletonModelClass.getTxt_user_access_token(),formattedDate1);*/
                 if (txtPrayer.getText().length() <= 30) {
                     txtPrayer.setError("Minimum 30 characters required for your prayer description.");
                     return;
@@ -466,6 +469,10 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 recordVideo();
                 break;
         }
+    }
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
 

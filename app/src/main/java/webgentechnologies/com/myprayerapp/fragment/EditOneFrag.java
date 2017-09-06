@@ -1,5 +1,6 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -48,8 +50,8 @@ public class EditOneFrag extends Fragment //implements TextWatcher
    *Taking variables and arraylist for spinner
     */
 
-    public static String txt_editone_country_id1, txt_editone_country_name, txt_editone_country_sortname, txt_editone_state_id, txt_editone_state_name, txt_editone_country_id2;
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    public static String txt_country_id1, txt_country_name, txt_country_shortname, txt_state_id, txt_state_name, txt_country_id2;
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
 
     @Nullable
     @Override
@@ -65,21 +67,7 @@ public class EditOneFrag extends Fragment //implements TextWatcher
         spinner_state = (Spinner) rootView.findViewById(R.id.spinner_state);
         spinner_country = (Spinner) rootView.findViewById(R.id.spinner_country_name);
         setCustomDesign();
-        // addItemsOnStateSpinner();
-        // setCustomClickListeners();
-//        showPopUp();
         sendrequest_to_spinner();
-
-        /*
-        As Textwatcher(addTextChangedListener would not be used further that's why I have commented below codes
-         */
-      /*  txt_fname.addTextChangedListener(this);
-        txt_lname.addTextChangedListener(this);
-        // txt_email.addTextChangedListener(this);
-        txt_addr1.addTextChangedListener(this);
-        txt_addr2.addTextChangedListener(this);
-        txt_city.addTextChangedListener(this);
-        txt_phone.addTextChangedListener(this);*/
         return rootView;
     }
 
@@ -93,7 +81,7 @@ public class EditOneFrag extends Fragment //implements TextWatcher
         ((TextView) rootView.findViewById(R.id.tv_regn_step1)).setText("Step (1/3)");
         ((TextView) rootView.findViewById(R.id.txt_fname)).setTypeface(regular_font);
         ((TextView) rootView.findViewById(R.id.txt_lname)).setTypeface(regular_font);
-        //((TextView) rootView.findViewById(R.id.txt_email)).setTypeface(regular_font);
+        ((TextView) rootView.findViewById(R.id.txt_email)).setTypeface(regular_font);
 
 //        ((TextView)findViewById(R.id.txt_country)).setTypeface(regular_font);
         ((TextView) rootView.findViewById(R.id.txt_addr1)).setTypeface(regular_font);
@@ -108,21 +96,14 @@ public class EditOneFrag extends Fragment //implements TextWatcher
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        txt_fname.setText(userclass.getTxt_fname());
-        txt_lname.setText(userclass.getTxt_lname());
-        txt_email.setText(userclass.getTxt_email());
-        txt_addr1.setText(userclass.getTxt_addr1());
-        txt_addr2.setText(userclass.getTxt_addr2());
-        txt_city.setText(userclass.getTxt_city());
-        txt_phone.setText(userclass.getTxt_phone());
-        //volley request
+        txt_fname.setText(_userSingletonModelClass.getTxt_fname());
+        txt_lname.setText(_userSingletonModelClass.getTxt_lname());
+        txt_email.setText(_userSingletonModelClass.getTxt_email());
+        txt_addr1.setText(_userSingletonModelClass.getTxt_addr1());
+        txt_addr2.setText(_userSingletonModelClass.getTxt_addr2());
+        txt_city.setText(_userSingletonModelClass.getTxt_city());
+        txt_phone.setText(_userSingletonModelClass.getTxt_phone());
     }
-    //
-//    private void setCustomClickListeners() {
-////
-//    }
-
-
     /*
   Volley code for spinner
    */
@@ -181,9 +162,9 @@ public class EditOneFrag extends Fragment //implements TextWatcher
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_editone_country_id1 = countryModel.getCountry_id();
-                txt_editone_country_name = countryModel.getCountry_name();
-                txt_editone_country_sortname = countryModel.getCountry_short_name();
+                txt_country_id1 = countryModel.getCountry_id();
+                txt_country_name = countryModel.getCountry_name();
+                txt_country_shortname = countryModel.getCountry_short_name();
             }
 
             @Override
@@ -194,9 +175,9 @@ public class EditOneFrag extends Fragment //implements TextWatcher
         spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_editone_state_id = countryModel.getStateModelList().get(position).getState_id();
-                txt_editone_state_name = countryModel.getStateModelList().get(position).getState_name();
-                txt_editone_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+                txt_state_id = countryModel.getStateModelList().get(position).getState_id();
+                txt_state_name = countryModel.getStateModelList().get(position).getState_name();
+                txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
             }
 
             @Override
@@ -207,5 +188,8 @@ public class EditOneFrag extends Fragment //implements TextWatcher
     }
 //----------------Volley code for spinner ends---------------------------
 
-
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }

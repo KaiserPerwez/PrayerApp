@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -64,38 +66,6 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         imageButtonPrev.setOnClickListener(this);
     }
 
-   /* private void setCustomClickListeners() {
-        final CheckBox chk_others = (CheckBox) findViewById(R.id.chk_others);
-        chk_others.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                LinearLayout layout = (LinearLayout) findViewById(R.id.layout_txt_others);
-                if (chk_others.isChecked()) {
-                    layout.setVisibility(View.VISIBLE);
-                    userclass.setTxt_others(txt_others.getText().toString());
-                } else
-                    layout.setVisibility(View.GONE);
-
-            }
-        });
-
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
-        imageButtonNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RegnTwoActivity.this, RegnThreeActivity.class);
-                startActivity(intent);
-            }
-        });
-        FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
-        imageButtonPrev.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
-    }*/
-
     private void setCustomDesign() {
         m_ctx = RegnTwoActivity.this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -115,10 +85,9 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    List list = new ArrayList();
-
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.chk_others:
@@ -159,7 +128,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 userclass.setList_classes_attended(list);
                 userclass.setChurch_name(txt_churchname.getText().toString());
                 String user=userclass.toString();
-               // Toast.makeText(this,userclass.toString(),Toast.LENGTH_LONG).show();
+               // Toast.makeText(this,_userSingletonModelClass.toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegnTwoActivity.this, RegnThreeActivity.class);
                 startActivity(intent);
                 break;
@@ -167,5 +136,15 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 finish();
                 break;
         }
+    }
+
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideSoftKeyboard();
+        return super.onTouchEvent(event);
     }
 }

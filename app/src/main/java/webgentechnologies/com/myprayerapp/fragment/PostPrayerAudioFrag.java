@@ -1,6 +1,7 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -50,7 +52,7 @@ import java.util.Random;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
-import webgentechnologies.com.myprayerapp.activity.AndroidMultiPartEntity;
+import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
@@ -260,6 +262,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
 
     @Override
     public void onClick(View v) {
+        hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.audio_record:
@@ -446,6 +449,10 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     //------------------Json upload code ends------------------
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }
 
 

@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:fb="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_screen"
     android:gravity="center"
     tools:context="webgentechnologies.com.myprayerapp.activity.LoginActivity">
@@ -137,11 +138,11 @@
 
         </LinearLayout>
 
-        <!--   <LinearLayout
+        <LinearLayout
                android:id="@+id/linearLayout_btnFb"
                android:layout_width="match_parent"
                android:layout_height="40dp"
-               android:layout_marginTop="40dp"
+               android:layout_marginTop="20dp"
                android:background="@drawable/facebook_login"
                android:gravity="center">
 
@@ -169,15 +170,16 @@
                    android:gravity="center"
                    android:text="FACEBOOK"
                    android:textColor="@android:color/white" />
-           </LinearLayout> -->
-        <com.facebook.login.widget.LoginButton
-            android:id="@+id/btnfb"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp" />
+           </LinearLayout>
+        <!--<com.facebook.login.widget.LoginButton-->
+            <!--android:id="@+id/btnfb"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="100dp"-->
+            <!--android:layout_gravity="center_horizontal"-->
+            <!--android:layout_marginTop="10dp"-->
+            <!--android:gravity="center"-->
+            <!--android:paddingLeft="50dp"-->
+            <!--android:paddingRight="50dp"-->
+            <!--style="@style/FacebookLoginButton"/>-->
     </LinearLayout>
 </RelativeLayout>

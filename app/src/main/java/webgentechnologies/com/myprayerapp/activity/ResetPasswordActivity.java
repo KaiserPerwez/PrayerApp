@@ -7,7 +7,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -67,7 +69,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
                 if (txt_resetPwd.getText().toString().equals(txt_resetPwd_retype.getText().toString())) {
                     tv_pwd_chk.setText("Password matched successfully");
-                    //  userclass.setTxt_change_pswd(txt_resetPwd_retype.getText().toString());
+                    //  _userSingletonModelClass.setTxt_change_pswd(txt_resetPwd_retype.getText().toString());
                     txt_password_change = txt_resetPwd_retype.getText().toString();
                     // m_btn_resetPwd.setEnabled(true);
                 } else {
@@ -107,6 +109,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         imageButtonPrev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideSoftKeyboard();
                 if (m_verify_mode.equals("change_pwd")) {
                     finish();
                 } else {
@@ -122,13 +125,14 @@ public class ResetPasswordActivity extends AppCompatActivity {
         m_btn_resetPwd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideSoftKeyboard();
                /* if (m_verify_mode.equals("change_pwd")) {
-                    Intent intent = new Intent(m_ctx, HomeActivity.class);
+                    Intent intent = new Intent(_ctx, HomeActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
                 } else {
-                    Intent intent = new Intent(m_ctx, LoginActivity.class);
+                    Intent intent = new Intent(_ctx, LoginActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
@@ -163,10 +167,10 @@ public class ResetPasswordActivity extends AppCompatActivity {
                     if (status.equals("true")) {
                        // startActivity(new Intent(ForgotPasswordOneActivity.this, HomeActivity.class));
                         JSONObject jobdata = job.getJSONObject("data");
-                        userclass.setTxt_user_login_id(jobdata.getString("id"));
-                        userclass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        userclass.setTxt_temp_user_login_email(jobdata.getString("email"));
-                        userclass.setTxt_fcbk_login_and_normal_login_email(userclass.getTxt_temp_user_login_email());
+                        _userSingletonModelClass.setTxt_user_login_id(jobdata.getString("id"));
+                        _userSingletonModelClass.setTxt_user_access_token(jobdata.getString("accessToken"));
+                        _userSingletonModelClass.setTxt_temp_user_login_email(jobdata.getString("email"));
+                        _userSingletonModelClass.setTxt_fcbk_login_and_normal_login_email(_userSingletonModelClass.getTxt_temp_user_login_email());
                     } else
                         Toast.makeText(getApplicationContext(), "Incorrect email_id or password", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -211,5 +215,14 @@ public class ResetPasswordActivity extends AppCompatActivity {
         VolleyUtils.getInstance(ResetPasswordActivity.this).addToRequestQueue(stringRequest);//
     }
 //----------Volley code to reset password ends------------
+void hideSoftKeyboard() {
+    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+    inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+}
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        hideSoftKeyboard();
+        return super.onTouchEvent(event);
+    }
 }
 
