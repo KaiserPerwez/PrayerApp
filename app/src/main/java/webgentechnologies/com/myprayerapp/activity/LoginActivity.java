@@ -50,6 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
@@ -61,6 +62,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     Button _btn_login;
     EditText _txt_email, _txt_password;
     TextView _tv_forgot_pwd, _tv_signUp;
+    ProgressDialog progressDialog;
+    LinearLayout _linearLayout_btnFb;
     /*
     Facebook login variables
      */
@@ -68,8 +71,44 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private AccessTokenTracker accessTokenTracker;
     private ProfileTracker profileTracker;
     private LoginButton loginButtonFB;
-    ProgressDialog progressDialog;
-    LinearLayout _linearLayout_btnFb;
+    /*
+    *Facebook onSuccess code
+     */
+    private FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+            GraphRequest request = GraphRequest.newMeRequest(
+                    loginResult.getAccessToken(),
+                    new GraphRequest.GraphJSONObjectCallback() {
+                        @Override
+                        public void onCompleted(JSONObject object, GraphResponse response) {
+                            // Application code
+                            try {
+                                userSingletonModelClass.setTxt_fname(object.getString("first_name"));
+                                userSingletonModelClass.setTxt_lname(object.getString("last_name"));
+                                userSingletonModelClass.setTxt_email(object.getString("email"));
+                                userSingletonModelClass.setReg_type("facebook");
+                                register_FbUser();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
+            request.setParameters(parameters);
+            request.executeAsync();
+        }
+
+        @Override
+        public void onCancel() {
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,45 +151,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         ///---------Facebook code ends inside onCreate()-------------
     }
-
-    /*
-    *Facebook onSuccess code
-     */
-    private FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
-        @Override
-        public void onSuccess(LoginResult loginResult) {
-            GraphRequest request = GraphRequest.newMeRequest(
-                    loginResult.getAccessToken(),
-                    new GraphRequest.GraphJSONObjectCallback() {
-                        @Override
-                        public void onCompleted(JSONObject object, GraphResponse response) {
-                            // Application code
-                            try {
-                                userSingletonModelClass.setTxt_fname(object.getString("first_name"));
-                                userSingletonModelClass.setTxt_lname(object.getString("last_name"));
-                                userSingletonModelClass.setTxt_email(object.getString("email"));
-                                userSingletonModelClass.setReg_type("facebook");
-                                register_FbUser();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        }
-                    });
-            Bundle parameters = new Bundle();
-            parameters.putString("fields", "id, first_name, last_name, email, gender, birthday, location");
-            request.setParameters(parameters);
-            request.executeAsync();
-        }
-
-        @Override
-        public void onCancel() {
-        }
-
-        @Override
-        public void onError(FacebookException error) {
-        }
-    };
 
     /*
     Facebook login override methods
@@ -203,6 +203,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.btn_login:
 
                 if (_txt_email.getText().toString().length() > 0 && _txt_password.getText().toString().length() > 0) {
+                    if (!ValidatorUtils.isValidEmail(_txt_email.getText().toString())) {
+                        _txt_email.setError("INVALID Email");
+                        return;
+                    }
                     userSingletonModelClass.setTxt_email(_txt_email.getText().toString());
                     userSingletonModelClass.setTxt_pswd(_txt_password.getText().toString());
                     login();

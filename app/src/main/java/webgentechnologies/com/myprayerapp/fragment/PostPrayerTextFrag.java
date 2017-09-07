@@ -24,8 +24,6 @@ import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 
@@ -42,6 +40,9 @@ import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
+
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
 
 /**
  * Created by Kaiser on 25-07-2017.
@@ -186,9 +187,6 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-              /*  params.put(KEY_USERNAME,username);
-                params.put(KEY_PASSWORD,password);
-                params.put(KEY_EMAIL, email);*/
                 params.put("user_id", userclass.getTxt_user_login_id());
                 params.put("sender_name", userclass.getTxt_fname() + " " + userclass.getTxt_lname());
                 params.put("sender_email", userclass.getTxt_email());

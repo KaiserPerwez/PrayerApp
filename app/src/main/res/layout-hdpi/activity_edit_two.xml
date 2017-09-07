@@ -102,7 +102,7 @@
                 android:layout_gravity="center"
                 android:background="@drawable/field_area_bg">
 
-                <EditText
+                <Spinner
                     android:id="@+id/txt_church_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -203,7 +203,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:gravity="center"
-                    android:hint="Enter a Class name"
+                    android:hint="Class names separated by comma"
                     android:inputType="text"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"

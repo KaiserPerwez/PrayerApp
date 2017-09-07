@@ -4,11 +4,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -26,8 +26,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 
@@ -37,51 +35,35 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.CountryModel;
 import webgentechnologies.com.myprayerapp.model.StateModel;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
+
 public class RegnOneActivity extends AppCompatActivity implements View.OnClickListener {
-    Context m_ctx = RegnOneActivity.this;
+    Context _ctx;
     EditText txt_fname, txt_lname, txt_email, txt_addr1, txt_addr2, txt_state, txt_phone, txt_city;
-    Spinner spinner_country,spinner_state;
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    Spinner spinner_country, spinner_state;
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
     /*
     *Adding variable for popup...
      */
     ListView lv_churches;
     ArrayList<String> arrListChurches = new ArrayList<>();
     ArrayAdapter<String> adapter;
-    EditText txt_selected_church, txt_search_prayer;
-    SharedPreferences sharedpreferences;
-    static final String sharedpreference_key_churchname = "church name";
-    static final String sharedpreferenceName = "pref_prayerApp";
-    static String selected_church_name;
-
-    /*
-    *Taking variables and arraylist for spinner
-     */
-   // public static String txt_country_id1, txt_country_name, txt_country_sortname, txt_state_id, txt_state_name, txt_country_id2;
-    public static String txt_country_id1, txt_country_name, txt_country_sortname, txt_state_id, txt_state_name, txt_country_id2;
+    EditText txt_selected_church, txt_search_church;
+    String selected_church_name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regn_one);
-       /* sharedpreferences = getSharedPreferences(sharedpreferenceName, Context.MODE_PRIVATE);
-        String sharedpreferencesString = sharedpreferences.getString(sharedpreference_key_churchname, null);*/
-        //Toast.makeText(getApplicationContext(),sharedpreferencesString,Toast.LENGTH_LONG).show();
-        // if (sharedpreferencesString == null) {
-        // txt_selected_church.setText("Select the church from the given list");
-        // showPopUp();
-        //  }else {
-              /* Intent intent = new Intent(RegnOneActivity.this, LoginActivity.class);
-                startActivity(intent);
-                RegnOneActivity.this.finish();
-            showPopUp();
-    }*/
+        _ctx = RegnOneActivity.this;
         showPopUp();
         txt_fname = (EditText) findViewById(R.id.txt_fname);
         txt_lname = (EditText) findViewById(R.id.txt_lname);
@@ -93,27 +75,65 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
 
         setCustomDesign();
-        userclass.setTxt_country_id("-1");//default
-        userclass.setTxt_state_id("-1");//default
+        _userSingletonModelClass.setTxt_country_id("-1");//default
+        _userSingletonModelClass.setTxt_state_id("-1");//default
 
-        sendrequest_to_spinner();
-        //setCustomClickListeners();
+        fetchCountriesFromServer();
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+
+        txt_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (txt_email.isFocused())
+                    return;
+                else if (!ValidatorUtils.isValidEmail(txt_email.getText().toString())) {
+                    txt_email.setError("Email Format is invalid");
+                    return;
+                } else {
+                    Toast.makeText(_ctx, "Lost", Toast.LENGTH_SHORT).show();
+                    LayoutInflater li = LayoutInflater.from(_ctx);
+                    final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_ctx);// set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+                    // set dialog message
+                    alertDialogBuilder.setCancelable(false);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                    alertDialog.show();
+
+                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    txt.setHint("Re-Enter Email");
+                    txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    btn_verify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String email1 = txt_email.getText().toString();
+                            String email2 = txt.getText().toString();
+                            txt.setError(null);
+
+                            if (email2.length() == 0)
+                                txt.setError("Email can't be empty");
+                            else if (!ValidatorUtils.isValidEmail(email2))
+                                txt.setError("Email Format is invalid");
+                            else if (!email1.equals(email2))
+                                txt.setError("Emails didn't Match");
+                            else
+                                alertDialog.cancel();
+                        }
+                    });
+
+                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    btn_back.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
-    public void settingvalues() {
-//TODO:
-        userclass.setTxt_fname(txt_fname.getText().toString());
-        userclass.setTxt_lname(txt_lname.getText().toString());
-        userclass.setTxt_email(txt_email.getText().toString());
-        userclass.setTxt_addr1(txt_addr1.getText().toString());
-        userclass.setTxt_addr2(txt_addr2.getText().toString());
-        userclass.setTxt_city(txt_city.getText().toString());
-        userclass.setTxt_phone(txt_phone.getText().toString());
-    }
 
     private void setCustomDesign() {
         //  _ctx = RegnOneActivity.this;
@@ -143,19 +163,10 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         int item = v.getId();
         switch (item) {
             case R.id.imageButtonNext:
-                settingvalues();
-                if(userclass.getTxt_country_id().equals("-1"))
-                {
-                    Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if(userclass.getTxt_state_id().equals("-1"))
-                {
-                    Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                Intent intent = new Intent(m_ctx, RegnTwoActivity.class);
+                //if (setFieldDataToUserSingletonObject()) {
+                Intent intent = new Intent(_ctx, RegnTwoActivity.class);
                 startActivity(intent);
+                //}
                 break;
             case R.id.imageButtonPrev:
                 finish();
@@ -163,15 +174,85 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private boolean setFieldDataToUserSingletonObject() {
+        txt_fname.setError(null);
+        txt_lname.setError(null);
+        txt_email.setError(null);
+        txt_addr1.setError(null);
+        txt_addr2.setError(null);
+        txt_city.setError(null);
+        txt_phone.setError(null);
+
+        if (txt_fname.getText().toString().length() == 0) {
+            txt_fname.requestFocus();
+            txt_fname.setError("First Name Field can't be empty");
+            return false;
+        }
+        if (txt_lname.getText().toString().length() == 0) {
+            txt_lname.requestFocus();
+            txt_lname.setError("Last Name Field can't be empty");
+            return false;
+        }
+
+        if (txt_email.getText().toString().length() == 0) {
+            txt_email.requestFocus();
+            txt_email.setError("Email Field can't be empty");
+            return false;
+        }
+        if (!ValidatorUtils.isValidEmail(txt_email.getText().toString())) {
+            txt_email.requestFocus();
+            txt_email.setError("Invalid email format");
+            return false;
+        }
+
+        if (txt_addr1.getText().toString().length() == 0) {
+            txt_addr1.requestFocus();
+            txt_addr1.setError("Address Field can't be empty");
+            return false;
+        }
+        if (txt_addr2.getText().toString().length() == 0) {
+            txt_addr2.requestFocus();
+            txt_addr2.setError("Address Field can't be empty");
+            return false;
+        }
+        if (txt_city.getText().toString().length() == 0) {
+            txt_city.requestFocus();
+            txt_city.setError("City Field can't be empty");
+            return false;
+        }
+        if (txt_phone.getText().toString().length() == 0) {
+            txt_phone.requestFocus();
+            txt_phone.setError("PhoneNumber Field can't be empty");
+            return false;
+        }
+        _userSingletonModelClass.setTxt_fname(txt_fname.getText().toString());
+        _userSingletonModelClass.setTxt_lname(txt_lname.getText().toString());
+        _userSingletonModelClass.setTxt_email(txt_email.getText().toString());
+        _userSingletonModelClass.setTxt_addr1(txt_addr1.getText().toString());
+        _userSingletonModelClass.setTxt_addr2(txt_addr2.getText().toString());
+        _userSingletonModelClass.setTxt_city(txt_city.getText().toString());
+        _userSingletonModelClass.setTxt_phone(txt_phone.getText().toString());
+        if (_userSingletonModelClass.getTxt_country_id().equals("-1")) {
+            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (_userSingletonModelClass.getTxt_state_id().equals("-1")) {
+            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
     /*
     *Popup code...
      */
     private void showPopUp() {
 
-        LayoutInflater li = LayoutInflater.from(m_ctx);// get prompts.xml view
+        LayoutInflater li = LayoutInflater.from(_ctx);// get prompts.xml view
         final View promptsView = li.inflate(R.layout.add_church_dialog, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(m_ctx);// set prompts.xml to alertdialog builder
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_ctx);// set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
         // set dialog message
         alertDialogBuilder.setCancelable(false);
@@ -179,33 +260,35 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         alertDialog.show();
 
         //Calling method of volley
-        sendRequest();
+        fetchChurchesFromServer();
 
         txt_selected_church = (EditText) promptsView.findViewById(R.id.txt_selected_churchname);
-        txt_search_prayer = (EditText) promptsView.findViewById(R.id.search_Prayer);
+        txt_search_church = (EditText) promptsView.findViewById(R.id.search_church);
         lv_churches = (ListView) promptsView.findViewById(R.id.church_lv);
 
         Button btn_submit = (Button) promptsView.findViewById(R.id.btn_submit);
         btn_submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String txt_selected_church_name = txt_selected_church.getText().toString();
+                if (txt_selected_church_name.length() == 0) {
+                    Toast.makeText(_ctx, "Selected Church-name can't be empty", Toast.LENGTH_SHORT).show();
+                    hideSoftKeyboard();
+                    return;
+                }
+
                 hideSoftKeyboard();
                 alertDialog.dismiss();
-
-                String txt_selected_church_name = txt_selected_church.getText().toString();
-              //  _userSingletonModelClass.setTxt_selected_church_name(txt_selected_church_name);
-                userclass.setChurch_name(txt_selected_church_name);
-
+                _userSingletonModelClass.setChurch_name(txt_selected_church_name);
 
 
             }
         });
-        Button btn_exit = (Button) promptsView.findViewById(R.id.btn_exit);
+        Button btn_exit = (Button) promptsView.findViewById(R.id.btn_close);
         btn_exit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 hideSoftKeyboard();
-                // RegnOneActivity.this.finish();
                 finish();
             }
         });
@@ -215,10 +298,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     /*
     Volley code for popup...
      */
-    public void sendRequest() {
-        // final ProgressDialog progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
-
-        // progressDialog.setIndeterminate(true);
+    public void fetchChurchesFromServer() {
         final ProgressDialog progressDialog = new ProgressDialog(RegnOneActivity.this, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
@@ -226,26 +306,20 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_ALL_CHURCHES_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String responseStr) {
-                churchList_Json(responseStr);
-                //str = responseStr;
-                progressDialog.hide();
+                loadChurchesOnListView(responseStr);
+                progressDialog.cancel();
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Toast.makeText(RegnOneActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
-                progressDialog.hide();
+                progressDialog.cancel();
             }
         });
         VolleyUtils.getInstance(RegnOneActivity.this).addToRequestQueue(stringRequestChurchList);//
-      /*  progressDialog.show(_ctx, "", "Loading data...", true, true);
-        if (str != null)
-            progressDialog.dismiss();*/
-        // Show User a progress dialog while waiting for Volley response
-
     }
 
-    public void churchList_Json(String responseStr) {
+    public void loadChurchesOnListView(String responseStr) {
         try {
             JSONObject jsonObject = new JSONObject(responseStr);
             JSONArray jsonArrayChurchList = jsonObject.getJSONArray("data");
@@ -264,11 +338,14 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         lv_churches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected_church_name = adapter.getItem(position).toString();
+                hideSoftKeyboard();
+                selected_church_name = adapter.getItem(position);
                 txt_selected_church.setText(selected_church_name);
+                txt_search_church.clearFocus();
+                txt_selected_church.requestFocus();
             }
         });
-        txt_search_prayer.addTextChangedListener(new TextWatcher() {
+        txt_search_church.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 lv_churches.setAdapter(adapter);
@@ -284,25 +361,17 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                 RegnOneActivity.this.adapter.getFilter().filter(s);
             }
         });
-      /* lv_churches.setAdapter(new ChurchListViewAdapter());
-        lv_churches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selected_church_name= _arrListChurches.get(position);
-                txt_selected_church.setText(selected_church_name);
-            }
-        });*/
     }
     //Volley code for popup ends...
 
     /*
     Volley code for spinner
      */
-    public void sendrequest_to_spinner() {
+    public void fetchCountriesFromServer() {
         StringRequest stringRequest = new StringRequest(UrlConstants._URL_GET_COUNTRY_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                showjson_to_spinner(response);
+                loadCountriesOnSpinner(response);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -312,7 +381,8 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         });
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
-    public void showjson_to_spinner(String response_str) {
+
+    public void loadCountriesOnSpinner(String response_str) {
         final CountryModel countryModel = new CountryModel();
 
         try {
@@ -322,6 +392,11 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             countryModel.setCountry_id(jsonObject_country.getString("id"));
             countryModel.setCountry_name(jsonObject_country.getString("name"));
             countryModel.setCountry_short_name(jsonObject_country.getString("sortname"));
+
+            _userSingletonModelClass.setTxt_country_id(jsonObject_country.getString("id"));
+            _userSingletonModelClass.setTxt_country(jsonObject_country.getString("name"));
+            _userSingletonModelClass.setTxt_country_sortname(jsonObject_country.getString("sortname"));
+
 
             JSONArray jsonArrayStates = jsonObject_country.getJSONArray("state");
             for (int i = 0; i < jsonArrayStates.length(); i++) {
@@ -334,6 +409,10 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
                 countryModel.addStateModel(stateModel);
             }
+
+            _userSingletonModelClass.setTxt_state_id(jsonArrayStates.getJSONObject(0).getString("id"));
+            _userSingletonModelClass.setTxt_state_name(jsonArrayStates.getJSONObject(0).getString("name"));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -347,25 +426,25 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             arrayList_state_name.add(temp_sModel.getState_name());
         }
 
-        spinner_country= (Spinner) findViewById(R.id.spinner_country_name);
-        spinner_country.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,arraylist_country_name ));
-spinner_country.setSelection(0);
+        spinner_country = (Spinner) findViewById(R.id.spinner_country_name);
+        spinner_country.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
+        spinner_country.setSelection(0);
 
-        spinner_state= (Spinner) findViewById(R.id.spinner_state);
+        spinner_state = (Spinner) findViewById(R.id.spinner_state);
         spinner_state.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
-spinner_state.setSelection(0);
+        spinner_state.setSelection(0);
+
 
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_country_id1 = countryModel.getCountry_id();
-                txt_country_name = countryModel.getCountry_name();
-                txt_country_sortname = countryModel.getCountry_short_name();
+                String txt_country_id1 = countryModel.getCountry_id();
+                String txt_country_name = countryModel.getCountry_name();
+                String txt_country_sortname = countryModel.getCountry_short_name();
 
-//                Toast.makeText(getApplicationContext(), txt_country_id1 + "\n" + txt_country_name, Toast.LENGTH_LONG).show();
-                userclass.setTxt_country_id(txt_country_id1);
-                userclass.setTxt_country(txt_country_name);
-                userclass.setTxt_country_sortname(txt_country_sortname);
+                _userSingletonModelClass.setTxt_country_id(txt_country_id1);
+                _userSingletonModelClass.setTxt_country(txt_country_name);
+                _userSingletonModelClass.setTxt_country_sortname(txt_country_sortname);
             }
 
             @Override
@@ -376,12 +455,12 @@ spinner_state.setSelection(0);
         spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_state_id = countryModel.getStateModelList().get(position).getState_id();
-                txt_state_name = countryModel.getStateModelList().get(position).getState_name();
-                txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
-           //     Toast.makeText(getApplicationContext(), txt_state_id + "\n" + txt_state_name, Toast.LENGTH_LONG).show();
-                userclass.setTxt_state_id(txt_state_id);
-                userclass.setTxt_state_name(txt_state_name);
+                String txt_state_id = countryModel.getStateModelList().get(position).getState_id();
+                String txt_state_name = countryModel.getStateModelList().get(position).getState_name();
+                String txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+
+                _userSingletonModelClass.setTxt_state_id(txt_state_id);
+                _userSingletonModelClass.setTxt_state_name(txt_state_name);
             }
 
             @Override
@@ -392,11 +471,12 @@ spinner_state.setSelection(0);
     }
 
 
-//-------------------Volley code for spinner ends--------------------------
-void hideSoftKeyboard() {
-    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-    inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-}
+    //-------------------Volley code for spinner ends--------------------------
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         hideSoftKeyboard();

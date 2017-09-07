@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_screen"
     tools:context="webgentechnologies.com.myprayerapp.activity.RegnThreeActivity">
 
@@ -159,10 +159,10 @@
 
             </LinearLayout>
 
-            <RelativeLayout
-                android:id="@+id/relativeLayoutYes"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="100dp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/tv_YES"
@@ -173,30 +173,6 @@
                     android:text="If YES, Please indicate:"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_below="@id/tv_YES"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/field_area_bg">
-
-                    <Spinner
-                        android:id="@+id/spinner_countryYes"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@android:color/transparent"
-                        android:ems="10"
-                        android:paddingLeft="10dp"
-                        android:textSize="13sp" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:id="@+id/relativeLayoutNo"
-                android:layout_width="match_parent"
-                android:layout_height="100dp">
-
                 <TextView
                     android:id="@+id/tv_NO"
                     android:layout_width="wrap_content"
@@ -206,17 +182,14 @@
                     android:text="If NO, what countries or region are you interested in going on mission trips?"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
-                    android:layout_below="@id/tv_NO"
                     android:layout_marginTop="5dp"
-                    android:background="@drawable/field_area_bg"
-                    android:orientation="horizontal">
+                    android:background="@drawable/field_area_bg">
 
                     <Spinner
-                        android:id="@+id/spinner_countryNo"
+                        android:id="@+id/spinner_country"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
@@ -224,7 +197,7 @@
                         android:paddingLeft="10dp"
                         android:textSize="13sp" />
                 </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
 
             <CheckBox
                 android:id="@+id/chk_new_to_mission"

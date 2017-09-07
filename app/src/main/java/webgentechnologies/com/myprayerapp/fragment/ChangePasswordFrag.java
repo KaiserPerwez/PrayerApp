@@ -17,13 +17,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
@@ -35,6 +31,9 @@ import webgentechnologies.com.myprayerapp.activity.ResetPasswordActivity;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
+
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
 
 public class ChangePasswordFrag extends Fragment {
 
@@ -103,7 +102,6 @@ public class ChangePasswordFrag extends Fragment {
                     public void onClick(View view) {
                         hideSoftKeyboard();
                         alertDialog.dismiss();
-                        //  _userSingletonModelClass.setTxt_otp_from_email_to_change_pswd(txt_otp.getText().toString());
                         txt_otp_verify = txt_otp.getText().toString();
                         //Volley method to verify otp is calling
                         verifyOtp();
@@ -177,22 +175,6 @@ public class ChangePasswordFrag extends Fragment {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_LONG).show();
-              /*  try {
-                    JSONObject job = new JSONObject(response);
-                    String status = job.getString("status");
-
-                    if (status.equals("true")) {
-                       // startActivity(new Intent(ForgotPasswordOneActivity.this, HomeActivity.class));
-                        JSONObject jobdata = job.getJSONObject("data");
-                        _userSingletonModelClass.setTxt_user_login_id(jobdata.getString("id"));
-                        _userSingletonModelClass.setTxt_user_access_token(jobdata.getString("accessToken"));
-                        _userSingletonModelClass.setTxt_temp_user_login_email(jobdata.getString("email"));
-                        _userSingletonModelClass.setTxt_fcbk_login_and_normal_login_email(_userSingletonModelClass.getTxt_temp_user_login_email());
-                    } else
-                        Toast.makeText(getApplicationContext(), "Incorrect email_id or password", Toast.LENGTH_LONG).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
                 try {
                     JSONObject job = new JSONObject(response);
                     String status = job.getString("status");
@@ -216,9 +198,6 @@ public class ChangePasswordFrag extends Fragment {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-              /*  params.put(KEY_USERNAME,username);
-                params.put(KEY_PASSWORD,password);
-                params.put(KEY_EMAIL, email);*/
                 params.put("otp", txt_otp_verify);
                 params.put("user_id", userclass.getTxt_user_login_id());
                 params.put("access_token", userclass.getTxt_user_access_token());

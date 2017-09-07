@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/bg_screen"
     tools:context="webgentechnologies.com.myprayerapp.activity.RegnTwoActivity">
 
@@ -205,7 +205,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:gravity="center"
-                    android:hint="Class names separated by comma"
+                    android:hint="Enter a Class name"
                     android:inputType="text"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"

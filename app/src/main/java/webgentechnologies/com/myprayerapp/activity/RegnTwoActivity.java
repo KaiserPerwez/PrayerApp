@@ -2,12 +2,9 @@ package webgentechnologies.com.myprayerapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,11 +24,9 @@ import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 
 
 public class RegnTwoActivity extends AppCompatActivity implements View.OnClickListener {
-    Context m_ctx;
+    Context _ctx;
     CheckBox chk_alpha, chk_perspective, chk_men, chk_beth_more, chk_cbs, chk_others;
     EditText txt_others, txt_churchname;
-    static String others;
-    SharedPreferences sharedpreferences;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
 
     @Override
@@ -43,7 +38,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         chk_men = (CheckBox) findViewById(R.id.chk_men);
         chk_beth_more = (CheckBox) findViewById(R.id.chk_beth_more);
         chk_cbs = (CheckBox) findViewById(R.id.chk_cbs);
-        // chk_others=(CheckBox)findViewById(R.id.chk_others);
+
         txt_others = (EditText) findViewById(R.id.txt_others);
         txt_churchname = (EditText) findViewById(R.id.txt_church_name);
         chk_alpha.setOnClickListener(this);
@@ -51,13 +46,10 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         chk_men.setOnClickListener(this);
         chk_beth_more.setOnClickListener(this);
         chk_cbs.setOnClickListener(this);
-        //Calling sharedpreference to set churchname value...
-       /* sharedpreferences = getSharedPreferences(sharedpreferenceName, Context.MODE_PRIVATE);
-        String sharedpreferencesString = sharedpreferences.getString(sharedpreference_key_churchname, null);*/
+
         txt_churchname.setText(userclass.getChurch_name());
 
         setCustomDesign();
-        //setCustomClickListeners();
         chk_others = (CheckBox) findViewById(R.id.chk_others);
         chk_others.setOnClickListener(this);
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
@@ -67,7 +59,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void setCustomDesign() {
-        m_ctx = RegnTwoActivity.this;
+        _ctx = RegnTwoActivity.this;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         Typeface regular_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
 
@@ -99,7 +91,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.imageButtonNext:
-                List list = new ArrayList();
+                List<String> list = new ArrayList();
                 if (chk_alpha.isChecked())
                     list.add("Alpha");
                 if (chk_perspective.isChecked())
@@ -127,8 +119,6 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 userclass.setList_classes_attended(list);
                 userclass.setChurch_name(txt_churchname.getText().toString());
-                String user=userclass.toString();
-               // Toast.makeText(this,_userSingletonModelClass.toString(),Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(RegnTwoActivity.this, RegnThreeActivity.class);
                 startActivity(intent);
                 break;
