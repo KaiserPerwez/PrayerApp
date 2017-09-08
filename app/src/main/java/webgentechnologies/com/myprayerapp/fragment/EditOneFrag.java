@@ -18,8 +18,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 
@@ -35,6 +33,9 @@ import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
+
 /**
  * Created by Kaiser on 25-07-2017.
  */
@@ -42,15 +43,14 @@ import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 public class EditOneFrag extends Fragment //implements TextWatcher
 {
 
-    View rootView;
     public static EditText txt_fname, txt_lname, txt_email, txt_addr1, txt_addr2, txt_city, txt_phone;
-    Spinner spinner_state, spinner_country;
+    public static String txt_country_id1, txt_country_name, txt_country_shortname, txt_state_id, txt_state_name, txt_country_id2;
+    View rootView;
 
     /*
    *Taking variables and arraylist for spinner
     */
-
-    public static String txt_country_id1, txt_country_name, txt_country_shortname, txt_state_id, txt_state_name, txt_country_id2;
+    Spinner spinner_state, spinner_country;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
 
     @Nullable
@@ -108,7 +108,7 @@ public class EditOneFrag extends Fragment //implements TextWatcher
   Volley code for spinner
    */
     public void sendrequest_to_spinner() {
-        StringRequest stringRequest = new StringRequest(UrlConstants._URL_GET_COUNTRY_LIST, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(UrlConstants._URL_COUNTRY_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 showjson_to_spinner(response);

@@ -32,11 +32,11 @@
         </activity>
         <activity
             android:name=".activity.LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.RegnOneActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activity.RegnTwoActivity"
             android:screenOrientation="portrait" />
@@ -67,7 +67,7 @@
             android:name=".activity.HomeActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
 
         <activity android:name=".activity.ForgotPasswordTwoActivity" />
     </application>

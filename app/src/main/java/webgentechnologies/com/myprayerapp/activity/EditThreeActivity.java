@@ -113,8 +113,8 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
             participation_status = "YES";
         } else {
             toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
-            findViewById(R.id.tv_YES).setVisibility(View.VISIBLE);
-            findViewById(R.id.tv_NO).setVisibility(View.GONE);
+            findViewById(R.id.tv_YES).setVisibility(View.GONE);
+            findViewById(R.id.tv_NO).setVisibility(View.VISIBLE);
             participation_status = "NO";
         }
     }
@@ -198,9 +198,10 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
 
     //------------Volley code for Update...----------------
     public void editprofile() {
-        progressDialog.show();
         progressDialog.setCancelable(false);
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_EDIT_PROFILE, new Response.Listener<String>() {
+        progressDialog.show();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_EDIT_USER_PROFILE, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (progressDialog.isShowing())

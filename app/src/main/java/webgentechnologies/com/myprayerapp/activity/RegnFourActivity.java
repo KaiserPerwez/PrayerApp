@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -18,18 +16,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
@@ -37,30 +30,32 @@ import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
+//import com.android.volley.VolleyError;
+//import com.android.volley.toolbox.StringRequest;
+
 public class RegnFourActivity extends AppCompatActivity implements View.OnClickListener {
     Button btn_signUp;
-    Context ctx;
+    Context _ctx;
     EditText txt_password, txt_password_retype;
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
-    static String password1, password2;
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
     ProgressDialog progressDialog;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regn_four);
+        _ctx = RegnFourActivity.this;
+
         txt_password = (EditText) findViewById(R.id.txt_reg_pwd);
         txt_password_retype = (EditText) findViewById(R.id.txt_password_retype);
         setCustomDesign();
-        // setCustomClickListeners();
         btn_signUp = (Button) findViewById(R.id.btn_signUp);
         btn_signUp.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
         TextView tv_AlreadyRegd = (TextView) findViewById(R.id.tv_AlreadyRegd);
         tv_AlreadyRegd.setOnClickListener(this);
-        progressDialog = new ProgressDialog(RegnFourActivity.this, ProgressDialog.STYLE_SPINNER);
+        progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Registering...");
     }
 
@@ -83,30 +78,29 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
             case R.id.btn_signUp:
                 String password1 = txt_password.getText().toString();
                 String password2 = txt_password_retype.getText().toString();
-                if (password1.length() == 0)
-                {
-                    txt_password.setError("Password can't be empty");
+                if (password1.length() < 8) {
+                    txt_password.requestFocus();
+                    txt_password.setError("At least 8 characters required");
                     return;
                 }
-                if (password2.length() == 0)
-                {
+                if (password2.length() == 0) {
+                    txt_password_retype.requestFocus();
                     txt_password_retype.setError("Retyped-Password can't be empty");
                     return;
                 }
                 if (!password2.equals(password1)) {
-                    Toast.makeText(RegnFourActivity.this, "Password Mis-matched", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_ctx, "Password Mis-matched", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                userclass.setTxt_pswd(password1);
-                String str=userclass.toString();
+                _userSingletonModelClass.setTxt_pswd(password1);
                 registerUser();
                 break;
             case R.id.imageButtonPrev:
                 finish();
                 break;
             case R.id.tv_AlreadyRegd:
-                Intent intent = new Intent(RegnFourActivity.this, LoginActivity.class);
+                Intent intent = new Intent(_ctx, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 break;
@@ -125,28 +119,24 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
                     progressDialog.cancel();
                 try {
                     JSONObject job = new JSONObject(response);
-                    String status=job.getString("status");
-                    if(status.equals("true"))
-                    {
-                        Intent intent = new Intent(RegnFourActivity.this, LoginActivity.class);
+                    String status = job.getString("status");
+                    if (status.equals("true")) {
+                        Intent intent = new Intent(_ctx, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                         startActivity(intent);
+                    } else {
+                        Toast.makeText(_ctx, "Couldn't Register.Please try again.May be user already exists", Toast.LENGTH_SHORT).show();
                     }
-                    else
-                    {
-                        Toast.makeText(RegnFourActivity.this, "Couldn't Register.Please try again.May be user already exists", Toast.LENGTH_SHORT).show();
-                    }
-                }catch (Exception e)
-                {
+                } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(RegnFourActivity.this, "Couldn't update.Error:"+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_ctx, "Couldn't update.Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(RegnFourActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
             }
@@ -154,56 +144,37 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-              /*  params.put(KEY_USERNAME,username);
-                params.put(KEY_PASSWORD,password);
-                param
-                s.put(KEY_EMAIL, email);*/
-                params.put("first_name", userclass.getTxt_fname());
-                params.put("last_name", userclass.getTxt_lname());
-                params.put("email", userclass.getTxt_email());
-                params.put("country_id", userclass.getTxt_country_id());
-                params.put("country_name", userclass.getTxt_country());
-                params.put("address1", userclass.getTxt_addr1());
-                params.put("address2", userclass.getTxt_addr2());
-                params.put("city", userclass.getTxt_city());
-                params.put("state_id", userclass.getTxt_state_id());
-                params.put("state_name", userclass.getTxt_state_name());
-                params.put("phone", userclass.getTxt_phone());
-                params.put("church_name", userclass.getChurch_name());
+                params.put("first_name", _userSingletonModelClass.getTxt_fname());
+                params.put("last_name", _userSingletonModelClass.getTxt_lname());
+                params.put("email", _userSingletonModelClass.getTxt_email());
+                params.put("country_id", _userSingletonModelClass.getTxt_country_id());
+                params.put("country_name", _userSingletonModelClass.getTxt_country());
+                params.put("address1", _userSingletonModelClass.getTxt_addr1());
+                params.put("address2", _userSingletonModelClass.getTxt_addr2());
+                params.put("city", _userSingletonModelClass.getTxt_city());
+                params.put("state_id", _userSingletonModelClass.getTxt_state_id());
+                params.put("state_name", _userSingletonModelClass.getTxt_state_name());
+                params.put("phone", _userSingletonModelClass.getTxt_phone());
+                params.put("church_name", _userSingletonModelClass.getChurch_name());
 
-                String str="";
+                String str = "";
                 for (String s :
-                        userclass.getList_classes_attended()) {
-                    str += (s+";");
+                        _userSingletonModelClass.getList_classes_attended()) {
+                    str += (s + ";");
                 }
-                str=str.substring(0,str.length()-1);
+                str = str.substring(0, str.length() - 1);
                 params.put("classes", str);
-                params.put("mission_trip", userclass.getTxt_mission_trip_countries());
-                params.put("mission_trip_status", userclass.getTxt_mission_trip_participation_status());
-                params.put("mission_concept", userclass.getTxt_newto_mission());
-                params.put("password", userclass.getTxt_pswd());
-                params.put("device_id", userclass.getDevice_id());
-                params.put("device_type", userclass.getDevice_type());
-                params.put("reg_type",userclass.getReg_type());
+                params.put("mission_trip", _userSingletonModelClass.getTxt_mission_trip_countries());
+                params.put("mission_trip_status", _userSingletonModelClass.getTxt_mission_trip_participation_status());
+                params.put("mission_concept", _userSingletonModelClass.getTxt_newto_mission());
+                params.put("password", _userSingletonModelClass.getTxt_pswd());
+                params.put("device_id", _userSingletonModelClass.getDevice_id());
+                params.put("device_type", _userSingletonModelClass.getDevice_type());
+                params.put("reg_type", _userSingletonModelClass.getReg_type());
                 return params;
             }
-
-//            private Map<String, String> checkParams(Map<String, String> map) {
-//                Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
-//                while (it.hasNext()) {
-//                    Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
-//                    if (pairs.getValue() == null) {
-//                        map.put(pairs.getKey(), "");
-//                    }
-//                }
-//                return map;
-//
-//            }
         };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-//        VolleyUtils.getInstance(RegnFourActivity.this).addToRequestQueue(stringRequest);
+        VolleyUtils.getInstance(_ctx).addToRequestQueue(stringRequest);
     }
     //-----------Volley code for registration ends------------------
 
@@ -211,6 +182,7 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getCurrentFocus()) ? null : getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         hideSoftKeyboard();

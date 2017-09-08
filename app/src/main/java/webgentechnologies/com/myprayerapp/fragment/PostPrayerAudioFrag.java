@@ -1,14 +1,18 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -29,11 +33,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.error.VolleyError;
-import com.android.volley.request.SimpleMultiPartRequest;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -48,30 +47,29 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Random;
+import java.util.Date;
+import java.util.Locale;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
-import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
+import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
-import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO;
 
 /**
  * Created by Kaiser on 25-07-2017.
  */
 
 public class PostPrayerAudioFrag extends Fragment implements View.OnClickListener {
-    View rootView;
-    ImageView audio_record, audio_stop_record;
-    String AudioSavePathInDevice = null;
-    MediaRecorder mediaRecorder;
-    String RandomAudioFileName = "ABCDEFGHIJKLMNOP";
     public static final int RequestPermissionCode = 1;
+    View rootView;
+    ImageView audio_record;
+    MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
     FileUtils fileUtils=new FileUtils();
@@ -81,25 +79,86 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     int[] i = {0};
     EditText txt_Prayer;
     long totalSize = 0;
-    // private ProgressBar progressBar;
+    TextView audio_timer;
+    long timeInMilliseconds = 0L;
+    long timeSwapBuff = 0L;
+    long updatedTime = 0L;
+    boolean recording_status = false;
+    private ProgressDialog progressDialog;
+    private Uri fileUri; // file url to store image/video
+    private long startHTime = 0L;
+    private Handler customHandler = new Handler();
+    private Runnable updateTimerThread = new Runnable() {
 
+        public void run() {
+
+            timeInMilliseconds = SystemClock.uptimeMillis() - startHTime;
+
+            updatedTime = timeSwapBuff + timeInMilliseconds;
+
+            int secs = (int) (updatedTime / 1000);
+            int mins = secs / 60;
+            secs = secs % 60;
+            if (audio_timer != null)
+                audio_timer.setText("" + String.format("%02d", mins) + "m:"
+                        + String.format("%02d", secs) + "s");
+            customHandler.postDelayed(this, 0);
+        }
+
+    };
+
+    /**
+     * returning image / video
+     */
+    private static File getOutputMediaFile(int type) {
+
+        // External sdcard location
+        File mediaStorageDir = new File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                FileUtils.FILE_DIRECTORY_NAME);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+              /*  Log.d(TAG, "Oops! Failed create "
+                        + Config.IMAGE_DIRECTORY_NAME + " directory");*/
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+       /* if (type == MEDIA_TYPE_IMAGE) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                    + "IMG_" + timeStamp + ".jpg");
+        } */
+        if (type == MEDIA_TYPE_AUDIO) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                    + "AUDIO_" + timeStamp + ".mp3");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        //returning our layout file
-        //change R.layout.yourlayoutfilename for each of your fragments
+
         rootView = inflater.inflate(R.layout.frag_post_prayer_audio, container, false);
         txt_Prayer=(EditText)rootView.findViewById(R.id.txt_Prayer);
+        audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
         audio_record = (ImageView) rootView.findViewById(R.id.audio_record);
-        audio_stop_record = (ImageView) rootView.findViewById(R.id.audio_stop_record);
-        audio_stop_record.setEnabled(false);
         audio_record.setOnClickListener(this);
-        audio_stop_record.setOnClickListener(this);
-        //   progressBar = (ProgressBar)rootView.findViewById(R.id.progressBar);
+
+        progressDialog = new ProgressDialog(getContext(), ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Uploading...");
+        progressDialog.setCancelable(false);
 
         setCustomDesign();
-        // setCustomClickListeners();
         RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
         RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
         TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
@@ -119,6 +178,14 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
         return rootView;
+    }
+
+    private void resetTimer() {
+        startHTime = 0L;
+        customHandler = new Handler();
+        timeInMilliseconds = 0L;
+        timeSwapBuff = 0L;
+        updatedTime = 0L;
     }
 
     private void setCustomDesign() {
@@ -166,19 +233,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
         mediaRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB);
-        mediaRecorder.setOutputFile(AudioSavePathInDevice);
-    }
-
-    public String CreateRandomAudioFileName(int string) {
-        StringBuilder stringBuilder = new StringBuilder(string);
-        int i = 0;
-        while (i < string) {
-            stringBuilder.append(RandomAudioFileName.
-                    charAt(new Random().nextInt(RandomAudioFileName.length())));
-
-            i++;
-        }
-        return stringBuilder.toString();
+        mediaRecorder.setOutputFile(fileUri.getPath());
     }
 
     private void requestPermission() {
@@ -214,51 +269,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         return result == PackageManager.PERMISSION_GRANTED &&
                 result1 == PackageManager.PERMISSION_GRANTED;
     }
-    //-----------------Code for audio recording ends------------
-
-    /*
-     *Volley code for posting audio prayer
-        */
-    public void postaudio() {
-        SimpleMultiPartRequest smr = new SimpleMultiPartRequest(Request.Method.POST, UrlConstants._URL_POST_AUDIO_PRAYER, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(getActivity(), "Response:"+response.toString(), Toast.LENGTH_LONG).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity(),"Error:" +error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-        // smr.addFile()
-
-        smr.addStringParam("user_id", userclass.getTxt_user_login_id());
-        smr.addStringParam("sender_name", userclass.getTxt_fname() + " " + userclass.getTxt_lname());
-        smr.addStringParam("sender_email", userclass.getTxt_email());
-        smr.addStringParam("receiver_email", "satabhisha.wgt@gmail.com");
-        String path=fileUtils.getAudio_filepath();
-        smr.addFile("audiofile", path);
-        // smr.addStringParam("post_content","sdf");
-        //  smr.addStringParam("post_description", "regreg");
-
-        smr.addStringParam("post_description",txt_Prayer.getText().toString());
-        smr.addStringParam("accessibility", postPrayerModelClass.getAccessibility());
-        smr.addStringParam("post_type", "Video");
-        smr.addStringParam("post_priority", postPrayerModelClass.getPost_priority());
-        smr.addStringParam("user_access_token", userclass.getTxt_user_access_token());
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
-        String formattedDate1 = df1.format(c.getTime());
-        smr.addStringParam("created_date", formattedDate1);
-      /*  RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-        requestQueue.add(smr);*/
-        VolleyUtils.getInstance(getContext()).addToRequestQueue(smr);
-
-    }
-
-    //----------Volley code for posting audio prayer ends------------
-
 
     @Override
     public void onClick(View v) {
@@ -266,45 +276,40 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         int item = v.getId();
         switch (item) {
             case R.id.audio_record:
-                if (checkPermission()) {
+                if (!recording_status) {
+                    if (checkPermission()) {
+                        fileUri = getOutputMediaFileUri(MEDIA_TYPE_AUDIO);
+                        fileUtils.setAudio_filepath(fileUri.getPath());
+                        MediaRecorderReady();
+                        try {
+                            audio_record.setBackgroundResource(R.drawable.red_button);
+                            resetTimer();
 
-                    AudioSavePathInDevice =
-                            Environment.getExternalStorageDirectory().getAbsolutePath() + "/" +
-                                    CreateRandomAudioFileName(5) + "AudioRecording.3gp";
-
-                    MediaRecorderReady();
-                    fileUtils.setAudio_filepath(AudioSavePathInDevice);
-
-                    try {
-                        mediaRecorder.prepare();
-                        mediaRecorder.start();
-                    } catch (IllegalStateException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                            mediaRecorder.prepare();
+                            mediaRecorder.start();
+                            recording_status = true;
+                            startHTime = SystemClock.uptimeMillis();
+                            customHandler.postDelayed(updateTimerThread, 0);
+                        } catch (IllegalStateException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Asking for record permission.Please try again.", Toast.LENGTH_SHORT).show();
+                        requestPermission();
                     }
-
-                    audio_record.setEnabled(false);
-                    audio_stop_record.setEnabled(true);
-
-                    Toast.makeText(getActivity(), "Recording started",
-                            Toast.LENGTH_LONG).show();
                 } else {
-                    requestPermission();
+                    mediaRecorder.stop();
+                    recording_status = false;
+                    audio_record.setBackgroundResource(R.drawable.mic);
+                    timeSwapBuff += timeInMilliseconds;
+                    customHandler.removeCallbacks(updateTimerThread);
+                    Toast.makeText(getActivity(), "Recording Completed", Toast.LENGTH_LONG).show();
                 }
 
-                break;
-            case R.id.audio_stop_record:
-                mediaRecorder.stop();
-                audio_stop_record.setEnabled(false);
-                //buttonPlayLastRecordAudio.setEnabled(true);
-                audio_record.setEnabled(true);
-                //buttonStopPlayingRecording.setEnabled(false);
-
-                Toast.makeText(getActivity(), "Recording Completed",
-                        Toast.LENGTH_LONG).show();
 
                 break;
             case R.id.toggle_switch_rLayoutOuter:
@@ -318,9 +323,9 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 showPriorityPopUp();
                 break;
             case R.id.btn_post_prayer:
-                if(txt_Prayer.getText().length()<=30)
+                if (txt_Prayer.getText().length() < 10)
                 {
-                    txt_Prayer.setError("Minimum 30 characters required for your prayer description.");
+                    txt_Prayer.setError("Minimum 10 characters required for your prayer description.");
                     return;
                 }
                 else
@@ -331,26 +336,47 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     /**
+     * Method to show alert dialog
+     */
+    private void showAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message).setTitle("Response from Servers")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // do nothing
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    //------------------Json upload code ends------------------
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /**
+     * Creating file uri to store image/video
+     */
+    private Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    /**
      * Uploading the file to server
      */
-    public class UploadAudioFileToServer extends AsyncTask<Void, Integer, String> {
+    private class UploadAudioFileToServer extends AsyncTask<Void, Integer, String> {
         @Override
         protected void onPreExecute() {
-            // setting progress bar to zero
-            //   progressBar.setProgress(0);
+            if (progressDialog != null)
+                progressDialog.show();
             super.onPreExecute();
         }
 
         @Override
         protected void onProgressUpdate(Integer... progress) {
-            // Making progress bar visible
-            //   progressBar.setVisibility(View.VISIBLE);
-
-            // updating progress bar value
-            //   progressBar.setProgress(progress[0]);
-
-            // updating percentage value
-            // txtPercentage.setText(String.valueOf(progress[0]) + "%");
         }
 
         @Override
@@ -421,38 +447,17 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
 
         @Override
         protected void onPostExecute(String result) {
-            // Log.e(TAG, "Response from server: " + result);
-
-            // showing the server response in an alert dialog
-            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
-            showAlert(result);
-
+            if (progressDialog.isShowing())
+                progressDialog.cancel();
+            Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
+            audio_timer.setText("");
+            txt_Prayer.setText("");
+            //showAlert(result);
             super.onPostExecute(result);
         }
 
     }
 
-    /**
-     * Method to show alert dialog
-     */
-    private void showAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(message).setTitle("Response from Servers")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // do nothing
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    //------------------Json upload code ends------------------
-    void hideSoftKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
 }
 
 

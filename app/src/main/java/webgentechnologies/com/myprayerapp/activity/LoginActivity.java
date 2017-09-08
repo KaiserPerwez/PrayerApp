@@ -3,6 +3,7 @@ package webgentechnologies.com.myprayerapp.activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
@@ -50,6 +51,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.PrefUtils;
 import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
@@ -265,6 +267,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         userSingletonModelClass.setTxt_email(json_obj_data.getString("email"));
                         userSingletonModelClass.setTxt_fname(json_obj_data.getString("firstName"));
                         userSingletonModelClass.setTxt_lname(json_obj_data.getString("lastName"));
+                        load_LoginDetails_OnPrefs();
                         load_ProfileDetails();
                     } else {
                         if (progressDialog.isShowing())
@@ -302,6 +305,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         };
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    private void load_LoginDetails_OnPrefs() {
+        SharedPreferences.Editor editor = getSharedPreferences(PrefUtils._PREF_PRAYER_APP, MODE_PRIVATE).edit();
+        editor.putString(PrefUtils._PREF_KEY_LOGIN_ID, userSingletonModelClass.getTxt_user_login_id());
+        editor.putString(PrefUtils._PREF_KEY_LOGIN_ACCESS_TOKEN, userSingletonModelClass.getTxt_user_access_token());
+        editor.apply();
     }
 
     public void register_FbUser() {
@@ -427,7 +437,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if (!(progressDialog.isShowing()))
             progressDialog.show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_GET_REGISTRATION_DETAILS, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_REGISTRATION_DETAILS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {

@@ -118,7 +118,7 @@ public class ChangePasswordFrag extends Fragment {
  *Volley code for Getting otp to email for password reset
   */
     public void getOtpToemailTochngpswd() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_FOR_CHANGE_PASSWORD, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_CHANGE_PASSWORD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_LONG).show();
@@ -171,7 +171,7 @@ public class ChangePasswordFrag extends Fragment {
 *Volley code to verify otp
 */
     public void verifyOtp() {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_RECEIVED_FROM_EMAIL_VERIFY, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_VERIFY_EMAIL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(getActivity().getApplicationContext(), response, Toast.LENGTH_LONG).show();

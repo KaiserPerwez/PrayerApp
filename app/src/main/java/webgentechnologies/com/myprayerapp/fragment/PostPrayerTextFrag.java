@@ -1,5 +1,6 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,8 +42,6 @@ import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
-//import com.android.volley.VolleyError;
-//import com.android.volley.toolbox.StringRequest;
 
 /**
  * Created by Kaiser on 25-07-2017.
@@ -56,7 +55,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
     PostPrayerModelClass postPrayerModelClass=new PostPrayerModelClass();
     EditText txtPrayer;
-
+    ProgressDialog progressDialog;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,9 +143,9 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 showPriorityPopUp();
                 break;
             case R.id.btn_post_prayer:
-              if(txtPrayer.getText().length()<=30)
+                if (txtPrayer.getText().length() <= 10)
               {
-                  txtPrayer.setError("Minimum 30 characters required for your prayer description.");
+                  txtPrayer.setError("Minimum 10 characters required for your prayer description.");
                   return;
               }
               else
@@ -160,10 +159,15 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
        *Volley code for posting text prayer
         */
     public void posttextprayer() {
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Loading Your Prayer list");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_POST_TEXT_PRAYER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(getActivity(), response, Toast.LENGTH_LONG).show();
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
                 try {
                     JSONObject job = new JSONObject(response);
                     String status = job.getString("status");
@@ -181,6 +185,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
                 Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
             }
         }) {
@@ -206,8 +212,6 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 return params;
             }
         };
-//        RequestQueue requestQueue = Volley.newRequestQueue(getActivity());
-//        requestQueue.add(stringRequest);
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 //----------Volley code for posting text prayer ends------------

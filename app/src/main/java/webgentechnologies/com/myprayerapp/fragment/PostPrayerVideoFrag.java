@@ -48,9 +48,9 @@ import java.util.Locale;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
-import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
+import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 
 /**
@@ -58,28 +58,61 @@ import webgentechnologies.com.myprayerapp.networking.UrlConstants;
  */
 
 public class PostPrayerVideoFrag extends Fragment implements View.OnClickListener {
+    public static final int MEDIA_TYPE_VIDEO = 2;
+    // Camera activity request codes
+    private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
+    static String filepath = null;
     View rootView;
-
     ImageView img_record_video;
     TextView txt_overflow;
     ImageView img_overflow;
     int[] i = {0};
     EditText txtPrayer;
-    static String filepath = null;
     long totalSize = 0;
     Button btn_prayer;
     ProgressDialog progressDialog;
-
-
-    // Camera activity request codes
-    private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
-
-    public static final int MEDIA_TYPE_VIDEO = 2;
-
-    private Uri fileUri; // file url to store image/video
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     FileUtils fileUtils = new FileUtils();
+    private Uri fileUri; // file url to store image/video
+
+    /**
+     * returning image / video
+     */
+    private static File getOutputMediaFile(int type) {
+
+        // External sdcard location
+        File mediaStorageDir = new File(
+                Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                FileUtils.FILE_DIRECTORY_NAME);
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+              /*  Log.d(TAG, "Oops! Failed create "
+                        + Config.IMAGE_DIRECTORY_NAME + " directory");*/
+                return null;
+            }
+        }
+
+        // Create a media file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
+                Locale.getDefault()).format(new Date());
+        File mediaFile;
+       /* if (type == MEDIA_TYPE_IMAGE) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                    + "IMG_" + timeStamp + ".jpg");
+        } */
+        if (type == MEDIA_TYPE_VIDEO) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+                    + "VID_" + timeStamp + ".mp4");
+        } else {
+            return null;
+        }
+
+        return mediaFile;
+    }
 
     @Nullable
     @Override
@@ -112,7 +145,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
-        //  Log.d("VIDEO DATA:", _userSingletonModelClass.toString());
 
         return rootView;
     }
@@ -156,7 +188,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
         }
     }
-
+    //----Checking device camera code ends--------
 
     /**
      * Checking device has camera hardware or not
@@ -171,17 +203,17 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             return false;
         }
     }
-    //----Checking device camera code ends--------
+    //-------Launching camera app to record video ends---------
 
     /**
      * Launching camera app to record video
      */
     private void recordVideo() {
-        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
 
         fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
         fileUtils.setVideo_filepath(fileUri.getPath());
 
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         // set video quality
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
 
@@ -191,7 +223,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         // start the video capture Intent
         startActivityForResult(intent, CAMERA_CAPTURE_VIDEO_REQUEST_CODE);
     }
-    //-------Launching camera app to record video ends---------
 
     /**
      * Here we store the file url as it will be null after returning from camera
@@ -214,6 +245,11 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         }
 
     }
+
+    //-----------Receiving activity result method will be called after closing the camera ends----------------------
+    /**
+     * ------------ Helper Methods ----------------------
+     * */
 
     /**
      * Receiving activity result method will be called after closing the camera
@@ -246,54 +282,11 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         }
     }
 
-    //-----------Receiving activity result method will be called after closing the camera ends----------------------
-    /**
-     * ------------ Helper Methods ----------------------
-     * */
-
     /**
      * Creating file uri to store image/video
      */
-    public Uri getOutputMediaFileUri(int type) {
+    private Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    /**
-     * returning image / video
-     */
-    public static File getOutputMediaFile(int type) {
-
-        // External sdcard location
-        File mediaStorageDir = new File(
-                Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                FileUtils.FILE_DIRECTORY_NAME);
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-              /*  Log.d(TAG, "Oops! Failed create "
-                        + Config.IMAGE_DIRECTORY_NAME + " directory");*/
-                return null;
-            }
-        }
-
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
-                Locale.getDefault()).format(new Date());
-        File mediaFile;
-       /* if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "IMG_" + timeStamp + ".jpg");
-        } */
-        if (type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator
-                    + "VID_" + timeStamp + ".mp4");
-        } else {
-            return null;
-        }
-
-        return mediaFile;
     }
 
     //--------------Helper method ends-------------------
@@ -302,9 +295,79 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
      */
 
     /**
+     * Method to show alert dialog
+     */
+    private void showAlert(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(message).setTitle("Response from Servers")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // do nothing
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    //------------------Json upload code ends------------------
+    @Override
+    public void onClick(View view) {
+        hideSoftKeyboard();
+        int item = view.getId();
+        switch (item) {
+            case R.id.toggle_switch_rLayoutOuter:
+            case R.id.toggle_switch_rLayoutInner:
+            case R.id.toggle_switch_text:
+            case R.id.toggle_switch_btn:
+                toggleYesNo(i[0]++);
+                break;
+            case R.id.txt_overflow:
+                showPriorityPopUp();
+                break;
+            case R.id.img_overflow:
+                showPriorityPopUp();
+                break;
+            case R.id.btn_post_prayer:
+                // Checking camera availability
+                //----Checking camera availability code ends-------
+                // _userSingletonModelClass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
+                //  _userSingletonModelClass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
+                //  new UploadFileToServer().execute();
+                // postvideo();
+              /*  String path = fileUtils.getTxt_video_filepath();
+                SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
+                Calendar c = Calendar.getInstance();
+                String formattedDate1 = df1.format(c.getTime());
+                postvideo2(_userSingletonModelClass.getTxt_user_login_id(),_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname(), _userSingletonModelClass.getTxt_email(),
+                       "satabhisha.wgt@gmail.com","ddrhd",txtPrayer.getText().toString(),"Medium","Video", postPrayerModelClass.getPost_priority(),
+                        _userSingletonModelClass.getTxt_user_access_token(),formattedDate1);*/
+                if (txtPrayer.getText().length() <= 10) {
+                    txtPrayer.setError("Minimum 10 characters required for your prayer description.");
+                    return;
+                } else
+                    new UploadFileToServer().execute();
+                // postvideo3();
+                break;
+            case R.id.img_record_video:
+                if (!isDeviceSupportCamera()) {
+                    Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                recordVideo();
+                break;
+        }
+    }
+
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    /**
      * Uploading the file to server
      */
-    public class UploadFileToServer extends AsyncTask<Void, Integer, String> {
+    private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
         @Override
         protected void onPreExecute() {
             // setting progress bar to zero
@@ -401,78 +464,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             super.onPostExecute(result);
         }
 
-    }
-
-    /**
-     * Method to show alert dialog
-     */
-    private void showAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(message).setTitle("Response from Servers")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // do nothing
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    //------------------Json upload code ends------------------
-    @Override
-    public void onClick(View view) {
-        hideSoftKeyboard();
-        int item = view.getId();
-        switch (item) {
-            case R.id.toggle_switch_rLayoutOuter:
-            case R.id.toggle_switch_rLayoutInner:
-            case R.id.toggle_switch_text:
-            case R.id.toggle_switch_btn:
-                toggleYesNo(i[0]++);
-                break;
-            case R.id.txt_overflow:
-                showPriorityPopUp();
-                break;
-            case R.id.img_overflow:
-                showPriorityPopUp();
-                break;
-            case R.id.btn_post_prayer:
-                // Checking camera availability
-                //----Checking camera availability code ends-------
-                // _userSingletonModelClass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
-                //  _userSingletonModelClass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
-                //  new UploadFileToServer().execute();
-                // postvideo();
-              /*  String path = fileUtils.getTxt_video_filepath();
-                SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
-                Calendar c = Calendar.getInstance();
-                String formattedDate1 = df1.format(c.getTime());
-                postvideo2(_userSingletonModelClass.getTxt_user_login_id(),_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname(), _userSingletonModelClass.getTxt_email(),
-                       "satabhisha.wgt@gmail.com","ddrhd",txtPrayer.getText().toString(),"Medium","Video", postPrayerModelClass.getPost_priority(),
-                        _userSingletonModelClass.getTxt_user_access_token(),formattedDate1);*/
-                if (txtPrayer.getText().length() <= 30) {
-                    txtPrayer.setError("Minimum 30 characters required for your prayer description.");
-                    return;
-                } else
-                    new UploadFileToServer().execute();
-                // postvideo3();
-                break;
-            case R.id.img_record_video:
-                //  postvideo();
-                // Checking camera availability
-                if (!isDeviceSupportCamera()) {
-                    Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_LONG).show();
-                    // will close the app if the device does't have camera
-                    return;
-                }
-                recordVideo();
-                break;
-        }
-    }
-    void hideSoftKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 }
 

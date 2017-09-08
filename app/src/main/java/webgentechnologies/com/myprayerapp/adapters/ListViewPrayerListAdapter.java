@@ -215,7 +215,7 @@ public class ListViewPrayerListAdapter extends BaseAdapter {
         LinearLayout linearLayout_searchPrayerOverview = (LinearLayout) finalConvertView.findViewById(R.id.linearLayout_searchPrayerOverview);
         AbsListView.LayoutParams lp = (AbsListView.LayoutParams) linearLayout_searchPrayerOverview.getLayoutParams();
 
-        lp.height = (n % 2 == 0) ? 160 : lp.WRAP_CONTENT;
+        lp.height = (n % 2 == 0) ? 160 : ViewGroup.LayoutParams.WRAP_CONTENT;
         if (layout_prayer_details.getVisibility() == View.GONE)
             layout_prayer_details.setVisibility(View.VISIBLE);
         else

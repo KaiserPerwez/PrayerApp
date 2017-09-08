@@ -98,7 +98,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
         _progressDialog.setCancelable(false);
         _progressDialog.show();
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_IN_USER_EMAIL_FORGOT_PASSWORD, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_FORGOT_PASSWORD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (_progressDialog.isShowing())
@@ -182,7 +182,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
      */
     public void verifyOtp(final AlertDialog alertDialog) {
         hideSoftKeyboard();
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_RECEIVED_FOR_FORGOTPASSWORD_VERIFY, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_OTP_VERIFY_FORGOTPASSWORD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 if (_progressDialog.isShowing())

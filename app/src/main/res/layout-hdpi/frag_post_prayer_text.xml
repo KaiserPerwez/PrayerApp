@@ -104,7 +104,7 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="left"
-                android:hint="Write your Prayer (Min 30 characters).."
+                android:hint="Write your Prayer (Min 10 characters).."
                 android:inputType="textMultiLine"
                 android:padding="20dp"
                 android:scrollHorizontally="false"

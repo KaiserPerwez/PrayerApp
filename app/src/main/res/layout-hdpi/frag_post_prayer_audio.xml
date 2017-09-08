@@ -90,18 +90,19 @@
 
         <ImageView
             android:id="@+id/audio_record"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_gravity="center"
-            android:background="@drawable/mic" />
-
-        <ImageView
-            android:id="@+id/audio_stop_record"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/mic" />
+
+        <TextView
+            android:id="@+id/audio_timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:background="@drawable/red_button" />
+            android:gravity="center"
+            android:textColor="@android:color/white" />
 
         <LinearLayout
             android:id="@+id/linearLayout_txtPrayer"
@@ -118,7 +119,7 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="left"
-                android:hint="Describe your Prayer Here (Minimum 30 characters).."
+                android:hint="Describe your Prayer Here (Minimum 10 characters).."
                 android:padding="10dp"
                 android:scrollHorizontally="false"
                 android:textColorHint="#687787"

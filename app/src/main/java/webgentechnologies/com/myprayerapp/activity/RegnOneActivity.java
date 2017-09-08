@@ -87,7 +87,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         txt_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (txt_email.isFocused())
+                if (txt_email.isFocused() || txt_email.getText().toString().length() == 0)
                     return;
                 else if (!ValidatorUtils.isValidEmail(txt_email.getText().toString())) {
                     txt_email.setError("Email Format is invalid");
@@ -178,10 +178,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         txt_fname.setError(null);
         txt_lname.setError(null);
         txt_email.setError(null);
-        txt_addr1.setError(null);
-        txt_addr2.setError(null);
         txt_city.setError(null);
-        txt_phone.setError(null);
 
         if (txt_fname.getText().toString().length() == 0) {
             txt_fname.requestFocus();
@@ -205,26 +202,12 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         }
 
-        if (txt_addr1.getText().toString().length() == 0) {
-            txt_addr1.requestFocus();
-            txt_addr1.setError("Address Field can't be empty");
-            return false;
-        }
-        if (txt_addr2.getText().toString().length() == 0) {
-            txt_addr2.requestFocus();
-            txt_addr2.setError("Address Field can't be empty");
-            return false;
-        }
         if (txt_city.getText().toString().length() == 0) {
             txt_city.requestFocus();
             txt_city.setError("City Field can't be empty");
             return false;
         }
-        if (txt_phone.getText().toString().length() == 0) {
-            txt_phone.requestFocus();
-            txt_phone.setError("PhoneNumber Field can't be empty");
-            return false;
-        }
+
         _userSingletonModelClass.setTxt_fname(txt_fname.getText().toString());
         _userSingletonModelClass.setTxt_lname(txt_lname.getText().toString());
         _userSingletonModelClass.setTxt_email(txt_email.getText().toString());
@@ -303,7 +286,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_ALL_CHURCHES_LIST, new Response.Listener<String>() {
+        StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_CHURCH_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String responseStr) {
                 loadChurchesOnListView(responseStr);
@@ -368,7 +351,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     Volley code for spinner
      */
     public void fetchCountriesFromServer() {
-        StringRequest stringRequest = new StringRequest(UrlConstants._URL_GET_COUNTRY_LIST, new Response.Listener<String>() {
+        StringRequest stringRequest = new StringRequest(UrlConstants._URL_COUNTRY_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 loadCountriesOnSpinner(response);

@@ -172,6 +172,10 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
     }
 
     private void loadAllPrayersIntoListView() {
+        if (_postPrayerModelClassList.size() == 0) {
+            Toast.makeText(getContext(), "NO PRAYER FOUND", Toast.LENGTH_SHORT).show();
+            return;
+        }
         ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), _postPrayerModelClassList);
         ListView lv_prayer_list = (ListView) rootView.findViewById(R.id.lv_prayer_list);
         lv_prayer_list.setAdapter(listViewPrayerListAdapter);
@@ -227,6 +231,8 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                 lv_prayer_list.setAdapter(listViewPrayerListAdapter);
                 lv_prayer_list.invalidateViews();
 
+                if (postPrayerModelClassList.size() == 0)
+                    Toast.makeText(getContext(), "NO PRAYER FOUND", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
@@ -246,6 +252,7 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
 
         }
     }
+
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);

@@ -35,11 +35,11 @@ import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
 public class EditTwoActivity extends AppCompatActivity implements View.OnClickListener {
+    static String txt_selected_church_name;
     Context _ctx;
     CheckBox chk_alpha, chk_perspective, chk_men, chk_beth_more, chk_cbs, chk_others;
     EditText txt_others;
     Spinner txt_churchname;
-    static String txt_selected_church_name;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
     ArrayList<String> _arrListChurches = new ArrayList<>();
     ArrayAdapter<String> _adapter;
@@ -165,7 +165,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
     Volley code for spinner
      */
     public void sendRequest() {
-        StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_ALL_CHURCHES_LIST, new Response.Listener<String>() {
+        StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_CHURCH_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String responseStr) {
                 churchList_Json(responseStr);

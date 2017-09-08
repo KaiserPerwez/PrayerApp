@@ -2,6 +2,7 @@ package webgentechnologies.com.myprayerapp.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.PrefUtils;
 import webgentechnologies.com.myprayerapp.fragment.ChangePasswordFrag;
 import webgentechnologies.com.myprayerapp.fragment.EditOneFrag;
 import webgentechnologies.com.myprayerapp.fragment.PostPrayerAudioFrag;
@@ -32,9 +34,9 @@ import webgentechnologies.com.myprayerapp.fragment.SearchPrayerFrag;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,View.OnClickListener {
+    public static Context _context;
     LinearLayout _linearLayout_bar_prayers, _linearLayout_bar_edit;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
-    public static Context _context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +151,12 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 catch (Exception e){
                     Toast.makeText(_context, "Err:"+e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
+
+                SharedPreferences.Editor editor = getSharedPreferences(PrefUtils._PREF_PRAYER_APP, MODE_PRIVATE).edit();
+                editor.putString(PrefUtils._PREF_KEY_LOGIN_ID, null);
+                editor.putString(PrefUtils._PREF_KEY_LOGIN_ACCESS_TOKEN, null);
+                editor.apply();
+
                 UserSingletonModelClass.get_userSingletonModelClass().destroyUser();
                 startActivity(new Intent(HomeActivity.this, LoginActivity.class));
                 HomeActivity.this.finish();

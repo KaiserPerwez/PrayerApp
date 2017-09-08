@@ -156,7 +156,24 @@
                     android:textColorHint="#687787"
                     android:textSize="15sp" />
             </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/field_area_bg"
+                android:orientation="horizontal">
 
+                <Spinner
+                    android:id="@+id/spinner_country_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:ems="10"
+                    android:entries="@array/country_arrays"
+                    android:paddingLeft="10dp"
+                    android:prompt="@string/country_prompt"
+                    android:textSize="15sp" />
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
@@ -170,7 +187,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="Address1*"
+                    android:hint="Address1"
                     android:inputType="text"
                     android:paddingLeft="20dp"
                     android:textColorHint="#687787"
@@ -190,31 +207,13 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="Address2*"
+                    android:hint="Address2"
                     android:inputType="text"
                     android:paddingLeft="20dp"
                     android:textColorHint="#687787"
                     android:textSize="15sp" />
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/field_area_bg"
-                android:orientation="horizontal">
-
-                <Spinner
-                    android:id="@+id/spinner_country_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    android:ems="10"
-                    android:entries="@array/country_arrays"
-                    android:paddingLeft="10dp"
-                    android:prompt="@string/country_prompt"
-                    android:textSize="15sp" />
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -229,7 +228,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="State*"
+                    android:hint="City*"
                     android:inputType="text"
                     android:paddingLeft="20dp"
                     android:textColorHint="#687787"
@@ -267,7 +266,7 @@
                     android:layout_height="match_parent"
                     android:background="@android:color/transparent"
                     android:ems="10"
-                    android:hint="Phone*"
+                    android:hint="Phone"
                     android:inputType="phone"
                     android:paddingLeft="20dp"
                     android:textColorHint="#687787"
