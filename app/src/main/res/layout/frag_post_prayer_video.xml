@@ -10,11 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
+        android:orientation="vertical"
+        android:layout_marginTop="20dp">
 
         <LinearLayout
             android:id="@+id/overflow"
@@ -91,6 +88,11 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="150dp">
+            <ImageView
+                android:id="@+id/img_record_video_preview"
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"/>
 
             <ImageView
                 android:id="@+id/img_record_video"
@@ -105,7 +107,7 @@
             android:id="@+id/linearLayout_txtPrayer"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="30dp"
             android:background="@drawable/comment_field"
             android:orientation="horizontal">
 
@@ -116,12 +118,12 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="left"
-                android:hint="Describe your Prayer Here.."
+                android:hint="Describe your Prayer Here(Minimum 10 characters)"
                 android:inputType="textMultiLine"
                 android:padding="10dp"
                 android:scrollHorizontally="false"
                 android:textColorHint="#687787"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <Button

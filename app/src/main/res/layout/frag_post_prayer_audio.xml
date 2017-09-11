@@ -117,12 +117,12 @@
                 android:background="@android:color/transparent"
                 android:ems="10"
                 android:gravity="left"
-                android:hint="Describe your Prayer Here.."
+                android:hint="Describe your Prayer Here (Minimum 10 characters)"
                 android:inputType="textMultiLine"
                 android:padding="10dp"
                 android:scrollHorizontally="false"
                 android:textColorHint="#687787"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
         <Button

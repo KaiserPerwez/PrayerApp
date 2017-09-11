@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,12 +15,14 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.webkit.WebSettings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -38,6 +42,7 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +53,7 @@ import java.util.Locale;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
+import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
@@ -70,8 +76,9 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     EditText txtPrayer;
     long totalSize = 0;
     Button btn_prayer;
+    String receiver_email;
     ProgressDialog progressDialog;
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     FileUtils fileUtils = new FileUtils();
     private Uri fileUri; // file url to store image/video
@@ -123,7 +130,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         setCustomDesign();
         progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
-
+        progressDialog.setCancelable(false);
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
 
@@ -211,7 +218,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private void recordVideo() {
 
         fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
-        fileUtils.setVideo_filepath(fileUri.getPath());
+        filepath=fileUri.getPath();
+        fileUtils.setVideo_filepath(filepath);
 
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
         // set video quality
@@ -265,13 +273,16 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 Toast.makeText(getActivity(),
                         "Video successfully recorded", Toast.LENGTH_SHORT)
                         .show();
+                Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
+                        MediaStore.Images.Thumbnails.MINI_KIND);
+                ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+                img_record_video_preview.setImageBitmap(thumbnail);
 
             } else if (resultCode == getActivity().RESULT_CANCELED) {
 
                 // user cancelled recording
-                Toast.makeText(getActivity(),
-                        "User cancelled video recording", Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(getActivity(),"User cancelled video recording", Toast.LENGTH_SHORT).show();
+                filepath=null;
 
             } else {
                 // failed to record video
@@ -289,28 +300,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
-    //--------------Helper method ends-------------------
-    /*
-    Json upload code starts here---------------
-     */
-
-    /**
-     * Method to show alert dialog
-     */
-    private void showAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(message).setTitle("Response from Servers")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // do nothing
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    //------------------Json upload code ends------------------
     @Override
     public void onClick(View view) {
         hideSoftKeyboard();
@@ -328,33 +317,78 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             case R.id.img_overflow:
                 showPriorityPopUp();
                 break;
-            case R.id.btn_post_prayer:
-                // Checking camera availability
-                //----Checking camera availability code ends-------
-                // _userSingletonModelClass.setTxt_post_content_textfrag(txtPrayer.getText().toString());
-                //  _userSingletonModelClass.setTxt_post_description_textfrag(txtPrayer.getText().toString());
-                //  new UploadFileToServer().execute();
-                // postvideo();
-              /*  String path = fileUtils.getTxt_video_filepath();
-                SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
-                Calendar c = Calendar.getInstance();
-                String formattedDate1 = df1.format(c.getTime());
-                postvideo2(_userSingletonModelClass.getTxt_user_login_id(),_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname(), _userSingletonModelClass.getTxt_email(),
-                       "satabhisha.wgt@gmail.com","ddrhd",txtPrayer.getText().toString(),"Medium","Video", postPrayerModelClass.getPost_priority(),
-                        _userSingletonModelClass.getTxt_user_access_token(),formattedDate1);*/
-                if (txtPrayer.getText().length() <= 10) {
-                    txtPrayer.setError("Minimum 10 characters required for your prayer description.");
-                    return;
-                } else
-                    new UploadFileToServer().execute();
-                // postvideo3();
-                break;
             case R.id.img_record_video:
                 if (!isDeviceSupportCamera()) {
                     Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_LONG).show();
                     return;
                 }
+                Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_LONG).show();
                 recordVideo();
+                break;
+            case R.id.btn_post_prayer:
+                File sourceFile = null;
+                try {
+                    sourceFile= new File(fileUtils.getVideo_filepath());
+                }
+                catch (Exception e){
+                    //Toast.makeText(getContext(), ""+e.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Err:Please record a video before Uploading", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if(filepath==null || sourceFile.length()==0){
+                    Toast.makeText(getContext(), "Please record a video before Uploading", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else if (txtPrayer.getText().length() <= 10) {
+                    txtPrayer.requestFocus();
+                    txtPrayer.setError("Minimum 10 characters required for your prayer description.");
+                    return;
+                } else {
+                    txtPrayer.setError(null);
+                    LayoutInflater li = LayoutInflater.from(getContext());
+                    final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());// set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+                    // set dialog message
+                    alertDialogBuilder.setCancelable(false);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                    alertDialog.show();
+
+                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    txt_title.setText("Enter email id of Church Admin");
+                    txt_title.setTextSize(15);
+                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    txt.setHint("Enter Email");
+                    txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    btn_verify.setText("Submit");
+                    btn_verify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            receiver_email = txt.getText().toString();
+                            txt.setError(null);
+
+                            if (receiver_email.length() == 0)
+                                txt.setError("Email can't be empty");
+                            else if (!ValidatorUtils.isValidEmail(receiver_email))
+                                txt.setError("Email Format is invalid");
+                            else {
+                                alertDialog.cancel();
+                                new UploadFileToServer().execute();
+                            }
+                        }
+                    });
+
+                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    btn_back.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.cancel();
+                        }
+                    });
+                }
                 break;
         }
     }
@@ -370,8 +404,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private class UploadFileToServer extends AsyncTask<Void, Integer, String> {
         @Override
         protected void onPreExecute() {
-            // setting progress bar to zero
-            //   progressBar.setProgress(0);
+            if (progressDialog != null)
+                progressDialog.show();
             super.onPreExecute();
         }
 
@@ -408,10 +442,10 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                                 publishProgress((int) ((num / (float) totalSize) * 100));
                             }
                         });
-                entity.addPart("user_id", new StringBody(userclass.getTxt_user_login_id()));
-                entity.addPart("sender_name", new StringBody(userclass.getTxt_fname() + " " + userclass.getTxt_lname()));
-                entity.addPart("sender_email", new StringBody(userclass.getTxt_email()));
-                entity.addPart("receiver_email", new StringBody("satabhisha.wgt@gmail.com"));
+                entity.addPart("user_id", new StringBody(_userSingletonModelClass.getTxt_user_login_id()));
+                entity.addPart("sender_name", new StringBody(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname()));
+                entity.addPart("sender_email", new StringBody(_userSingletonModelClass.getTxt_email()));
+                entity.addPart("receiver_email", new StringBody(receiver_email));
                 File sourceFile = new File(fileUtils.getVideo_filepath());
 
                 // Adding file data to http body
@@ -421,7 +455,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 entity.addPart("accessibility", new StringBody(postPrayerModelClass.getAccessibility()));
                 entity.addPart("post_type", new StringBody("Video"));
                 entity.addPart("post_priority", new StringBody(postPrayerModelClass.getPost_priority()));
-                entity.addPart("user_access_token", new StringBody(userclass.getTxt_user_access_token()));
+                entity.addPart("user_access_token", new StringBody(_userSingletonModelClass.getTxt_user_access_token()));
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
                 String formattedDate1 = df1.format(c.getTime());
@@ -436,7 +470,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
                 int statusCode = response.getStatusLine().getStatusCode();
                 if (statusCode == 200) {
-                    // Server response
                     responseString = EntityUtils.toString(r_entity);
                 } else {
                     responseString = "Error occurred! Http Status Code: "
@@ -444,9 +477,9 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 }
 
             } catch (ClientProtocolException e) {
-                responseString = e.toString();
+                responseString = "Err:" + e.toString();
             } catch (IOException e) {
-                responseString = e.toString();
+                responseString = "Err:" + e.toString();
             }
 
             return responseString;
@@ -455,12 +488,14 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
         @Override
         protected void onPostExecute(String result) {
-            // Log.e(TAG, "Response from server: " + result);
+            if (progressDialog.isShowing())
+                progressDialog.cancel();
+            if (result.startsWith("Err"))
+                Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
 
-            // showing the server response in an alert dialog
-            Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
-            showAlert(result);
-
+            txtPrayer.setText("");
             super.onPostExecute(result);
         }
 

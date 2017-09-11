@@ -1,11 +1,13 @@
 package webgentechnologies.com.myprayerapp.fragment;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -36,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.activity.HomeActivity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
@@ -52,10 +55,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     TextView txt_overflow;
     ImageView img_overflow;
     int[] i = {0};
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
-    PostPrayerModelClass postPrayerModelClass=new PostPrayerModelClass();
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
+    PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     EditText txtPrayer;
     ProgressDialog progressDialog;
+private String receiver_email;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -83,7 +87,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
 
-        Log.d("TEXT DATA:",userclass.toString());
+        Log.d("TEXT DATA:", _userSingletonModelClass.toString());
 
         return rootView;
     }
@@ -143,13 +147,52 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 showPriorityPopUp();
                 break;
             case R.id.btn_post_prayer:
-                if (txtPrayer.getText().length() <= 10)
-              {
-                  txtPrayer.setError("Minimum 10 characters required for your prayer description.");
-                  return;
-              }
-              else
-                posttextprayer();
+                if (txtPrayer.getText().length() <= 10) {
+                    txtPrayer.setError("Minimum 10 characters required for your prayer description.");
+                    return;
+                } else {
+                    LayoutInflater li = LayoutInflater.from(getContext());
+                    final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());// set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+                    // set dialog message
+                    alertDialogBuilder.setCancelable(false);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                    alertDialog.show();
+
+                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    txt_title.setText("Enter email id of Church Admin");
+                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    txt.setHint("Enter Email");
+                    txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    btn_verify.setText("Submit");
+                    btn_verify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            receiver_email = txt.getText().toString();
+                            txt.setError(null);
+                            if (receiver_email.length() == 0)
+                                txt.setError("Email can't be empty");
+                            else if (!ValidatorUtils.isValidEmail(receiver_email))
+                                txt.setError("Email Format is invalid");
+                            else {
+                                alertDialog.cancel();
+                                postTextPrayer();
+                            }
+                        }
+                    });
+
+                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    btn_back.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.cancel();
+                        }
+                    });
+                }
                 break;
 
         }
@@ -158,9 +201,9 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     /*
        *Volley code for posting text prayer
         */
-    public void posttextprayer() {
+    public void postTextPrayer() {
         progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Loading Your Prayer list");
+        progressDialog.setMessage("Posting Prayer...");
         progressDialog.setCancelable(false);
         progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_POST_TEXT_PRAYER, new Response.Listener<String>() {
@@ -173,8 +216,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     String status = job.getString("status");
 
                     if (status.equals("true")) {
-                        startActivity(new Intent(getActivity(), HomeActivity.class));
                         Toast.makeText(getActivity(), "Data posted successfully", Toast.LENGTH_LONG).show();
+                        txtPrayer.setText("");
                     } else
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -193,16 +236,16 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("user_id", userclass.getTxt_user_login_id());
-                params.put("sender_name", userclass.getTxt_fname() + " " + userclass.getTxt_lname());
-                params.put("sender_email", userclass.getTxt_email());
-                params.put("receiver_email", "satabhisha.wgt@gmail.com");
-                params.put("post_content",txtPrayer.getText().toString());
+                params.put("user_id", _userSingletonModelClass.getTxt_user_login_id());
+                params.put("sender_name", _userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
+                params.put("sender_email", _userSingletonModelClass.getTxt_email());
+                params.put("receiver_email", receiver_email);
+                params.put("post_content", txtPrayer.getText().toString());
                 params.put("post_description", txtPrayer.getText().toString());
                 params.put("accessibility", postPrayerModelClass.getAccessibility());
                 params.put("post_type", "Text");
-                params.put("post_priority",postPrayerModelClass.getPost_priority());
-                params.put("sender_access_token", userclass.getTxt_user_access_token());
+                params.put("post_priority", postPrayerModelClass.getPost_priority());
+                params.put("sender_access_token", _userSingletonModelClass.getTxt_user_access_token());
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
                 String formattedDate1 = df1.format(c.getTime());
@@ -214,10 +257,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         };
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
-//----------Volley code for posting text prayer ends------------
-void hideSoftKeyboard() {
-    InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-    inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-}
+
+    //----------Volley code for posting text prayer ends------------
+    void hideSoftKeyboard() {
+        InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 }
 

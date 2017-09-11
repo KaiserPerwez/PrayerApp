@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -52,6 +53,7 @@ import java.util.Locale;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.FileUtils;
+import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.AndroidMultiPartEntity;
@@ -72,13 +74,16 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     MediaRecorder mediaRecorder;
     MediaPlayer mediaPlayer;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
-    FileUtils fileUtils=new FileUtils();
-    PostPrayerModelClass postPrayerModelClass=new PostPrayerModelClass();
+    FileUtils fileUtils = new FileUtils();
+    PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     TextView txt_overflow;
     ImageView img_overflow;
     int[] i = {0};
     EditText txt_Prayer;
+    Button btn_post_prayer;
     long totalSize = 0;
+    String receiver_email;
+
     TextView audio_timer;
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
@@ -149,7 +154,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.frag_post_prayer_audio, container, false);
-        txt_Prayer=(EditText)rootView.findViewById(R.id.txt_Prayer);
+        txt_Prayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
         audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
         audio_record = (ImageView) rootView.findViewById(R.id.audio_record);
         audio_record.setOnClickListener(this);
@@ -174,8 +179,8 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        Button btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
-        btn_prayer.setOnClickListener(this);
+        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
         return rootView;
     }
@@ -264,10 +269,10 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     public boolean checkPermission() {
+        Toast.makeText(getContext(), "Checking record permission", Toast.LENGTH_SHORT).show();
         int result = ContextCompat.checkSelfPermission(getActivity(), WRITE_EXTERNAL_STORAGE);
         int result1 = ContextCompat.checkSelfPermission(getActivity(), RECORD_AUDIO);
-        return result == PackageManager.PERMISSION_GRANTED &&
-                result1 == PackageManager.PERMISSION_GRANTED;
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -278,36 +283,46 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             case R.id.audio_record:
                 if (!recording_status) {
                     if (checkPermission()) {
+                        Toast.makeText(getContext(), "Record permission Granted.", Toast.LENGTH_SHORT).show();
                         fileUri = getOutputMediaFileUri(MEDIA_TYPE_AUDIO);
                         fileUtils.setAudio_filepath(fileUri.getPath());
                         MediaRecorderReady();
                         try {
                             audio_record.setBackgroundResource(R.drawable.red_button);
                             resetTimer();
-
                             mediaRecorder.prepare();
                             mediaRecorder.start();
                             recording_status = true;
                             startHTime = SystemClock.uptimeMillis();
                             customHandler.postDelayed(updateTimerThread, 0);
+                            Toast.makeText(getContext(), "Recording...", Toast.LENGTH_SHORT).show();
+                            btn_post_prayer.setEnabled(false);
                         } catch (IllegalStateException e) {
-                            // TODO Auto-generated catch block
+                            btn_post_prayer.setEnabled(true);
+                            Toast.makeText(getContext(), "Err:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             e.printStackTrace();
                         } catch (IOException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
+                            btn_post_prayer.setEnabled(true);
+                            Toast.makeText(getContext(), "Err:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(getContext(), "Asking for record permission.Please try again.", Toast.LENGTH_SHORT).show();
+                        btn_post_prayer.setEnabled(true);
+                        Toast.makeText(getContext(), "Record permission failed.Please try again.", Toast.LENGTH_LONG).show();
                         requestPermission();
                     }
                 } else {
-                    mediaRecorder.stop();
-                    recording_status = false;
-                    audio_record.setBackgroundResource(R.drawable.mic);
-                    timeSwapBuff += timeInMilliseconds;
-                    customHandler.removeCallbacks(updateTimerThread);
-                    Toast.makeText(getActivity(), "Recording Completed", Toast.LENGTH_LONG).show();
+                    try {
+                        mediaRecorder.stop();
+                        recording_status = false;
+                        audio_record.setBackgroundResource(R.drawable.mic);
+                        timeSwapBuff += timeInMilliseconds;
+                        customHandler.removeCallbacks(updateTimerThread);
+                        Toast.makeText(getActivity(), "Recording Completed", Toast.LENGTH_LONG).show();
+                        btn_post_prayer.setEnabled(true);
+                    } catch (Exception e) {
+                        btn_post_prayer.setEnabled(true);
+                        Toast.makeText(getContext(), "Couldn't stop.Please try stopping again. Err:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
 
 
@@ -323,13 +338,54 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 showPriorityPopUp();
                 break;
             case R.id.btn_post_prayer:
-                if (txt_Prayer.getText().length() < 10)
-                {
+                if (txt_Prayer.getText().length() < 10) {
                     txt_Prayer.setError("Minimum 10 characters required for your prayer description.");
                     return;
+                } else {
+                    LayoutInflater li = LayoutInflater.from(getContext());
+                    final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());// set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+                    // set dialog message
+                    alertDialogBuilder.setCancelable(false);
+                    final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                    alertDialog.show();
+
+                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    txt_title.setText("Enter email id of Church Admin");
+                    txt_title.setTextSize(15);
+                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    txt.setHint("Enter Email");
+                    txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    btn_verify.setText("Submit");
+                    btn_verify.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            receiver_email = txt.getText().toString();
+                            txt.setError(null);
+
+                            if (receiver_email.length() == 0)
+                                txt.setError("Email can't be empty");
+                            else if (!ValidatorUtils.isValidEmail(receiver_email))
+                                txt.setError("Email Format is invalid");
+                            else {
+                                alertDialog.cancel();
+                                new UploadAudioFileToServer().execute();
+                            }
+                        }
+                    });
+
+                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    btn_back.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            alertDialog.cancel();
+                        }
+                    });
                 }
-                else
-                new UploadAudioFileToServer().execute();
                 break;
 
         }
@@ -338,18 +394,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     /**
      * Method to show alert dialog
      */
-    private void showAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(message).setTitle("Response from Servers")
-                .setCancelable(false)
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // do nothing
-                    }
-                });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
 
     //------------------Json upload code ends------------------
     void hideSoftKeyboard() {
@@ -403,7 +447,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 entity.addPart("user_id", new StringBody(userclass.getTxt_user_login_id()));
                 entity.addPart("sender_name", new StringBody(userclass.getTxt_fname() + " " + userclass.getTxt_lname()));
                 entity.addPart("sender_email", new StringBody(userclass.getTxt_email()));
-                entity.addPart("receiver_email", new StringBody("satabhisha.wgt@gmail.com"));
+                entity.addPart("receiver_email", new StringBody(receiver_email));
                 File sourceFile = new File(fileUtils.getAudio_filepath());
 
                 // Adding file data to http body
@@ -436,9 +480,9 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 }
 
             } catch (ClientProtocolException e) {
-                responseString = e.toString();
+                responseString = "Err:" + e.toString();
             } catch (IOException e) {
-                responseString = e.toString();
+                responseString = "Err:" + e.toString();
             }
 
             return responseString;
@@ -449,10 +493,13 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         protected void onPostExecute(String result) {
             if (progressDialog.isShowing())
                 progressDialog.cancel();
-            Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
+            if (result.startsWith("Err"))
+                Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+            else
+                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
+
             audio_timer.setText("");
             txt_Prayer.setText("");
-            //showAlert(result);
             super.onPostExecute(result);
         }
 
