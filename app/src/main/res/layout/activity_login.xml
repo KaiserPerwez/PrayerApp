@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen"
     android:gravity="center"
-    tools:context="webgentechnologies.com.myprayerapp.activity.LoginActivity">
+    tools:context="com.wgt.myprayerapp.activity.LoginActivity">
     <!-- Login progress -->
     <ProgressBar
         android:id="@+id/login_progress"
@@ -18,8 +18,8 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true">
 
         <LinearLayout
             android:layout_width="match_parent"
