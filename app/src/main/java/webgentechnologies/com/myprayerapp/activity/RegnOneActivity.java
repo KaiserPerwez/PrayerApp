@@ -58,6 +58,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
     ArrayAdapter<String> adapter;
     EditText txt_selected_church, txt_search_church;
     String selected_church_name;
+    AlertDialog alertDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +102,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                     alertDialogBuilder.setView(promptsView);
                     // set dialog message
                     alertDialogBuilder.setCancelable(false);
-                    final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                    alertDialog = alertDialogBuilder.create();// create alert dialog
                     alertDialog.show();
 
                     final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
@@ -163,10 +164,10 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         int item = v.getId();
         switch (item) {
             case R.id.imageButtonNext:
-                //if (setFieldDataToUserSingletonObject()) {
+                if (setFieldDataToUserSingletonObject()) {
                 Intent intent = new Intent(_ctx, RegnTwoActivity.class);
                 startActivity(intent);
-                //}
+                }
                 break;
             case R.id.imageButtonPrev:
                 finish();
@@ -239,7 +240,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         alertDialogBuilder.setView(promptsView);
         // set dialog message
         alertDialogBuilder.setCancelable(false);
-        final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+        alertDialog = alertDialogBuilder.create();// create alert dialog
         alertDialog.show();
 
         //Calling method of volley
@@ -247,6 +248,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
         txt_selected_church = (EditText) promptsView.findViewById(R.id.txt_selected_churchname);
         txt_search_church = (EditText) promptsView.findViewById(R.id.search_church);
+        txt_search_church.requestFocus();
         lv_churches = (ListView) promptsView.findViewById(R.id.church_lv);
 
         Button btn_submit = (Button) promptsView.findViewById(R.id.btn_submit);
@@ -306,11 +308,16 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         try {
             JSONObject jsonObject = new JSONObject(responseStr);
             JSONArray jsonArrayChurchList = jsonObject.getJSONArray("data");
+            if (!arrListChurches.isEmpty())
+                arrListChurches.clear();
+
             for (int i = 0; i < jsonArrayChurchList.length(); i++) {
                 JSONObject jsonObjectChurchName = jsonArrayChurchList.getJSONObject(i);
                 String churchName = jsonObjectChurchName.getString("church_name");
                 arrListChurches.add(churchName);
             }
+
+            Toast.makeText(_ctx, "Churches:" + arrListChurches.size(), Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -318,10 +325,12 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
         adapter = new ArrayAdapter<String>(this, R.layout.dialog_row, R.id.txt_churchname_lst, arrListChurches);
         lv_churches.setAdapter(adapter);
+        lv_churches.invalidateViews();
         lv_churches.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                hideSoftKeyboard();
+                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                im.hideSoftInputFromWindow(alertDialog.getWindow().getDecorView().getWindowToken(), 0);
                 selected_church_name = adapter.getItem(position);
                 txt_selected_church.setText(selected_church_name);
                 txt_search_church.clearFocus();

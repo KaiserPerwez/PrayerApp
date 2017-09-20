@@ -43,7 +43,9 @@ public class VolleyUtils {
 
     public <T> void addToRequestQueue(Request<T> request) {
         // Add the specified request to the request queue
+        request.setShouldCache(false);//to get latest updates from server
         getRequestQueue().add(request);
     }
+
 }
 

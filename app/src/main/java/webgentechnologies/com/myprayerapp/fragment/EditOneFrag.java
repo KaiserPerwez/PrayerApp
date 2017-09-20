@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -40,8 +41,7 @@ import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
  * Created by Kaiser on 25-07-2017.
  */
 
-public class EditOneFrag extends Fragment //implements TextWatcher
-{
+public class EditOneFrag extends Fragment implements View.OnTouchListener {
 
     public static EditText txt_fname, txt_lname, txt_email, txt_addr1, txt_addr2, txt_city, txt_phone;
     public static String txt_country_id1, txt_country_name, txt_country_shortname, txt_state_id, txt_state_name, txt_country_id2;
@@ -57,6 +57,8 @@ public class EditOneFrag extends Fragment //implements TextWatcher
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_edit_one, container, false);
+        rootView.setOnTouchListener(this);//to detect touch on non-views
+
         txt_fname = (EditText) rootView.findViewById(R.id.txt_fname);
         txt_lname = (EditText) rootView.findViewById(R.id.txt_lname);
         txt_email = (EditText) rootView.findViewById(R.id.txt_email);
@@ -104,6 +106,7 @@ public class EditOneFrag extends Fragment //implements TextWatcher
         txt_city.setText(_userSingletonModelClass.getTxt_city());
         txt_phone.setText(_userSingletonModelClass.getTxt_phone());
     }
+
     /*
   Volley code for spinner
    */
@@ -157,7 +160,7 @@ public class EditOneFrag extends Fragment //implements TextWatcher
             arrayList_state_name.add(temp_sModel.getState_name());
         }
 
-        spinner_country.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item,arraylist_country_name ));
+        spinner_country.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
         spinner_state.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -191,5 +194,11 @@ public class EditOneFrag extends Fragment //implements TextWatcher
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftKeyboard();
+        return false;
     }
 }

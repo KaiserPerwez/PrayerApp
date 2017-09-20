@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupMenu;
@@ -44,16 +45,18 @@ import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
  * Created by Kaiser on 28-07-2017.
  */
 
-public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
+public class SearchPrayerFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     View rootView;
     ProgressDialog progressDialog;
     UserSingletonModelClass _userSingletonModelClass;
     List<PostPrayerModelClass> _postPrayerModelClassList = new ArrayList<>();
+    PopupMenu popup;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_search_prayer, container, false);
+        rootView.setOnTouchListener(this);//to detect touch on non-views
         return rootView;
     }
 
@@ -64,6 +67,14 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
         txt_overflow.setOnClickListener(this);
         final ImageView img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
+        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        frame_overflow.setOnClickListener(this);
+
+        //Creating the instance of PopupMenu
+        popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
+        //Inflating the Popup using xml file
+        popup.getMenuInflater().inflate(R.menu.sort_by_menu, popup.getMenu());
+        popup.getMenu().getItem(0).setChecked(true);
 
         _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
         loadAllPrayersFromDatabase();
@@ -85,6 +96,14 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                                 _postPrayerModelClassList) {
                             if (postPrayerModelClass.getPost_description().contains(txt_search.getText()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
+                            if (postPrayerModelClass.getPost_type().contains(txt_search.getText()))
+                                postPrayerModelClassList.add(postPrayerModelClass);
+//                            if (postPrayerModelClass.getAnswered_status().contains(txt_search.getText()))
+//                                postPrayerModelClassList.add(postPrayerModelClass);
+                            if (postPrayerModelClass.getPost_priority().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
+                                postPrayerModelClassList.add(postPrayerModelClass);
+                            if (postPrayerModelClass.getAccessibility().contains(txt_search.getText()))
+                                postPrayerModelClassList.add(postPrayerModelClass);
                         }
                         ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);
                         ListView lv_prayer_list = (ListView) rootView.findViewById(R.id.lv_prayer_list);
@@ -94,6 +113,11 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                         if (postPrayerModelClassList.size() == 0)
                             Toast.makeText(getContext(), "NO PRAYER FOUND", Toast.LENGTH_SHORT).show();
 
+                        for (int i = 0; i < popup.getMenu().size(); i++) {
+                            popup.getMenu().getItem(i).setChecked(false);
+                        }
+                        popup.getMenu().clear();
+                        popup.getMenuInflater().inflate(R.menu.sort_by_menu, popup.getMenu());
                         return true;
                     }
                 }
@@ -176,21 +200,28 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
             Toast.makeText(getContext(), "NO PRAYER FOUND", Toast.LENGTH_SHORT).show();
             return;
         }
-        ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), _postPrayerModelClassList);
+
+        List<PostPrayerModelClass> postPrayerModelClassList = new ArrayList<PostPrayerModelClass>();
+        for (PostPrayerModelClass postPrayerModelClass :
+                _postPrayerModelClassList) {
+            if (postPrayerModelClass.getAnswered_status().equals("1"))
+                postPrayerModelClassList.add(postPrayerModelClass);
+
+        }
+
+        ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);
         ListView lv_prayer_list = (ListView) rootView.findViewById(R.id.lv_prayer_list);
         lv_prayer_list.setAdapter(listViewPrayerListAdapter);
+
+
     }
 
 
     private void showSortPopUp() {
-        //Creating the instance of PopupMenu
-        PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
-        //Inflating the Popup using xml file
-        popup.getMenuInflater().inflate(R.menu.sort_by_menu, popup.getMenu());
-
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
+                item.setChecked(true);
                 ((EditText) rootView.findViewById(R.id.search_Prayer)).setText("");
                 List<PostPrayerModelClass> postPrayerModelClassList = new ArrayList<PostPrayerModelClass>();
                 if (item.getTitle().equals("Answered")) {
@@ -206,25 +237,26 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
                         if (postPrayerModelClass.getAnswered_status().equals("0"))
                             postPrayerModelClassList.add(postPrayerModelClass);
                     }
-                } else if (item.getTitle().equals("Text")) {
-                    for (PostPrayerModelClass postPrayerModelClass :
-                            _postPrayerModelClassList) {
-                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("TEXT"))
-                            postPrayerModelClassList.add(postPrayerModelClass);
-                    }
-                } else if (item.getTitle().equals("Audio")) {
-                    for (PostPrayerModelClass postPrayerModelClass :
-                            _postPrayerModelClassList) {
-                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("AUDIO"))
-                            postPrayerModelClassList.add(postPrayerModelClass);
-                    }
-                } else if (item.getTitle().equals("Video")) {
-                    for (PostPrayerModelClass postPrayerModelClass :
-                            _postPrayerModelClassList) {
-                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("VIDEO"))
-                            postPrayerModelClassList.add(postPrayerModelClass);
-                    }
                 }
+// else if (item.getTitle().equals("Text")) {
+//                    for (PostPrayerModelClass postPrayerModelClass :
+//                            _postPrayerModelClassList) {
+//                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("TEXT"))
+//                            postPrayerModelClassList.add(postPrayerModelClass);
+//                    }
+//                } else if (item.getTitle().equals("Audio")) {
+//                    for (PostPrayerModelClass postPrayerModelClass :
+//                            _postPrayerModelClassList) {
+//                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("AUDIO"))
+//                            postPrayerModelClassList.add(postPrayerModelClass);
+//                    }
+//                } else if (item.getTitle().equals("Video")) {
+//                    for (PostPrayerModelClass postPrayerModelClass :
+//                            _postPrayerModelClassList) {
+//                        if (postPrayerModelClass.getPost_type().toUpperCase().equals("VIDEO"))
+//                            postPrayerModelClassList.add(postPrayerModelClass);
+//                    }
+//                }
 
                 ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);
                 ListView lv_prayer_list = (ListView) rootView.findViewById(R.id.lv_prayer_list);
@@ -247,6 +279,7 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
         switch (id) {
             case R.id.txt_overflow:
             case R.id.img_overflow:
+            case R.id.frame_overflow:
                 showSortPopUp();
                 break;
 
@@ -256,5 +289,11 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener {
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftKeyboard();
+        return false;
     }
 }

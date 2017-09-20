@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
@@ -73,6 +74,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        TextView nav_header_username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        nav_header_username.setText(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
 
         //----------------------------------hide change password option for fb users---------//
         if (_userSingletonModelClass.getTxt_user_access_token() == null) {

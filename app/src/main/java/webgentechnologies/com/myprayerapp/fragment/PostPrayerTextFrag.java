@@ -3,15 +3,14 @@ package webgentechnologies.com.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -39,7 +38,6 @@ import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
-import webgentechnologies.com.myprayerapp.activity.HomeActivity;
 import webgentechnologies.com.myprayerapp.model.PostPrayerModelClass;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
@@ -50,7 +48,7 @@ import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
  * Created by Kaiser on 25-07-2017.
  */
 
-public class PostPrayerTextFrag extends Fragment implements View.OnClickListener {
+public class PostPrayerTextFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     View rootView;
     TextView txt_overflow;
     ImageView img_overflow;
@@ -59,11 +57,14 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     EditText txtPrayer;
     ProgressDialog progressDialog;
-private String receiver_email;
+    PopupMenu popup;
+    private String receiver_email;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_post_prayer_text, container, false);
+        rootView.setOnTouchListener(this);//to detect touch on non-views
         setCustomDesign();
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txtPrayer);
@@ -87,17 +88,8 @@ private String receiver_email;
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
 
-        Log.d("TEXT DATA:", _userSingletonModelClass.toString());
-
-        return rootView;
-    }
-
-    private void setCustomDesign() {
-    }
-
-    private void showPriorityPopUp() {
         //Creating the instance of PopupMenu
-        PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
+        popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
         //Inflating the Popup using xml file
         popup.getMenuInflater().inflate(R.menu.post_priority_menu, popup.getMenu());
         popup.getMenu().getItem(1).setChecked(true);
@@ -105,12 +97,14 @@ private String receiver_email;
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 postPrayerModelClass.setPost_priority(item.getTitle().toString());
+                item.setChecked(true);
                 return true;
             }
         });
+        return rootView;
+    }
 
-
-        popup.show();//showing popup menu
+    private void setCustomDesign() {
     }
 
     private void toggleYesNo(int i) {
@@ -144,7 +138,7 @@ private String receiver_email;
                 break;
             case R.id.txt_overflow:
             case R.id.img_overflow:
-                showPriorityPopUp();
+                popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
                 if (txtPrayer.getText().length() <= 10) {
@@ -259,9 +253,16 @@ private String receiver_email;
     }
 
     //----------Volley code for posting text prayer ends------------
+
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftKeyboard();
+        return false;
     }
 }
 

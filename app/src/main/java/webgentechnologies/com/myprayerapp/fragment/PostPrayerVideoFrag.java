@@ -3,7 +3,6 @@ package webgentechnologies.com.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -19,10 +18,10 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.webkit.WebSettings;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -42,7 +41,6 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +61,7 @@ import webgentechnologies.com.myprayerapp.networking.UrlConstants;
  * Created by Kaiser on 25-07-2017.
  */
 
-public class PostPrayerVideoFrag extends Fragment implements View.OnClickListener {
+public class PostPrayerVideoFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     public static final int MEDIA_TYPE_VIDEO = 2;
     // Camera activity request codes
     private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
@@ -81,6 +79,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     FileUtils fileUtils = new FileUtils();
+    PopupMenu popup;
     private Uri fileUri; // file url to store image/video
 
     /**
@@ -125,6 +124,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_post_prayer_video, container, false);
+        rootView.setOnTouchListener(this);//to detect touch on non-views
+
         img_record_video = (ImageView) rootView.findViewById(R.id.img_record_video);
         img_record_video.setOnClickListener(this);
         setCustomDesign();
@@ -153,28 +154,23 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         btn_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
 
-        return rootView;
-    }
-
-    private void setCustomDesign() {
-    }
-
-    private void showPriorityPopUp() {
         //Creating the instance of PopupMenu
-        PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
+        popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
         //Inflating the Popup using xml file
         popup.getMenuInflater().inflate(R.menu.post_priority_menu, popup.getMenu());
-
+        popup.getMenu().getItem(1).setChecked(true);
         //registering popup with OnMenuItemClickListener
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 postPrayerModelClass.setPost_priority(item.getTitle().toString());
-
+                item.setChecked(true);
                 return true;
             }
         });
+        return rootView;
+    }
 
-        popup.show();//showing popup menu
+    private void setCustomDesign() {
     }
 
     private void toggleYesNo(int i) {
@@ -312,10 +308,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 toggleYesNo(i[0]++);
                 break;
             case R.id.txt_overflow:
-                showPriorityPopUp();
-                break;
             case R.id.img_overflow:
-                showPriorityPopUp();
+                popup.show();//showing popup menu
                 break;
             case R.id.img_record_video:
                 if (!isDeviceSupportCamera()) {
@@ -396,6 +390,12 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftKeyboard();
+        return false;
     }
 
     /**

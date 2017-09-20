@@ -3,7 +3,6 @@ package webgentechnologies.com.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -21,6 +20,7 @@ import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -67,7 +67,7 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO;
  * Created by Kaiser on 25-07-2017.
  */
 
-public class PostPrayerAudioFrag extends Fragment implements View.OnClickListener {
+public class PostPrayerAudioFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     public static final int RequestPermissionCode = 1;
     View rootView;
     ImageView audio_record;
@@ -83,6 +83,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     Button btn_post_prayer;
     long totalSize = 0;
     String receiver_email;
+    PopupMenu popup;
 
     TextView audio_timer;
     long timeInMilliseconds = 0L;
@@ -154,6 +155,8 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         rootView = inflater.inflate(R.layout.frag_post_prayer_audio, container, false);
+        rootView.setOnTouchListener(this);//to detect touch on non-views
+
         txt_Prayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
         audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
         audio_record = (ImageView) rootView.findViewById(R.id.audio_record);
@@ -182,6 +185,20 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
         postPrayerModelClass.setPost_priority("Medium");
+
+        //Creating the instance of PopupMenu
+        popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
+        //Inflating the Popup using xml file
+        popup.getMenuInflater().inflate(R.menu.post_priority_menu, popup.getMenu());
+        popup.getMenu().getItem(1).setChecked(true);
+        //registering popup with OnMenuItemClickListener
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            public boolean onMenuItemClick(MenuItem item) {
+                postPrayerModelClass.setPost_priority(item.getTitle().toString());
+                item.setChecked(true);
+                return true;
+            }
+        });
         return rootView;
     }
 
@@ -194,23 +211,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     private void setCustomDesign() {
-    }
-
-    private void showPriorityPopUp() {
-        //Creating the instance of PopupMenu
-        PopupMenu popup = new PopupMenu(rootView.getContext(), rootView.findViewById(R.id.img_overflow));
-        //Inflating the Popup using xml file
-        popup.getMenuInflater().inflate(R.menu.post_priority_menu, popup.getMenu());
-        popup.getMenu().getItem(1).setChecked(true);
-        //registering popup with OnMenuItemClickListener
-        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            public boolean onMenuItemClick(MenuItem item) {
-                postPrayerModelClass.setPost_priority(item.getTitle().toString());
-                return true;
-            }
-        });
-
-        popup.show();//showing popup menu
     }
 
     private void toggleYesNo(int i) {
@@ -335,7 +335,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 break;
             case R.id.txt_overflow:
             case R.id.img_overflow:
-                showPriorityPopUp();
+                popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
                 if (txt_Prayer.getText().length() < 10) {
@@ -401,12 +401,18 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        hideSoftKeyboard();
+        return false;
+    }
     /**
      * Creating file uri to store image/video
      */
     private Uri getOutputMediaFileUri(int type) {
         return Uri.fromFile(getOutputMediaFile(type));
     }
+
 
     /**
      * Uploading the file to server

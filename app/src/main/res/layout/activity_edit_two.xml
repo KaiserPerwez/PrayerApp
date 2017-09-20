@@ -203,7 +203,7 @@
                     android:background="@android:color/transparent"
                     android:ems="10"
                     android:gravity="center"
-                    android:hint="Class names separated by comma"
+                    android:hint="Enter a Class name"
                     android:inputType="text"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"

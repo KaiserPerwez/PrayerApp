@@ -24,6 +24,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:hint="Search Prayer"
+            android:lines="1"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
             android:scrollHorizontally="false"
@@ -59,12 +60,19 @@
             android:textColor="@android:color/white"
             android:textSize="18sp" />
 
-        <ImageView
-            android:id="@+id/img_overflow"
-            android:layout_width="5dp"
-            android:layout_height="20dp"
-            android:layout_marginLeft="10sp"
-            android:background="@drawable/overflow_icon" />
+        <FrameLayout
+            android:id="@+id/frame_overflow"
+            android:layout_width="50dp"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_overflow"
+                android:layout_width="5dp"
+                android:layout_height="20dp"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10sp"
+                android:background="@drawable/overflow_icon" />
+        </FrameLayout>
     </LinearLayout>
 
     <include layout="@layout/search_prayer_list_item" />

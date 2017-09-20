@@ -28,6 +28,7 @@ import java.util.Map;
 import webgentechnologies.com.myprayerapp.R;
 import webgentechnologies.com.myprayerapp.Utils.PrefUtils;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
+import webgentechnologies.com.myprayerapp.networking.ConnectionDetector;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
@@ -62,7 +63,24 @@ public class SplashActivity extends AppCompatActivity {
             final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
             alertDialog.show();
         } else {
-            loadDataFromPref();
+            if (ConnectionDetector.isConnectedToInternet(_ctx))
+                loadDataFromPref();
+            else {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_ctx);// set prompts.xml to alertdialog builder
+                alertDialogBuilder.setTitle("Alert");
+                alertDialogBuilder.setMessage("No internet Connectivity.App will exit.");
+                // set dialog message
+                alertDialogBuilder.setCancelable(false);
+                alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        SplashActivity.this.finish();
+                    }
+                });
+                final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
+                alertDialog.show();
+            }
         }
     }
 

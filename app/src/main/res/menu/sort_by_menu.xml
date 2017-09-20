@@ -10,17 +10,17 @@
             android:id="@+id/sort_unanswered"
             android:orderInCategory="2"
             android:title="UnAnswered" />
-        <item
-            android:id="@+id/sort_text"
-            android:orderInCategory="2"
-            android:title="Text" />
-        <item
-            android:id="@+id/sort_audio"
-            android:orderInCategory="2"
-            android:title="Audio" />
-        <item
-            android:id="@+id/sort_video"
-            android:orderInCategory="2"
-            android:title="Video" />
+        <!--<item-->
+        <!--android:id="@+id/sort_text"-->
+        <!--android:orderInCategory="2"-->
+        <!--android:title="Text" />-->
+        <!--<item-->
+        <!--android:id="@+id/sort_audio"-->
+        <!--android:orderInCategory="2"-->
+        <!--android:title="Audio" />-->
+        <!--<item-->
+        <!--android:id="@+id/sort_video"-->
+        <!--android:orderInCategory="2"-->
+        <!--android:title="Video" />-->
     </group>
 </menu>

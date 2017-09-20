@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.CustomUtils;
 import webgentechnologies.com.myprayerapp.Utils.ValidatorUtils;
 import webgentechnologies.com.myprayerapp.model.UserSingletonModelClass;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
@@ -126,14 +127,16 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
                         btn_back.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                hideSoftKeyboard();
+                                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                im.hideSoftInputFromWindow(alertDialog.getWindow().getDecorView().getWindowToken(), 0);
                                 alertDialog.dismiss();
                             }
                         });
                         btn_verify.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                hideSoftKeyboard();
+                                InputMethodManager im = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                                im.hideSoftInputFromWindow(alertDialog.getWindow().getDecorView().getWindowToken(), 0);
                                 txt_otp.clearFocus();
                                 btn_verify.requestFocus();
                                 txt_otp_from_email = txt_otp.getText().toString();
@@ -196,7 +199,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
                         startActivity(new Intent(_ctx, ForgotPasswordTwoActivity.class));
                         Toast.makeText(_ctx, "success", Toast.LENGTH_LONG).show();
                     } else {
-                        Toast.makeText(_ctx, "Incorrect otp...please verify again", Toast.LENGTH_LONG).show();
+                        CustomUtils.alert(_ctx, "ERROR", "Incorrect otp...please verify again");
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

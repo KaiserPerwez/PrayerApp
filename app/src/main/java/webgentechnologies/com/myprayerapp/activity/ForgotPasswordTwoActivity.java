@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import webgentechnologies.com.myprayerapp.R;
+import webgentechnologies.com.myprayerapp.Utils.CustomUtils;
 import webgentechnologies.com.myprayerapp.networking.UrlConstants;
 import webgentechnologies.com.myprayerapp.networking.VolleyUtils;
 
@@ -99,16 +100,14 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
                 if (pass1.length() == 0) {
                     txt_resetPwd.setError("Password can't be empty");
                     return;
-                }
-                if (pass2.toString().length() == 0) {
+                } else if (pass2.length() == 0) {
                     txt_resetPwd_retype.setError("Re-typed Password can't be empty");
                     return;
-                }
-                if (pass1.length() != pass2.length()) {
-                    Toast.makeText(_ctx, "Passwords were of different length", Toast.LENGTH_SHORT).show();
+                } else if ((pass1.length() != pass2.length()) || (!pass1.equals(pass2))) {
+                    CustomUtils.alert(_ctx, "ERROR", "Incorrect otp...please verify again");
+                    Toast.makeText(_ctx, "Passwords Mismatched.Please try again", Toast.LENGTH_SHORT).show();
                     return;
-                }
-                if (pass1.equals(pass2)) {
+                } else {
                     Toast.makeText(_ctx, "Passwords Matched.Resetting..", Toast.LENGTH_SHORT).show();
                     txt_password_change = txt_resetPwd_retype.getText().toString();
                     resetPassword();
