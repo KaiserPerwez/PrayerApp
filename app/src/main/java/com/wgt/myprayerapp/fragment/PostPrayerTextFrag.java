@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -58,6 +60,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     ProgressDialog progressDialog;
     PopupMenu popup;
     private String receiver_email;
+    SwitchCompat toggle_switch;
 
     @Nullable
     @Override
@@ -79,6 +82,24 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         toggle_switch_btn.setOnClickListener(this);
         toggle_switch_btn.setOnClickListener(this);
 
+        toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
+                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                if(toggle_switch.isChecked()){
+                    toggle_switch.setText("Public");
+                    tv_OR.setVisibility(View.VISIBLE);
+                    linearLayout_btnFb.setVisibility(View.VISIBLE);
+                }
+                else{
+                    toggle_switch.setText("Private");
+                    tv_OR.setVisibility(View.GONE);
+                    linearLayout_btnFb.setVisibility(View.GONE);
+                }
+            }
+        });
         txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
