@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/search_prayer_list_border_bg"
+    android:gravity="top|center"
+    android:orientation="vertical"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp">
+
+
+        <TextView
+            android:id="@+id/tv_play"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left|center_vertical"
+            android:paddingLeft="10dp"
+            android:layout_margin="20dp"
+            android:text="Play Audio"
+            android:textColor="@android:color/white"
+            android:drawableLeft="@drawable/icon_play"/>
+    <CheckBox
+        android:id="@+id/chk_answered"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="22dp"
+        android:text="Answered"
+        android:textColor="@android:color/white"
+        app:buttonTint="@android:color/white" />
+    <TextView
+        android:id="@+id/answered_date"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:gravity="left"
+        android:paddingLeft="65dp"
+        android:text="28/07/2017 8:14pm"
+        android:textColor="@android:color/white" />
+</LinearLayout>
