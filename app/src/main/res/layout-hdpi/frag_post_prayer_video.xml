@@ -34,64 +34,29 @@
                 android:background="@drawable/overflow_icon" />
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="70dp"
-            android:layout_height="50dp"
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/toggle_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:gravity="center"
-            android:paddingLeft="0dp">
-
-            <RelativeLayout
-                android:id="@+id/toggle_switch_rLayoutOuter"
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:layout_weight="6"
-                android:background="@drawable/togglebutton_white_bg"
-                android:minWidth="200dp"
-                android:paddingBottom="1dp"
-                android:paddingLeft="1dp"
-                android:paddingRight="1dp"
-                android:paddingTop="1dp">
-
-                <TextView
-                    android:id="@+id/toggle_switch_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="-3dp"
-                    android:gravity="center"
-                    android:text="Private Public"
-                    android:textSize="10sp" />
-
-                <RelativeLayout
-                    android:id="@+id/toggle_switch_rLayoutInner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:gravity="left|center"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp">
-
-                    <ImageButton
-                        android:id="@+id/toggle_switch_btn"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentStart="true"
-                        android:background="@drawable/toggleswitch" />
-                </RelativeLayout>
-            </RelativeLayout>
-        </LinearLayout>
+            android:checked="false"
+            android:padding="10dp"
+            android:text="Private"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:theme="@style/SCBSwitch" />
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="150dp">
+
             <ImageView
                 android:id="@+id/img_record_video_preview"
                 android:layout_width="120dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:background="@drawable/search_prayer_list_border_bg" />
+
             <ImageView
                 android:id="@+id/img_record_video"
                 android:layout_width="60dp"
@@ -143,14 +108,16 @@
             android:text="OR"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/linearLayout_btnFb"
             android:layout_width="match_parent"
             android:layout_height="40dp"
             android:background="@drawable/facebook_login"
-            android:gravity="center">
+            android:gravity="center"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="20dp"

@@ -31,6 +31,7 @@ import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.Profile;
@@ -104,18 +105,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onCancel() {
+            Toast.makeText(_ctx, "User cancelled login", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onError(FacebookException error) {
+            Toast.makeText(_ctx, "FB Login Error:"+error.toString(), Toast.LENGTH_SHORT).show();
         }
     };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         setContentView(R.layout.activity_login);
         _ctx = LoginActivity.this;
+
         _txt_email = (EditText) findViewById(R.id.txt_email);
         _txt_password = (EditText) findViewById(R.id.txt_password);
         _btn_login = (Button) findViewById(R.id.btn_login);

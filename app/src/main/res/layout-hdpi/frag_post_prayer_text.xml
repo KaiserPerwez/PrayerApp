@@ -50,54 +50,6 @@
             android:textSize="15sp"
             android:checked="false"
             android:theme="@style/SCBSwitch"/>
-        <LinearLayout
-            android:layout_width="70dp"
-            android:layout_height="50dp"
-            android:layout_gravity="right"
-            android:gravity="center"
-            android:paddingLeft="0dp">
-
-            <RelativeLayout
-                android:id="@+id/toggle_switch_rLayoutOuter"
-                android:layout_width="100dp"
-                android:layout_height="35dp"
-                android:layout_weight="6"
-                android:background="@drawable/togglebutton_white_bg"
-                android:minWidth="200dp"
-                android:paddingBottom="1dp"
-                android:paddingLeft="1dp"
-                android:paddingRight="1dp"
-                android:paddingTop="1dp">
-
-                <TextView
-                    android:id="@+id/toggle_switch_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_marginLeft="-3dp"
-                    android:gravity="center"
-                    android:text="Private  Public"
-                    android:textSize="9sp" />
-
-                <RelativeLayout
-                    android:id="@+id/toggle_switch_rLayoutInner"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:gravity="left|center"
-                    android:paddingLeft="2dp"
-                    android:paddingRight="2dp">
-
-                    <ImageButton
-                        android:id="@+id/toggle_switch_btn"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentStart="true"
-                        android:background="@drawable/toggleswitch" />
-                </RelativeLayout>
-            </RelativeLayout>
-        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/linearLayout_txtPrayer"
@@ -134,6 +86,7 @@
             android:textSize="20sp" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/tv_OR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -145,6 +98,7 @@
             android:textStyle="bold" />
 
         <LinearLayout
+            android:visibility="gone"
             android:id="@+id/linearLayout_btnFb"
             android:layout_width="match_parent"
             android:layout_height="40dp"

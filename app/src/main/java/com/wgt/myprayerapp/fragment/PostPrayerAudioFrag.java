@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -72,13 +74,11 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     View rootView;
     ImageView audio_record;
     MediaRecorder mediaRecorder;
-    MediaPlayer mediaPlayer;
     UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
     FileUtils fileUtils = new FileUtils();
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     TextView txt_overflow;
     ImageView img_overflow;
-    int[] i = {0};
     EditText txt_Prayer;
     Button btn_post_prayer;
     long totalSize = 0;
@@ -166,17 +166,24 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         progressDialog.setMessage("Uploading...");
         progressDialog.setCancelable(false);
 
-        setCustomDesign();
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) rootView.findViewById(R.id.toggle_switch_btn);
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(this);
-        toggle_switch_rLayoutInner.setOnClickListener(this);
-        toggle_switch_text.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
+        final SwitchCompat toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
+                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                if(toggle_switch.isChecked()){
+                    toggle_switch.setText("Public");
+                    tv_OR.setVisibility(View.VISIBLE);
+                    linearLayout_btnFb.setVisibility(View.VISIBLE);
+                }
+                else{
+                    toggle_switch.setText("Private");
+                    tv_OR.setVisibility(View.GONE);
+                    linearLayout_btnFb.setVisibility(View.GONE);
+                }
+            }
+        });
 
         txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
@@ -209,29 +216,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         timeSwapBuff = 0L;
         updatedTime = 0L;
     }
-
-    private void setCustomDesign() {
-    }
-
-    private void toggleYesNo(int i) {
-        final RelativeLayout toggle_switch_rLayout = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-        LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
-        if (i % 2 == 0) {
-            toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
-            tv_OR.setVisibility(View.GONE);
-            linearLayout_btnFb.setVisibility(View.GONE);
-            postPrayerModelClass.setAccessibility("PRIVATE");
-
-        } else {
-            toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
-            tv_OR.setVisibility(View.VISIBLE);
-            linearLayout_btnFb.setVisibility(View.VISIBLE);
-            postPrayerModelClass.setAccessibility("PUBLIC");
-
-        }
-    }
-
     //------------------Code for audio recording----------------
     public void MediaRecorderReady() {
         mediaRecorder = new MediaRecorder();
@@ -326,12 +310,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 }
 
 
-                break;
-            case R.id.toggle_switch_rLayoutOuter:
-            case R.id.toggle_switch_rLayoutInner:
-            case R.id.toggle_switch_text:
-            case R.id.toggle_switch_btn:
-                toggleYesNo(i[0]++);
                 break;
             case R.id.txt_overflow:
             case R.id.img_overflow:

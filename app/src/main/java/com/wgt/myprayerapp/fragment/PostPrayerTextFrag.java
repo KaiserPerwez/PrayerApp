@@ -67,20 +67,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.frag_post_prayer_text, container, false);
         rootView.setOnTouchListener(this);//to detect touch on non-views
-        setCustomDesign();
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txtPrayer);
-
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) rootView.findViewById(R.id.toggle_switch_btn);
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(this);
-        toggle_switch_rLayoutInner.setOnClickListener(this);
-        toggle_switch_text.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
 
         toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
         toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -124,38 +112,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         return rootView;
     }
 
-    private void setCustomDesign() {
-    }
-
-    private void toggleYesNo(int i) {
-        final RelativeLayout toggle_switch_rLayout = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-        LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
-        if (i % 2 == 0) {
-            toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
-            tv_OR.setVisibility(View.GONE);
-            linearLayout_btnFb.setVisibility(View.GONE);
-            postPrayerModelClass.setAccessibility("PRIVATE");
-        } else {
-            toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
-            tv_OR.setVisibility(View.VISIBLE);
-            linearLayout_btnFb.setVisibility(View.VISIBLE);
-            postPrayerModelClass.setAccessibility("PUBLIC");
-
-        }
-    }
-
     @Override
     public void onClick(View v) {
         hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
-            case R.id.toggle_switch_rLayoutOuter:
-            case R.id.toggle_switch_rLayoutInner:
-            case R.id.toggle_switch_text:
-            case R.id.toggle_switch_btn:
-                toggleYesNo(i[0]++);
-                break;
             case R.id.txt_overflow:
             case R.id.img_overflow:
                 popup.show();//showing popup menu

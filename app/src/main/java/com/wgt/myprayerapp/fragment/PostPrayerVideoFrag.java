@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -128,23 +130,30 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
         img_record_video = (ImageView) rootView.findViewById(R.id.img_record_video);
         img_record_video.setOnClickListener(this);
-        setCustomDesign();
         progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
         progressDialog.setCancelable(false);
 
-        txtPrayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
+       final SwitchCompat toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
+                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                if(toggle_switch.isChecked()){
+                    toggle_switch.setText("Public");
+                    tv_OR.setVisibility(View.VISIBLE);
+                    linearLayout_btnFb.setVisibility(View.VISIBLE);
+                }
+                else{
+                    toggle_switch.setText("Private");
+                    tv_OR.setVisibility(View.GONE);
+                    linearLayout_btnFb.setVisibility(View.GONE);
+                }
+            }
+        });
 
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) rootView.findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) rootView.findViewById(R.id.toggle_switch_btn);
-        toggleYesNo(i[0]++);
-        toggle_switch_rLayoutOuter.setOnClickListener(this);
-        toggle_switch_rLayoutInner.setOnClickListener(this);
-        toggle_switch_text.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
-        toggle_switch_btn.setOnClickListener(this);
+        txtPrayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
 
         txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
@@ -170,27 +179,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         return rootView;
     }
 
-    private void setCustomDesign() {
-    }
-
-    private void toggleYesNo(int i) {
-        final RelativeLayout toggle_switch_rLayout = (RelativeLayout) rootView.findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-        LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
-        if (i % 2 == 0) {
-            toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
-            tv_OR.setVisibility(View.GONE);
-            linearLayout_btnFb.setVisibility(View.GONE);
-            postPrayerModelClass.setAccessibility("PRIVATE");
-
-        } else {
-            toggle_switch_rLayout.setGravity(Gravity.LEFT | Gravity.CENTER);
-            tv_OR.setVisibility(View.VISIBLE);
-            linearLayout_btnFb.setVisibility(View.VISIBLE);
-            postPrayerModelClass.setAccessibility("PUBLIC");
-
-        }
-    }
     //----Checking device camera code ends--------
 
     /**
@@ -301,12 +289,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         hideSoftKeyboard();
         int item = view.getId();
         switch (item) {
-            case R.id.toggle_switch_rLayoutOuter:
-            case R.id.toggle_switch_rLayoutInner:
-            case R.id.toggle_switch_text:
-            case R.id.toggle_switch_btn:
-                toggleYesNo(i[0]++);
-                break;
             case R.id.txt_overflow:
             case R.id.img_overflow:
                 popup.show();//showing popup menu
