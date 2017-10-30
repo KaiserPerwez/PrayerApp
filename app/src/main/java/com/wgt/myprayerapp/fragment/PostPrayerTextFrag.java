@@ -3,10 +3,12 @@ package com.wgt.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
+import android.text.Html;
 import android.text.InputType;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +32,16 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
+import com.facebook.FacebookCallback;
+import com.facebook.share.ShareApi;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareMedia;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.ValidatorUtils;
 import com.wgt.myprayerapp.model.PostPrayerModelClass;
@@ -61,6 +73,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     PopupMenu popup;
     private String receiver_email;
     SwitchCompat toggle_switch;
+    LinearLayout linearLayout_btnFb;
+    Button btn_prayer;
 
     @Nullable
     @Override
@@ -69,31 +83,38 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
         txtPrayer = (EditText) rootView.findViewById(R.id.txtPrayer);
-
-        toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
-        toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
-                if(toggle_switch.isChecked()){
-                    toggle_switch.setText("Public");
-                    tv_OR.setVisibility(View.VISIBLE);
-                    linearLayout_btnFb.setVisibility(View.VISIBLE);
-                }
-                else{
-                    toggle_switch.setText("Private");
-                    tv_OR.setVisibility(View.GONE);
-                    linearLayout_btnFb.setVisibility(View.GONE);
-                }
-            }
-        });
         txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        Button btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+
+        btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_prayer.setOnClickListener(this);
+        linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        linearLayout_btnFb.setOnClickListener(this);
+
+        toggle_switch = (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
+                linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                if (toggle_switch.isChecked()) {
+                    toggle_switch.setText("Public");
+                    //tv_OR.setVisibility(View.VISIBLE);
+                    postPrayerModelClass.setAccessibility("Public");
+                    linearLayout_btnFb.setVisibility(View.VISIBLE);
+                    btn_prayer.setVisibility(View.GONE);
+                } else {
+                    toggle_switch.setText("Private");
+                    //tv_OR.setVisibility(View.GONE);
+                    postPrayerModelClass.setAccessibility("Private");
+                    linearLayout_btnFb.setVisibility(View.GONE);
+                    btn_prayer.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -122,6 +143,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
+            case R.id.linearLayout_btnFb:
                 if (txtPrayer.getText().length() <= 10) {
                     txtPrayer.setError("Minimum 10 characters required for your prayer description.");
                     return;
@@ -169,7 +191,6 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     });
                 }
                 break;
-
         }
     }
 
@@ -191,8 +212,13 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     String status = job.getString("status");
 
                     if (status.equals("true")) {
-                        Toast.makeText(getActivity(), "Data posted successfully", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Data posted successfully to database.Opening Facebook...", Toast.LENGTH_LONG).show();
                         txtPrayer.setText("");
+                        if (postPrayerModelClass.getAccessibility().equals("Public"))
+                        {
+                            Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                            postTextPrayerToFb();
+                        }
                     } else
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
@@ -225,12 +251,33 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
                 String formattedDate1 = df1.format(c.getTime());
                 params.put("created_date", formattedDate1);
-
-
                 return params;
             }
         };
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+    private void postTextPrayerToFb() {
+
+        Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
+        // Create an object
+        ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
+                .putString("og:type", "books.book")
+                .putString("og:title", "Text Prayer")
+                .putString("og:description", "Posted via PrayerApp-Android")
+                .putString("books:isbn", "0-553-57340-3")
+                .build();
+        // Create an action
+        ShareOpenGraphAction action = new ShareOpenGraphAction.Builder()
+                .setActionType("books.reads")
+                .putObject("book", object)
+                .build();
+        // Create the content
+        ShareOpenGraphContent content = new ShareOpenGraphContent.Builder()
+                .setPreviewPropertyName("book")
+                .setAction(action)
+                .build();
+        ShareDialog.show(getActivity(), content);
     }
 
     //----------Volley code for posting text prayer ends------------

@@ -34,6 +34,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.share.model.ShareContent;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.model.ShareMediaContent;
+import com.facebook.share.model.ShareOpenGraphAction;
+import com.facebook.share.model.ShareOpenGraphContent;
+import com.facebook.share.model.ShareOpenGraphObject;
+import com.facebook.share.model.ShareVideo;
+import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.FileUtils;
 import com.wgt.myprayerapp.Utils.ValidatorUtils;
@@ -51,6 +59,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -142,11 +152,13 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
+                    postPrayerModelClass.setAccessibility("Public");
                     tv_OR.setVisibility(View.VISIBLE);
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
                 }
                 else{
                     toggle_switch.setText("Private");
+                    postPrayerModelClass.setAccessibility("Public");
                     tv_OR.setVisibility(View.GONE);
                     linearLayout_btnFb.setVisibility(View.GONE);
                 }
@@ -161,6 +173,9 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         img_overflow.setOnClickListener(this);
         btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_prayer.setOnClickListener(this);
+        LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        linearLayout_btnFb.setOnClickListener(this);
+
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -302,6 +317,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 recordVideo();
                 break;
             case R.id.btn_post_prayer:
+            case R.id.linearLayout_btnFb:
                 File sourceFile = null;
                 try {
                     sourceFile = new File(fileUtils.getVideo_filepath());
@@ -364,6 +380,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     });
                 }
                 break;
+
         }
     }
 
@@ -475,10 +492,31 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             else
                 Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
 
+            if (postPrayerModelClass.getAccessibility().equals("Public"))
+            {
+                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                JSONObject job = null;
+                try {
+                    job = new JSONObject(result);
+                    String response_url = job.getString("data");
+                    postVideoPrayerToFb(response_url);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
             txtPrayer.setText("");
             super.onPostExecute(result);
+
         }
 
+    }
+
+    private void postVideoPrayerToFb(String responseLink) {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse(responseLink))
+                .setQuote("Video: "+txtPrayer.getText().toString())
+                .build();
+        ShareDialog.show(getActivity(), content);
     }
 }
 
