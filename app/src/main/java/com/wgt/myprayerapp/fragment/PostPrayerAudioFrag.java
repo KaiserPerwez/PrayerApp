@@ -36,6 +36,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.FileUtils;
 import com.wgt.myprayerapp.Utils.ValidatorUtils;
@@ -53,6 +55,8 @@ import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -174,11 +178,13 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
+                    postPrayerModelClass.setAccessibility("Public");
                     tv_OR.setVisibility(View.VISIBLE);
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
                 }
                 else{
                     toggle_switch.setText("Private");
+                    postPrayerModelClass.setAccessibility("Private");
                     tv_OR.setVisibility(View.GONE);
                     linearLayout_btnFb.setVisibility(View.GONE);
                 }
@@ -191,6 +197,9 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         img_overflow.setOnClickListener(this);
         btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
+        LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        linearLayout_btnFb.setOnClickListener(this);
+
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -316,6 +325,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
+            case R.id.linearLayout_btnFb:
                 if (txt_Prayer.getText().length() < 10) {
                     txt_Prayer.setError("Minimum 10 characters required for your prayer description.");
                     return;
@@ -365,7 +375,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                     });
                 }
                 break;
-
         }
     }
 
@@ -439,7 +448,8 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 entity.addPart("audiofile", new FileBody(sourceFile));
 
                 entity.addPart("post_description", new StringBody(txt_Prayer.getText().toString()));
-                entity.addPart("accessibility", new StringBody(postPrayerModelClass.getAccessibility()));
+                String x=postPrayerModelClass.getAccessibility();
+                entity.addPart("accessibility", new StringBody(x));
                 entity.addPart("post_type", new StringBody("Audio"));
                 entity.addPart("post_priority", new StringBody(postPrayerModelClass.getPost_priority()));
                 entity.addPart("user_access_token", new StringBody(userclass.getTxt_user_access_token()));
@@ -482,12 +492,32 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
             else
                 Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
-
+            if (postPrayerModelClass.getAccessibility().equals("Public"))
+            {
+                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                JSONObject job = null;
+                try {
+                    job = new JSONObject(result);
+                    String response_url = job.getString("data");
+                    postAudioPrayerToFb(response_url);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
             audio_timer.setText("");
             txt_Prayer.setText("");
             super.onPostExecute(result);
+
         }
 
+    }
+
+    private void postAudioPrayerToFb(String responseLink) {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse(responseLink))
+                .setQuote("Audio: "+txt_Prayer.getText().toString())
+                .build();
+        ShareDialog.show(getActivity(), content);
     }
 
 }

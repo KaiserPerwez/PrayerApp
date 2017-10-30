@@ -86,7 +86,7 @@
             android:textSize="20sp" />
 
         <TextView
-            android:visibility="gone"
+            android:visibility="invisible"
             android:id="@+id/tv_OR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
