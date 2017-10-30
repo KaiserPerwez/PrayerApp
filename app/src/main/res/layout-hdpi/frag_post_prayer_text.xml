@@ -43,12 +43,12 @@
             android:id="@+id/toggle_switch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:checked="false"
+            android:padding="10dp"
             android:text="Private"
             android:textColor="@android:color/white"
-            android:layout_gravity="right"
-            android:padding="10dp"
             android:textSize="15sp"
-            android:checked="false"
             android:theme="@style/SCBSwitch"/>
 
         <LinearLayout
@@ -83,10 +83,9 @@
             android:background="@drawable/login_button"
             android:text="Post Prayer"
             android:textColor="@android:color/white"
-            android:textSize="20sp" />
+            android:textSize="15sp" />
 
         <TextView
-            android:visibility="invisible"
             android:id="@+id/tv_OR"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -95,15 +94,17 @@
             android:text="OR"
             android:textColor="@android:color/white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
         <LinearLayout
-            android:visibility="gone"
             android:id="@+id/linearLayout_btnFb"
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/facebook_login"
-            android:gravity="center">
+            android:gravity="center"
+            android:visibility="gone">
 
             <ImageView
                 android:layout_width="20dp"

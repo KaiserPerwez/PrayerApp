@@ -3,14 +3,11 @@ package com.wgt.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
-import android.text.Html;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -20,11 +17,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,12 +27,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
-import com.facebook.FacebookCallback;
-import com.facebook.share.ShareApi;
-import com.facebook.share.Sharer;
-import com.facebook.share.model.ShareContent;
-import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.model.ShareMedia;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.model.ShareOpenGraphObject;
@@ -71,10 +60,10 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     EditText txtPrayer;
     ProgressDialog progressDialog;
     PopupMenu popup;
-    private String receiver_email;
     SwitchCompat toggle_switch;
     LinearLayout linearLayout_btnFb;
-    Button btn_prayer;
+    Button btn_post_prayer;
+    private String receiver_email;
 
     @Nullable
     @Override
@@ -88,8 +77,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
 
-        btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
-        btn_prayer.setOnClickListener(this);
+        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer.setOnClickListener(this);
         linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
@@ -104,13 +93,13 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     //tv_OR.setVisibility(View.VISIBLE);
                     postPrayerModelClass.setAccessibility("Public");
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
-                    btn_prayer.setVisibility(View.GONE);
+                    btn_post_prayer.setVisibility(View.GONE);
                 } else {
                     toggle_switch.setText("Private");
                     //tv_OR.setVisibility(View.GONE);
                     postPrayerModelClass.setAccessibility("Private");
                     linearLayout_btnFb.setVisibility(View.GONE);
-                    btn_prayer.setVisibility(View.VISIBLE);
+                    btn_post_prayer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -145,7 +134,9 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             case R.id.btn_post_prayer:
             case R.id.linearLayout_btnFb:
                 if (txtPrayer.getText().length() <= 10) {
+                    txtPrayer.requestFocus();
                     txtPrayer.setError("Minimum 10 characters required for your prayer description.");
+                    Toast.makeText(getContext(), "Minimum 10 characters required", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     LayoutInflater li = LayoutInflater.from(getContext());
@@ -160,6 +151,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
 
                     final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
                     txt_title.setText("Enter email id of Church Admin");
+                    txt_title.setTextSize(15);
                     final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
                     txt.setHint("Enter Email");
                     txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -212,7 +204,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     String status = job.getString("status");
 
                     if (status.equals("true")) {
-                        Toast.makeText(getActivity(), "Data posted successfully to database.Opening Facebook...", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity(), "Data posted successfully to database", Toast.LENGTH_LONG).show();
                         txtPrayer.setText("");
                         if (postPrayerModelClass.getAccessibility().equals("Public"))
                         {
@@ -258,8 +250,6 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     }
 
     private void postTextPrayerToFb() {
-
-        Toast.makeText(getContext(), "Clicked", Toast.LENGTH_SHORT).show();
         // Create an object
         ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
                 .putString("og:type", "books.book")

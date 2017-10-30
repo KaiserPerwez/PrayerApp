@@ -158,35 +158,38 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
                 countryModel.getStateModelList()) {
             arrayList_state_name.add(temp_sModel.getState_name());
         }
+        try {
+            spinner_country.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
+            spinner_state.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
+            spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    txt_country_id1 = countryModel.getCountry_id();
+                    txt_country_name = countryModel.getCountry_name();
+                    txt_country_shortname = countryModel.getCountry_short_name();
+                }
 
-        spinner_country.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
-        spinner_state.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
-        spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_country_id1 = countryModel.getCountry_id();
-                txt_country_name = countryModel.getCountry_name();
-                txt_country_shortname = countryModel.getCountry_short_name();
-            }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+            spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    txt_state_id = countryModel.getStateModelList().get(position).getState_id();
+                    txt_state_name = countryModel.getStateModelList().get(position).getState_name();
+                    txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+                }
 
-            }
-        });
-        spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                txt_state_id = countryModel.getStateModelList().get(position).getState_id();
-                txt_state_name = countryModel.getStateModelList().get(position).getState_name();
-                txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
-            }
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Couldn't load countries", Toast.LENGTH_SHORT).show();
+        }
     }
 //----------------Volley code for spinner ends---------------------------
 

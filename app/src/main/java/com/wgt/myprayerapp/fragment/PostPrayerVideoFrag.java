@@ -16,7 +16,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -26,21 +25,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.share.model.ShareContent;
 import com.facebook.share.model.ShareLinkContent;
-import com.facebook.share.model.ShareMediaContent;
-import com.facebook.share.model.ShareOpenGraphAction;
-import com.facebook.share.model.ShareOpenGraphContent;
-import com.facebook.share.model.ShareOpenGraphObject;
-import com.facebook.share.model.ShareVideo;
 import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.FileUtils;
@@ -85,7 +76,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     int[] i = {0};
     EditText txtPrayer;
     long totalSize = 0;
-    Button btn_prayer;
+    Button btn_post_prayer;
     String receiver_email;
     ProgressDialog progressDialog;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
@@ -153,14 +144,16 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
                     postPrayerModelClass.setAccessibility("Public");
-                    tv_OR.setVisibility(View.VISIBLE);
+                    // tv_OR.setVisibility(View.VISIBLE);
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
+                    btn_post_prayer.setVisibility(View.GONE);
                 }
                 else{
                     toggle_switch.setText("Private");
                     postPrayerModelClass.setAccessibility("Public");
-                    tv_OR.setVisibility(View.GONE);
+                    //tv_OR.setVisibility(View.GONE);
                     linearLayout_btnFb.setVisibility(View.GONE);
+                    btn_post_prayer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -171,8 +164,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        btn_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
-        btn_prayer.setOnClickListener(this);
+        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer.setOnClickListener(this);
         LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
@@ -200,14 +193,10 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
      * Checking device has camera hardware or not
      */
     private boolean isDeviceSupportCamera() {
-        if (getActivity().getPackageManager().hasSystemFeature(
-                PackageManager.FEATURE_CAMERA)) {
-            // this device has a camera
-            return true;
-        } else {
-            // no camera on this device
-            return false;
-        }
+        // this device has a camera
+// no camera on this device
+        return getActivity().getPackageManager().hasSystemFeature(
+                PackageManager.FEATURE_CAMERA);
     }
     //-------Launching camera app to record video ends---------
 
@@ -323,7 +312,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     sourceFile = new File(fileUtils.getVideo_filepath());
                 } catch (Exception e) {
                     //Toast.makeText(getContext(), ""+e.toString(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(getContext(), "Err:Please record a video before Uploading", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Please record a video before Uploading", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (filepath == null || sourceFile.length() == 0) {
@@ -332,6 +321,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 } else if (txtPrayer.getText().length() <= 10) {
                     txtPrayer.requestFocus();
                     txtPrayer.setError("Minimum 10 characters required for your prayer description.");
+                    Toast.makeText(getContext(), "Minimum 10 characters required", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
                     txtPrayer.setError(null);
@@ -393,6 +383,14 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     public boolean onTouch(View v, MotionEvent event) {
         hideSoftKeyboard();
         return false;
+    }
+
+    private void postVideoPrayerToFb(String responseLink) {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse(responseLink))
+                .setQuote("Video: " + txtPrayer.getText().toString())
+                .build();
+        ShareDialog.show(getActivity(), content);
     }
 
     /**
@@ -509,14 +507,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
         }
 
-    }
-
-    private void postVideoPrayerToFb(String responseLink) {
-        ShareLinkContent content = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse(responseLink))
-                .setQuote("Video: "+txtPrayer.getText().toString())
-                .build();
-        ShareDialog.show(getActivity(), content);
     }
 }
 

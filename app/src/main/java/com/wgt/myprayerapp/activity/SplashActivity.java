@@ -17,6 +17,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
+import com.facebook.login.LoginManager;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.PrefUtils;
 import com.wgt.myprayerapp.model.UserSingletonModelClass;
@@ -62,9 +63,10 @@ public class SplashActivity extends AppCompatActivity {
             final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
             alertDialog.show();
         } else {
-            if (ConnectionDetector.isConnectedToInternet(_ctx))
+            if (ConnectionDetector.isConnectedToInternet(_ctx)) {
+                logOutFb();
                 loadDataFromPref();
-            else {
+            } else {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_ctx);// set prompts.xml to alertdialog builder
                 alertDialogBuilder.setTitle("Alert");
                 alertDialogBuilder.setMessage("No internet Connectivity.App will exit.");
@@ -90,12 +92,7 @@ public class SplashActivity extends AppCompatActivity {
         float yInches = metrics.heightPixels / metrics.ydpi;
         float xInches = metrics.widthPixels / metrics.xdpi;
         double diagonalInches = Math.sqrt(xInches * xInches + yInches * yInches);
-        if (diagonalInches >= 6.5) {
-            // 6.5inch device or bigger
-            return false;
-        } else {
-            return true;
-        }
+        return diagonalInches < 6.5;
     }
 
     private void loadDataFromPref() {
@@ -192,4 +189,12 @@ public class SplashActivity extends AppCompatActivity {
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);
     }
 
+    private void logOutFb() {
+        try {
+            LoginManager.getInstance().logOut();
+        } catch (Exception e) {
+            Toast.makeText(_ctx, "ErrAt Splash:" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
 }

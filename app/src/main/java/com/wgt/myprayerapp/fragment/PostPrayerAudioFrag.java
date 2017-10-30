@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -18,7 +17,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,11 +26,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -89,7 +85,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     String receiver_email;
     PopupMenu popup;
 
-    TextView audio_timer;
+    TextView tv_audio_timer;
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
@@ -109,8 +105,8 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             int secs = (int) (updatedTime / 1000);
             int mins = secs / 60;
             secs = secs % 60;
-            if (audio_timer != null)
-                audio_timer.setText("" + String.format("%02d", mins) + "m:"
+            if (tv_audio_timer != null)
+                tv_audio_timer.setText("" + String.format("%02d", mins) + "m:"
                         + String.format("%02d", secs) + "s");
             customHandler.postDelayed(this, 0);
         }
@@ -162,7 +158,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
         txt_Prayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
-        audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
+        tv_audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
         audio_record = (ImageView) rootView.findViewById(R.id.audio_record);
         audio_record.setOnClickListener(this);
 
@@ -179,14 +175,16 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
                     postPrayerModelClass.setAccessibility("Public");
-                    tv_OR.setVisibility(View.VISIBLE);
+                    //tv_OR.setVisibility(View.VISIBLE);
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
+                    btn_post_prayer.setVisibility(View.GONE);
                 }
                 else{
                     toggle_switch.setText("Private");
                     postPrayerModelClass.setAccessibility("Private");
-                    tv_OR.setVisibility(View.GONE);
+                    //tv_OR.setVisibility(View.GONE);
                     linearLayout_btnFb.setVisibility(View.GONE);
+                    btn_post_prayer.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -326,8 +324,19 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 break;
             case R.id.btn_post_prayer:
             case R.id.linearLayout_btnFb:
+                txt_Prayer.setError(null);
                 if (txt_Prayer.getText().length() < 10) {
+                    txt_Prayer.requestFocus();
                     txt_Prayer.setError("Minimum 10 characters required for your prayer description.");
+                    return;
+                } else if (tv_audio_timer.getText().toString().length() == 0 || tv_audio_timer.getText().toString().equals("00m:00s")) {
+                    Toast.makeText(getContext(), "Please record an audio", Toast.LENGTH_SHORT).show();
+                    tv_audio_timer.requestFocus();
+                    try {
+                        File sourceFile = new File(fileUtils.getAudio_filepath());
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                     return;
                 } else {
                     LayoutInflater li = LayoutInflater.from(getContext());
@@ -401,6 +410,13 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         return Uri.fromFile(getOutputMediaFile(type));
     }
 
+    private void postAudioPrayerToFb(String responseLink) {
+        ShareLinkContent content = new ShareLinkContent.Builder()
+                .setContentUrl(Uri.parse(responseLink))
+                .setQuote("Audio: " + txt_Prayer.getText().toString())
+                .build();
+        ShareDialog.show(getActivity(), content);
+    }
 
     /**
      * Uploading the file to server
@@ -504,20 +520,12 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                     e.printStackTrace();
                 }
             }
-            audio_timer.setText("");
+            tv_audio_timer.setText("");
             txt_Prayer.setText("");
             super.onPostExecute(result);
 
         }
 
-    }
-
-    private void postAudioPrayerToFb(String responseLink) {
-        ShareLinkContent content = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse(responseLink))
-                .setQuote("Audio: "+txt_Prayer.getText().toString())
-                .build();
-        ShareDialog.show(getActivity(), content);
     }
 
 }
