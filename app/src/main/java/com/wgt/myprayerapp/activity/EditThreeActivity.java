@@ -16,7 +16,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,10 +24,13 @@ import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 import com.wgt.myprayerapp.R;
+import com.wgt.myprayerapp.model.CountryModel;
 import com.wgt.myprayerapp.model.UserSingletonModelClass;
 import com.wgt.myprayerapp.networking.UrlConstants;
 import com.wgt.myprayerapp.networking.VolleyUtils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -80,18 +82,8 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
         progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Updating data...");
 
-        String mission_trip_country = _userSingletonModelClass.getTxt_mission_trip_countries();
         spinner_country = (Spinner) findViewById(R.id.spinner_country);
         addItemsOnCountrySpinner();
-
-        SpinnerAdapter spinnerAdapter = spinner_country.getAdapter();
-        for (int ii = 0; ii < spinnerAdapter.getCount(); ii++) {
-            if (spinnerAdapter.getItem(ii).equals(mission_trip_country)) {
-                spinner_country.setSelection(ii);
-                break;
-            } else
-                spinner_country.setSelection(0);
-        }
 
         if (_userSingletonModelClass.getTxt_mission_trip_participation_status().toUpperCase().equals("YES")) {
         } else {
@@ -132,7 +124,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
         ((TextView) findViewById(R.id.tv_NO)).setTypeface(regular_font);
         ((TextView) findViewById(R.id.chk_new_to_mission)).setTypeface(regular_font);
         ((TextView) findViewById(R.id.btn_editProfile)).setTypeface(regular_font);
-        ((TextView) findViewById(R.id.btn_editProfile)).setVisibility(View.VISIBLE);
+        findViewById(R.id.btn_editProfile).setVisibility(View.VISIBLE);
         //  final CheckBox chk = (CheckBox) findViewById(R.id.chk);
         //chk.setTextSize((int) (chk.getTextSize()/0.85));
         //((TextView)findViewById(R.id.tv_regn_two)).setTypeface(regular_font);
@@ -141,16 +133,69 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void addItemsOnCountrySpinner() {
-        final List<String> arraylist_country_name = new ArrayList<String>();
-        arraylist_country_name.add("United States");
+        final ProgressDialog progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Fetching Country list...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        StringRequest stringRequest = new StringRequest(UrlConstants._URL_MISSION_COUNTRY_LIST, new Response.Listener<String>() {
 
-        spinner_country.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
-        spinner_country.setSelection(0);
-        country_mission = arraylist_country_name.get(0);
+            @Override
+            public void onResponse(String response) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    String status = jsonObject.getString("status");
+                    if (status.equals(true) || status.equals("true"))
+                        json_to_spinnerCountry(response);
+                    else
+                        Toast.makeText(_ctx, "No country loaded", Toast.LENGTH_SHORT).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
+                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+        VolleyUtils.getInstance(_ctx).addToRequestQueue(stringRequest);
+    }
+
+    public void json_to_spinnerCountry(String response_str) {
+        List<CountryModel> countryModelList = new ArrayList<>();
+        try {
+            JSONObject jsonObjectResponse = new JSONObject(response_str);
+            JSONArray jsonArrayCountryList = jsonObjectResponse.getJSONArray("data");
+            for (int i = 0; i < jsonArrayCountryList.length(); i++) {
+                JSONObject jsonObject_country = jsonArrayCountryList.getJSONObject(i);
+                CountryModel countryModel = new CountryModel();
+                countryModel.setCountry_id(jsonObject_country.getString("id"));
+                countryModel.setCountry_name(jsonObject_country.getString("name"));
+                countryModel.setCountry_short_name(jsonObject_country.getString("sortname"));
+                countryModelList.add(countryModel);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        final ArrayList<String> arrayList_country_name = new ArrayList<>();
+        int pos_selected_country = 0;
+        for (CountryModel temp_sModel :
+                countryModelList) {
+            if (temp_sModel.getCountry_name().equals(_userSingletonModelClass.getTxt_mission_trip_countries()))
+                pos_selected_country = arrayList_country_name.size();
+
+            arrayList_country_name.add(temp_sModel.getCountry_name());
+        }
+        spinner_country.setAdapter(new ArrayAdapter<String>(_ctx, android.R.layout.simple_spinner_dropdown_item, arrayList_country_name));
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                country_mission = arraylist_country_name.get(position);
+                country_mission = arrayList_country_name.get(position);
             }
 
             @Override
@@ -158,6 +203,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
 
             }
         });
+        spinner_country.setSelection(pos_selected_country);
     }
 
     @Override
@@ -223,7 +269,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
             }
@@ -242,7 +288,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
                 params.put("state_id", _userSingletonModelClass.getTxt_state_id());
                 params.put("state_name", _userSingletonModelClass.getTxt_state_name());
                 params.put("phone", _userSingletonModelClass.getTxt_phone());
-                params.put("church_name", _userSingletonModelClass.getChurch_name());
+                params.put("church_name", _userSingletonModelClass.getChurch_id());
                 String str = "";
                 for (String s :
                         _userSingletonModelClass.getList_classes_attended()) {

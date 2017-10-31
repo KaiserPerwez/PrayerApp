@@ -68,7 +68,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         spinner_state = (Spinner) rootView.findViewById(R.id.spinner_state);
         spinner_country = (Spinner) rootView.findViewById(R.id.spinner_country_name);
         setCustomDesign();
-        sendrequest_to_spinner();
+        addItemsOnCountrySpinner();
         return rootView;
     }
 
@@ -109,7 +109,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
     /*
   Volley code for spinner
    */
-    public void sendrequest_to_spinner() {
+    public void addItemsOnCountrySpinner() {
         StringRequest stringRequest = new StringRequest(UrlConstants._URL_COUNTRY_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
@@ -118,7 +118,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getActivity().getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
@@ -148,14 +148,19 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return;
         }
+
 
         final ArrayList<String> arraylist_country_name = new ArrayList<>();
         arraylist_country_name.add(countryModel.getCountry_name());
 
         ArrayList<String> arrayList_state_name = new ArrayList<>();
-        for (StateModel temp_sModel :
-                countryModel.getStateModelList()) {
+        int pos_selected_state = 0;
+        for (StateModel temp_sModel : countryModel.getStateModelList()) {
+            if (temp_sModel.getState_name().equals(_userSingletonModelClass.getTxt_state_name()))
+                pos_selected_state = arrayList_state_name.size();
+
             arrayList_state_name.add(temp_sModel.getState_name());
         }
         try {
@@ -187,8 +192,10 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
 
                 }
             });
+            spinner_state.setSelection(pos_selected_state);
         } catch (Exception e) {
-            Toast.makeText(getActivity(), "Couldn't load countries", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(), "Couldn't load countries", Toast.LENGTH_SHORT).show();
+            return;
         }
     }
 //----------------Volley code for spinner ends---------------------------

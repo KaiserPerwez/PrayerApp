@@ -31,12 +31,19 @@
                 android:textColor="@android:color/white"
                 android:textSize="15sp" />
 
-            <ImageView
-                android:id="@+id/img_overflow"
-                android:layout_width="5dp"
-                android:layout_height="20dp"
-                android:layout_marginLeft="10sp"
-                android:background="@drawable/overflow_icon" />
+            <FrameLayout
+                android:id="@+id/frame_overflow"
+                android:layout_width="30dp"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/img_overflow"
+                    android:layout_width="5dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/overflow_icon" />
+            </FrameLayout>
         </LinearLayout>
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/toggle_switch"

@@ -158,7 +158,7 @@ public class SplashActivity extends AppCompatActivity {
                             _userSingletonModelClass.setTxt_newto_mission(jobuser.getString("mission_concept"));
                         }
                     } else if (status.equals("false")) {
-                        Toast.makeText(_ctx, "NO/PARTIAL DATA FOUND", Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "NO/PARTIAL DATA FOUND", Toast.LENGTH_SHORT).show();
                     }
                     startActivity(new Intent(_ctx, HomeActivity.class));
                     SplashActivity.this.finish();
@@ -174,7 +174,7 @@ public class SplashActivity extends AppCompatActivity {
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

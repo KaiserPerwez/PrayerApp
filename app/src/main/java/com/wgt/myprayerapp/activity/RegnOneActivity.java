@@ -54,6 +54,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
      */
     ListView lv_churches;
     ArrayList<String> arrListChurches = new ArrayList<>();
+    ArrayList<String> arrListChurchesId = new ArrayList<>();
     ArrayAdapter<String> adapter;
     EditText txt_selected_church, txt_search_church;
     String selected_church_name;
@@ -93,7 +94,6 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                     txt_email.setError("Email Format is invalid");
                     return;
                 } else {
-                    Toast.makeText(_ctx, "Lost", Toast.LENGTH_SHORT).show();
                     LayoutInflater li = LayoutInflater.from(_ctx);
                     final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
 
@@ -263,6 +263,8 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
                 hideSoftKeyboard();
                 alertDialog.dismiss();
+                String selectedChurchId = arrListChurchesId.get(arrListChurches.indexOf(txt_selected_church_name));
+                _userSingletonModelClass.setChurch_id(selectedChurchId);
                 _userSingletonModelClass.setChurch_name(txt_selected_church_name);
 
 
@@ -296,7 +298,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(RegnOneActivity.this, error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(RegnOneActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                 progressDialog.cancel();
             }
         });
@@ -307,16 +309,18 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         try {
             JSONObject jsonObject = new JSONObject(responseStr);
             JSONArray jsonArrayChurchList = jsonObject.getJSONArray("data");
-            if (!arrListChurches.isEmpty())
+            if (!arrListChurches.isEmpty()) {
                 arrListChurches.clear();
+                arrListChurchesId.clear();
+            }
 
             for (int i = 0; i < jsonArrayChurchList.length(); i++) {
                 JSONObject jsonObjectChurchName = jsonArrayChurchList.getJSONObject(i);
                 String churchName = jsonObjectChurchName.getString("church_name");
                 arrListChurches.add(churchName);
+                String churchId = jsonObjectChurchName.getString("id");
+                arrListChurchesId.add(churchId);
             }
-
-            Toast.makeText(_ctx, "Churches:" + arrListChurches.size(), Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -367,7 +371,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         VolleyUtils.getInstance(this).addToRequestQueue(stringRequest);

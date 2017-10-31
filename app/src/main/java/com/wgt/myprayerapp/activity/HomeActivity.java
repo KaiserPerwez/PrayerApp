@@ -138,6 +138,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new PostPrayerVideoFrag();
                 break;
             case R.id.nav_searchPrayer:
+                _linearLayout_bar_prayers.setVisibility(View.GONE);
+                _linearLayout_bar_edit.setVisibility(View.GONE);
                 fragment = new SearchPrayerFrag();
                 break;
 

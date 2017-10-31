@@ -26,6 +26,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -193,11 +194,15 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
+        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        frame_overflow.setOnClickListener(this);
+
         btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
         LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
+        postPrayerModelClass.setAccessibility("Private");
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -248,11 +253,8 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                     boolean RecordPermission = grantResults[1] ==
                             PackageManager.PERMISSION_GRANTED;
 
-                    if (StoragePermission && RecordPermission) {
-                        Toast.makeText(getActivity(), "Permission Granted",
-                                Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_LONG).show();
+                    if (!StoragePermission && RecordPermission) {
+                        Toast.makeText(getActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
@@ -260,7 +262,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     public boolean checkPermission() {
-        Toast.makeText(getContext(), "Checking record permission", Toast.LENGTH_SHORT).show();
         int result = ContextCompat.checkSelfPermission(getActivity(), WRITE_EXTERNAL_STORAGE);
         int result1 = ContextCompat.checkSelfPermission(getActivity(), RECORD_AUDIO);
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
@@ -274,7 +275,6 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             case R.id.audio_record:
                 if (!recording_status) {
                     if (checkPermission()) {
-                        Toast.makeText(getContext(), "Record permission Granted.", Toast.LENGTH_SHORT).show();
                         fileUri = getOutputMediaFileUri(MEDIA_TYPE_AUDIO);
                         fileUtils.setAudio_filepath(fileUri.getPath());
                         MediaRecorderReady();
@@ -298,7 +298,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                         }
                     } else {
                         btn_post_prayer.setEnabled(true);
-                        Toast.makeText(getContext(), "Record permission failed.Please try again.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Record permission failed.Please try again.", Toast.LENGTH_SHORT).show();
                         requestPermission();
                     }
                 } else {
@@ -308,11 +308,11 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                         audio_record.setBackgroundResource(R.drawable.mic);
                         timeSwapBuff += timeInMilliseconds;
                         customHandler.removeCallbacks(updateTimerThread);
-                        Toast.makeText(getActivity(), "Recording Completed", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Recording Completed", Toast.LENGTH_SHORT).show();
                         btn_post_prayer.setEnabled(true);
                     } catch (Exception e) {
                         btn_post_prayer.setEnabled(true);
-                        Toast.makeText(getContext(), "Couldn't stop.Please try stopping again. Err:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Couldn't stop.Please try stopping again. Err:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -320,6 +320,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 break;
             case R.id.txt_overflow:
             case R.id.img_overflow:
+            case R.id.frame_overflow:
                 popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
@@ -330,12 +331,11 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                     txt_Prayer.setError("Minimum 10 characters required for your prayer description.");
                     return;
                 } else if (tv_audio_timer.getText().toString().length() == 0 || tv_audio_timer.getText().toString().equals("00m:00s")) {
-                    Toast.makeText(getContext(), "Please record an audio", Toast.LENGTH_SHORT).show();
                     tv_audio_timer.requestFocus();
                     try {
                         File sourceFile = new File(fileUtils.getAudio_filepath());
                     } catch (Exception e) {
-                        Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Please record an audio", Toast.LENGTH_SHORT).show();
                     }
                     return;
                 } else {
@@ -464,11 +464,12 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                 entity.addPart("audiofile", new FileBody(sourceFile));
 
                 entity.addPart("post_description", new StringBody(txt_Prayer.getText().toString()));
-                String x=postPrayerModelClass.getAccessibility();
-                entity.addPart("accessibility", new StringBody(x));
+                String accessibility = postPrayerModelClass.getAccessibility();
+                entity.addPart("accessibility", new StringBody(accessibility));
                 entity.addPart("post_type", new StringBody("Audio"));
                 entity.addPart("post_priority", new StringBody(postPrayerModelClass.getPost_priority()));
-                entity.addPart("user_access_token", new StringBody(userclass.getTxt_user_access_token()));
+                String accessToken = userclass.getTxt_user_access_token();
+                entity.addPart("user_access_token", new StringBody(accessToken));
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df1 = new SimpleDateFormat("dd/MM/yy h:mm a");
                 String formattedDate1 = df1.format(c.getTime());
@@ -505,12 +506,12 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             if (progressDialog.isShowing())
                 progressDialog.cancel();
             if (result.startsWith("Err"))
-                Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
             else
-                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_SHORT).show();
             if (postPrayerModelClass.getAccessibility().equals("Public"))
             {
-                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                 JSONObject job = null;
                 try {
                     job = new JSONObject(result);

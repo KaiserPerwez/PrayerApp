@@ -152,7 +152,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
                         txt_verifyEmail.setError("Email not found at our database");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(_ctx, "Err:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "Err:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -160,7 +160,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
             public void onErrorResponse(VolleyError error) {
                 if (_progressDialog.isShowing())
                     _progressDialog.cancel();
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -196,7 +196,6 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
                     if (status.equals("true")) {
                         alertDialog.dismiss();
                         startActivity(new Intent(_ctx, ForgotPasswordTwoActivity.class));
-                        Toast.makeText(_ctx, "success", Toast.LENGTH_LONG).show();
                     } else {
                         CustomUtils.alert(_ctx, "ERROR", "Incorrect otp...please verify again");
                     }
@@ -209,7 +208,7 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
             public void onErrorResponse(VolleyError error) {
                 if (_progressDialog.isShowing())
                     _progressDialog.cancel();
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

@@ -20,7 +20,6 @@ import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
 import com.wgt.myprayerapp.R;
-import com.wgt.myprayerapp.Utils.CustomUtils;
 import com.wgt.myprayerapp.networking.UrlConstants;
 import com.wgt.myprayerapp.networking.VolleyUtils;
 
@@ -103,11 +102,10 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
                     txt_resetPwd_retype.setError("Re-typed Password can't be empty");
                     return;
                 } else if ((pass1.length() != pass2.length()) || (!pass1.equals(pass2))) {
-                    CustomUtils.alert(_ctx, "ERROR", "Incorrect otp...please verify again");
                     Toast.makeText(_ctx, "Passwords Mismatched.Please try again", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
-                    Toast.makeText(_ctx, "Passwords Matched.Resetting..", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(_ctx, "Passwords Matched.Trying to Reset at Database..", Toast.LENGTH_SHORT).show();
                     txt_password_change = txt_resetPwd_retype.getText().toString();
                     resetPassword();
                 }
@@ -137,7 +135,7 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_CHANGE_PASSWORD_FOR_FORGOT_PASSWORD_USERS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(_ctx, response, Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, response, Toast.LENGTH_SHORT).show();
                 if (_progressDialog.isShowing())
                     _progressDialog.cancel();
                 try {
@@ -149,10 +147,10 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
                         startActivity(intent);
                         finish();
                     } else
-                        Toast.makeText(_ctx, "Error!Try again", Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Error!Try again", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -160,7 +158,7 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
             public void onErrorResponse(VolleyError error) {
                 if (_progressDialog.isShowing())
                     _progressDialog.cancel();
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -168,9 +166,6 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
                 Map<String, String> params = new HashMap<String, String>();
                 params.put("password", txt_password_change);
                 params.put("email", ForgotPasswordOneActivity._txt_verifyEmail);
-                params.put("device_id", "245");
-                params.put("device_type", "Android");
-
                 return params;
             }
         };

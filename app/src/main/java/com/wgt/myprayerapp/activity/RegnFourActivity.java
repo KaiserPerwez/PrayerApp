@@ -135,7 +135,7 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
             }
@@ -154,7 +154,7 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
                 params.put("state_id", _userSingletonModelClass.getTxt_state_id());
                 params.put("state_name", _userSingletonModelClass.getTxt_state_name());
                 params.put("phone", _userSingletonModelClass.getTxt_phone());
-                params.put("church_name", _userSingletonModelClass.getChurch_name());
+                params.put("church_name", _userSingletonModelClass.getChurch_id());
 
                 String str = "";
                 for (String s :

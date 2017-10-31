@@ -59,7 +59,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
         imageButtonPrev.setOnClickListener(this);
 
         spinner_country = (Spinner) findViewById(R.id.spinner_country);
-        sendrequest_to_spinner();
+        addItemsOnCountrySpinner();
 
         RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutOuter);
         RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
@@ -102,7 +102,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
 
     }
 
-    public void sendrequest_to_spinner() {
+    public void addItemsOnCountrySpinner() {
         final ProgressDialog progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Fetching Country list...");
         progressDialog.setCancelable(false);
@@ -117,7 +117,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                     JSONObject jsonObject = new JSONObject(response);
                     String status = jsonObject.getString("status");
                     if (status.equals(true) || status.equals("true"))
-                        showjson_to_spinner(response);
+                        json_to_spinnerCountry(response);
                     else
                         Toast.makeText(_ctx, "No country loaded", Toast.LENGTH_SHORT).show();
                 } catch (JSONException e) {
@@ -129,13 +129,13 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         VolleyUtils.getInstance(_ctx).addToRequestQueue(stringRequest);
     }
 
-    public void showjson_to_spinner(String response_str) {
+    public void json_to_spinnerCountry(String response_str) {
         List<CountryModel> countryModelList = new ArrayList<>();
         try {
             JSONObject jsonObjectResponse = new JSONObject(response_str);
@@ -199,9 +199,11 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                 break;
             case R.id.chk_new_to_mission:
                 if (txt_chk_new_to_mission.isChecked())
-                    _userSingletonModelClass.setTxt_newto_mission("1");
+                    new_to_mission = "1";
+                    //_userSingletonModelClass.setTxt_newto_mission("1");
                 else
-                    _userSingletonModelClass.setTxt_newto_mission("0");
+                    new_to_mission = "0";
+                //_userSingletonModelClass.setTxt_newto_mission("0");
                 break;
         }
     }

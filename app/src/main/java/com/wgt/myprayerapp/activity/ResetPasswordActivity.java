@@ -157,7 +157,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_CHANGE_PASSWORD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(ResetPasswordActivity.this, response, Toast.LENGTH_LONG).show();
+                Toast.makeText(ResetPasswordActivity.this, response, Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject job = new JSONObject(response);
                     String status = job.getString("status");
@@ -167,7 +167,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
                         startActivity(intent);
                         finish();
                     } else
-                        Toast.makeText(ResetPasswordActivity.this, "Error!Try again", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ResetPasswordActivity.this, "Error!Try again", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -176,7 +176,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(ResetPasswordActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(ResetPasswordActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

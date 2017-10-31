@@ -160,7 +160,7 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(getActivity().getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -210,7 +210,7 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(getActivity().getApplicationContext(), error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getApplicationContext(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
