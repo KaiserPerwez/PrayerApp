@@ -107,11 +107,11 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                     list.add(txt_others.getText().toString());
                 }
                 if (list.size() == 0) {
-                    Toast.makeText(this, "Please select at least one class", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Please select at least one class", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (list.contains("OTHER") && (txt_others.getText().toString().length() <= 1)) {
-                    Toast.makeText(this, "Please Enter a valid class-name for \"OTHERS\" category", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Please Enter a valid class-name for \"OTHERS\" category", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 userclass.setList_classes_attended(list);

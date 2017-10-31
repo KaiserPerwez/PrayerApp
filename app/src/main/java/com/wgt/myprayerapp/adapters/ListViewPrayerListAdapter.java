@@ -191,13 +191,11 @@ public class ListViewPrayerListAdapter extends BaseAdapter {
                             public void onClick(DialogInterface dialog, int which) {
                                 // continue with delete
                                 updateAnsweredPrayer(holder.postPrayerModelClass);
-                                Toast.makeText(HomeActivity._context, "Confirmed", Toast.LENGTH_SHORT).show();
                                 holder.chk_answered.setChecked(true);
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(HomeActivity._context, "Dismissed", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
                                 holder.chk_answered.setChecked(false);
                             }
@@ -210,7 +208,7 @@ public class ListViewPrayerListAdapter extends BaseAdapter {
     }
 
     void toggleView(View finalConvertView, int n) {
-        View layout_prayer_details = (View) finalConvertView.findViewById(R.id.layout_prayer_details);
+        View layout_prayer_details = finalConvertView.findViewById(R.id.layout_prayer_details);
         LinearLayout linearLayout_searchPrayerOverview = (LinearLayout) finalConvertView.findViewById(R.id.linearLayout_searchPrayerOverview);
         AbsListView.LayoutParams lp = (AbsListView.LayoutParams) linearLayout_searchPrayerOverview.getLayoutParams();
 

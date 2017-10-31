@@ -35,12 +35,14 @@ import java.util.List;
 
 public class EditTwoActivity extends AppCompatActivity implements View.OnClickListener {
     static String txt_selected_church_name;
+    static String txt_selected_church_id;
     Context _ctx;
     CheckBox chk_alpha, chk_perspective, chk_men, chk_beth_more, chk_cbs, chk_others;
     EditText txt_others;
     Spinner txt_churchname;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
-    ArrayList<String> _arrListChurches = new ArrayList<>();
+    ArrayList<String> _arrListChurchName = new ArrayList<>();
+    ArrayList<String> _arrListChurchId = new ArrayList<>();
     ArrayAdapter<String> _adapter;
 
     @Override
@@ -149,6 +151,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 _userSingletonModelClass.setList_classes_attended(list);
                 _userSingletonModelClass.setChurch_name(txt_selected_church_name);
+                _userSingletonModelClass.setChurch_id(txt_selected_church_id);
                 Intent intent = new Intent(_ctx, EditThreeActivity.class);
                 startActivity(intent);
                 break;
@@ -172,7 +175,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -181,25 +184,35 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void churchList_Json(String responseStr) {
+        int pos_churchNameOrId = 0;
         try {
             JSONObject jsonObject = new JSONObject(responseStr);
             JSONArray jsonArrayChurchList = jsonObject.getJSONArray("data");
             for (int i = 0; i < jsonArrayChurchList.length(); i++) {
                 JSONObject jsonObjectChurchName = jsonArrayChurchList.getJSONObject(i);
                 String churchName = jsonObjectChurchName.getString("church_name");
-                _arrListChurches.add(churchName);
+                String churchId = jsonObjectChurchName.getString("id");
+
+                if (churchId.equals(_userSingletonModelClass.getChurch_id())) {
+                    pos_churchNameOrId = _arrListChurchName.size();
+                    _userSingletonModelClass.setChurch_name(churchName);
+                }
+
+                _arrListChurchId.add(churchId);
+                _arrListChurchName.add(churchName);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        _adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, _arrListChurches);
+        _adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, _arrListChurchName);
         txt_churchname.setAdapter(_adapter);
         txt_churchname.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 txt_selected_church_name = _adapter.getItem(i).toString();
+                txt_selected_church_id = _arrListChurchId.get(i);
             }
 
             @Override
@@ -207,7 +220,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
 
             }
         });
-
+        txt_churchname.setSelection(pos_churchNameOrId);
     }
 
     //----------------Volley code for spinner ends----------------

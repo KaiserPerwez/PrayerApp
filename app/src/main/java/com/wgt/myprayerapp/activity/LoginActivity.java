@@ -137,9 +137,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         _tv_forgot_pwd.setOnClickListener(this);
         _tv_signUp.setOnClickListener(this);
         _linearLayout_btnFb.setOnClickListener(this);
-
-        _txt_email.setText("satabhisha.wgt@gmail.com");
-        _txt_password.setText("123");
         setCustomDesign();
 
 
@@ -280,13 +277,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     } else {
                         if (progressDialog.isShowing())
                             progressDialog.cancel();
-                        Toast.makeText(_ctx, "Incorrect email_id or password", Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Incorrect email_id or password", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     if (progressDialog.isShowing())
                         progressDialog.cancel();
-                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -295,9 +292,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
                 if (error.toString().toUpperCase().contains("NOCONNECTION"))
-                    Toast.makeText(_ctx, "Please check Your Internet Connectivity", Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "Please check Your Internet Connectivity", Toast.LENGTH_SHORT).show();
                 else
-                    Toast.makeText(_ctx, "VolleyErr:" + error.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(_ctx, "VolleyErr:" + error.toString(), Toast.LENGTH_SHORT).show();
 
             }
         }) {
@@ -333,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     if (status.equals("true")) {
                         login_FbUser();
                     } else if (status.equals("false")) {
-                        Toast.makeText(_ctx, "Already registered.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Already registered.", Toast.LENGTH_SHORT).show();
                         login_FbUser();
                     }
                 } catch (JSONException e) {
@@ -343,7 +340,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -375,7 +372,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             private Map<String, String> checkParams(Map<String, String> map) {
                 Iterator<Map.Entry<String, String>> it = map.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry<String, String> pairs = (Map.Entry<String, String>) it.next();
+                    Map.Entry<String, String> pairs = it.next();
                     if (pairs.getValue() == null) {
                         map.put(pairs.getKey(), "");
                     }
@@ -410,7 +407,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         load_ProfileDetails();
                     } else {
-                        Toast.makeText(_ctx, "Error" + response, Toast.LENGTH_LONG).show();
+                        Toast.makeText(_ctx, "Error" + response, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -423,7 +420,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -491,7 +488,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             LoginActivity.this.finish();
                         }
                     } else if (status.equals("false")) {
-                        Toast.makeText(LoginActivity.this, "Already registered,Please edit your profile", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Already registered,Please edit your profile", Toast.LENGTH_SHORT).show();
                         // startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     }
                 } catch (JSONException e) {
@@ -506,7 +503,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(LoginActivity.this, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -76,6 +77,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
+        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        frame_overflow.setOnClickListener(this);
 
         btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
@@ -104,6 +107,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             }
         });
 
+        postPrayerModelClass.setAccessibility("Private");
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -129,6 +133,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         switch (item) {
             case R.id.txt_overflow:
             case R.id.img_overflow:
+            case R.id.frame_overflow:
                 popup.show();//showing popup menu
                 break;
             case R.id.btn_post_prayer:
@@ -204,15 +209,15 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     String status = job.getString("status");
 
                     if (status.equals("true")) {
-//                        Toast.makeText(getActivity(), "Data posted successfully to database", Toast.LENGTH_LONG).show();
+//                        Toast.makeText(getActivity(), "Data posted successfully to database", Toast.LENGTH_SHORT).show();
                         txtPrayer.setText("");
                         if (postPrayerModelClass.getAccessibility().equals("Public"))
                         {
-                            Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                             postTextPrayerToFb();
                         }
                     } else
-                        Toast.makeText(getActivity(), "Error", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -223,7 +228,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override

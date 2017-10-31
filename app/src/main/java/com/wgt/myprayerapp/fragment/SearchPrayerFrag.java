@@ -89,18 +89,19 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener, 
                 if (event.getAction() == MotionEvent.ACTION_UP) {
                     if (event.getRawX() >= (txt_search.getRight() - txt_search.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         // your action here
+                        hideSoftKeyboard();
                         List<PostPrayerModelClass> postPrayerModelClassList = new ArrayList<PostPrayerModelClass>();
                         for (PostPrayerModelClass postPrayerModelClass :
                                 _postPrayerModelClassList) {
-                            if (postPrayerModelClass.getPost_description().contains(txt_search.getText()))
+                            if (postPrayerModelClass.getPost_description().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
-                            if (postPrayerModelClass.getPost_type().contains(txt_search.getText()))
+                            if (postPrayerModelClass.getPost_type().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
 //                            if (postPrayerModelClass.getAnswered_status().contains(txt_search.getText()))
 //                                postPrayerModelClassList.add(postPrayerModelClass);
                             if (postPrayerModelClass.getPost_priority().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
-                            if (postPrayerModelClass.getAccessibility().contains(txt_search.getText()))
+                            if (postPrayerModelClass.getAccessibility().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
                         }
                         ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);
@@ -168,11 +169,11 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener, 
                         }
                         loadAllPrayersIntoListView();
                     } else {
-                        Toast.makeText(getContext(), "No Prayer Found", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "No Prayer Found", Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(HomeActivity._context, "Error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(HomeActivity._context, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
         }, new Response.ErrorListener() {
@@ -180,7 +181,7 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener, 
             public void onErrorResponse(VolleyError error) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -205,7 +206,10 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener, 
                 _postPrayerModelClassList) {
             if (postPrayerModelClass.getAnswered_status().equals("1"))
                 postPrayerModelClassList.add(postPrayerModelClass);
-
+        }
+        if (postPrayerModelClassList.size() == 0) {
+            Toast.makeText(getContext(), "NO ANSWERED PRAYER FOUND", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);

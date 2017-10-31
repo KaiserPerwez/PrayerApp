@@ -25,6 +25,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
@@ -164,11 +165,14 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         txt_overflow.setOnClickListener(this);
         img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
+        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        frame_overflow.setOnClickListener(this);
         btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
         LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
+        postPrayerModelClass.setAccessibility("Private");
         postPrayerModelClass.setPost_priority("Medium");
 
         //Creating the instance of PopupMenu
@@ -258,9 +262,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             if (resultCode == getActivity().RESULT_OK) {
 
                 // video successfully recorded
-                Toast.makeText(getActivity(),
-                        "Video successfully recorded", Toast.LENGTH_SHORT)
-                        .show();
+                //Toast.makeText(getActivity(),"Video successfully recorded", Toast.LENGTH_SHORT).show();
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
                         MediaStore.Images.Thumbnails.MINI_KIND);
                 ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
@@ -274,9 +276,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
             } else {
                 // failed to record video
-                Toast.makeText(getActivity(),
-                        "Sorry! Failed to record video", Toast.LENGTH_SHORT)
-                        .show();
+                Toast.makeText(getActivity(), "Sorry! Failed to record video", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -295,14 +295,15 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         switch (item) {
             case R.id.txt_overflow:
             case R.id.img_overflow:
+            case R.id.frame_overflow:
                 popup.show();//showing popup menu
                 break;
             case R.id.img_record_video:
                 if (!isDeviceSupportCamera()) {
-                    Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_SHORT).show();
                 recordVideo();
                 break;
             case R.id.btn_post_prayer:
@@ -311,8 +312,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 try {
                     sourceFile = new File(fileUtils.getVideo_filepath());
                 } catch (Exception e) {
-                    //Toast.makeText(getContext(), ""+e.toString(), Toast.LENGTH_LONG).show();
-                    Toast.makeText(getContext(), "Please record a video before Uploading", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(), ""+e.toString(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No Recorded File found", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (filepath == null || sourceFile.length() == 0) {
@@ -369,6 +370,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                         }
                     });
                 }
+                ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+                img_record_video_preview.setImageBitmap(null);
                 break;
 
         }
@@ -450,7 +453,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 entity.addPart("accessibility", new StringBody(postPrayerModelClass.getAccessibility()));
                 entity.addPart("post_type", new StringBody("Video"));
                 entity.addPart("post_priority", new StringBody(postPrayerModelClass.getPost_priority()));
-                entity.addPart("user_access_token", new StringBody(_userSingletonModelClass.getTxt_user_access_token()));
+                String accessToken = _userSingletonModelClass.getTxt_user_access_token();
+                entity.addPart("user_access_token", new StringBody(accessToken));
                 Calendar c = Calendar.getInstance();
                 SimpleDateFormat df1 = new SimpleDateFormat("dd-MMM-yyyy");
                 String formattedDate1 = df1.format(c.getTime());
@@ -486,13 +490,13 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             if (progressDialog.isShowing())
                 progressDialog.cancel();
             if (result.startsWith("Err"))
-                Toast.makeText(getActivity(), result, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
             else
-                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_SHORT).show();
 
             if (postPrayerModelClass.getAccessibility().equals("Public"))
             {
-                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                 JSONObject job = null;
                 try {
                     job = new JSONObject(result);
@@ -503,6 +507,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 }
             }
             txtPrayer.setText("");
+            ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+            img_record_video_preview.setImageBitmap(null);
             super.onPostExecute(result);
 
         }
