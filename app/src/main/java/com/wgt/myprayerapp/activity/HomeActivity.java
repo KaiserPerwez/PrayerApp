@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.facebook.login.LoginManager;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.PrefUtils;
+import com.wgt.myprayerapp.Utils.ValidatorUtils;
 import com.wgt.myprayerapp.fragment.ChangePasswordFrag;
 import com.wgt.myprayerapp.fragment.EditOneFrag;
 import com.wgt.myprayerapp.fragment.PostPrayerAudioFrag;
@@ -52,6 +53,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
 
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
+        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        imageButtonNextArrow.setOnClickListener(this);
         ImageView img_post_txt = (ImageView) findViewById(R.id.img_post_txt);
         img_post_txt.setOnClickListener(this);
         ImageView img_post_audio = (ImageView) findViewById(R.id.img_post_audio);
@@ -109,8 +112,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        displaySelectedScreen(id);
+        if (!_userSingletonModelClass.isProfileCompleted()) {
+            //CustomUtils.alert(_context, "Warning", "Please fill up all mandatory fields via Edit Profile Steps");
+            displaySelectedScreen(R.id.nav_editProfile);
+        } else {
+            int id = item.getItemId();
+            displaySelectedScreen(id);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -180,15 +188,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         int id = v.getId();
         switch (id) {
             case R.id.imageButtonNext:
-                _userSingletonModelClass.setTxt_fname(EditOneFrag.txt_fname.getText().toString());
-                _userSingletonModelClass.setTxt_lname(EditOneFrag.txt_lname.getText().toString());
-                _userSingletonModelClass.setTxt_email(EditOneFrag.txt_email.getText().toString());
-                _userSingletonModelClass.setTxt_addr1(EditOneFrag.txt_addr1.getText().toString());
-                _userSingletonModelClass.setTxt_addr2(EditOneFrag.txt_addr2.getText().toString());
-                _userSingletonModelClass.setTxt_city(EditOneFrag.txt_city.getText().toString());
-                _userSingletonModelClass.setTxt_phone(EditOneFrag.txt_phone.getText().toString());
-                Intent intent = new Intent(HomeActivity.this, EditTwoActivity.class);
-                startActivity(intent);
+            case R.id.imageButtonNextArrow:
+                if (setFieldDataToUserSingletonObject()) {
+                    Intent intent = new Intent(HomeActivity.this, EditTwoActivity.class);
+                    startActivity(intent);
+                }
                 break;
             case R.id.img_post_txt:
                 displaySelectedScreen(R.id.img_post_txt);
@@ -200,5 +204,81 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 displaySelectedScreen(R.id.img_post_video);
                 break;
         }
+    }
+
+    private boolean setFieldDataToUserSingletonObject() {
+        EditOneFrag.txt_fname.setError(null);
+        EditOneFrag.txt_lname.setError(null);
+        EditOneFrag.txt_email.setError(null);
+        EditOneFrag.txt_city.setError(null);
+
+        if (EditOneFrag.txt_fname.getText().toString().length() == 0) {
+            EditOneFrag.txt_fname.requestFocus();
+            EditOneFrag.txt_fname.setError("First Name Field can't be empty");
+            return false;
+        }
+        if (EditOneFrag.txt_lname.getText().toString().length() == 0) {
+            EditOneFrag.txt_lname.requestFocus();
+            EditOneFrag.txt_lname.setError("Last Name Field can't be empty");
+            return false;
+        }
+
+        if (EditOneFrag.txt_email.getText().toString().length() == 0) {
+            EditOneFrag.txt_email.requestFocus();
+            EditOneFrag.txt_email.setError("Email Field can't be empty");
+            return false;
+        }
+        if (!ValidatorUtils.isValidEmail(EditOneFrag.txt_email.getText().toString())) {
+            EditOneFrag.txt_email.requestFocus();
+            EditOneFrag.txt_email.setError("Invalid email format");
+            return false;
+        }
+
+        if (EditOneFrag.txt_city.getText().toString().length() == 0) {
+            EditOneFrag.txt_city.requestFocus();
+            EditOneFrag.txt_city.setError("City Field can't be empty");
+            return false;
+        }
+
+
+        String addr1 = EditOneFrag.txt_addr1.getText().toString();
+        if (addr1.equals(null) || addr1.length() == 0 || addr1.equals("null"))
+            addr1 = "";
+
+        String addr2 = EditOneFrag.txt_addr2.getText().toString();
+        if (addr2.equals(null) || addr2.length() == 0 || addr2.equals("null"))
+            addr2 = "";
+
+        String state_name = EditOneFrag.txt_state_name;
+        String state_id = EditOneFrag.txt_state_id;
+        if (state_name == null || state_name.length() == 0 || state_name.equals("null") || state_name.equals("Select State")) {
+            state_name = "";
+            state_id = "";
+        }
+
+        String phone = EditOneFrag.txt_phone.getText().toString();
+        if (phone.equals(null) || phone.length() == 0 || phone.equals(null) || phone.equals("null"))
+            phone = "";
+
+        _userSingletonModelClass.setTxt_fname(EditOneFrag.txt_fname.getText().toString());
+        _userSingletonModelClass.setTxt_lname(EditOneFrag.txt_lname.getText().toString());
+        _userSingletonModelClass.setTxt_email(EditOneFrag.txt_email.getText().toString());
+        _userSingletonModelClass.setTxt_city(EditOneFrag.txt_city.getText().toString());
+        _userSingletonModelClass.setTxt_addr1(EditOneFrag.txt_addr1.getText().toString());
+        _userSingletonModelClass.setTxt_addr2(EditOneFrag.txt_addr2.getText().toString());
+        _userSingletonModelClass.setTxt_phone(EditOneFrag.txt_phone.getText().toString());
+        _userSingletonModelClass.setTxt_country("United States");
+        _userSingletonModelClass.setTxt_state_name(state_name);
+
+//        if (spinner_country.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_country_id().equals("-1")) {
+//            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//        if (spinner_state.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
+//            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+
+        return true;
     }
 }

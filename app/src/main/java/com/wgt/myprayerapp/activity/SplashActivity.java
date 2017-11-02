@@ -156,11 +156,13 @@ public class SplashActivity extends AppCompatActivity {
                             _userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
                             _userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
                             _userSingletonModelClass.setTxt_newto_mission(jobuser.getString("mission_concept"));
+
+                            startActivity(new Intent(_ctx, HomeActivity.class));
                         }
                     } else if (status.equals("false")) {
-                        Toast.makeText(_ctx, "NO/PARTIAL DATA FOUND", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(_ctx, "NO/PARTIAL DATA FOUND.Please login.", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(_ctx, LoginActivity.class));
                     }
-                    startActivity(new Intent(_ctx, HomeActivity.class));
                     SplashActivity.this.finish();
                 } catch (JSONException e) {
                     e.printStackTrace();

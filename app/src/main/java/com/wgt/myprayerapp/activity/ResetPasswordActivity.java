@@ -157,7 +157,6 @@ public class ResetPasswordActivity extends AppCompatActivity {
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_CHANGE_PASSWORD, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(ResetPasswordActivity.this, response, Toast.LENGTH_SHORT).show();
                 try {
                     JSONObject job = new JSONObject(response);
                     String status = job.getString("status");

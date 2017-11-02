@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -70,8 +71,12 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
 
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
+        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        imageButtonNextArrow.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
 
         setCustomDesign();
         //Calling volley method for spinner
@@ -86,10 +91,10 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
             chk_men.setChecked(true);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("Beth More")) {
-            chk_alpha.setChecked(true);
+            chk_beth_more.setChecked(true);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("CBS")) {
-            chk_alpha.setChecked(true);
+            chk_cbs.setChecked(true);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("OTHER")) {
             chk_others.setChecked(true);
@@ -134,6 +139,11 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.imageButtonNext:
+            case R.id.imageButtonNextArrow:
+                if (txt_selected_church_id.equals("-1")) {
+                    Toast.makeText(_ctx, "Please select a church", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 List list = new ArrayList();
                 if (chk_alpha.isChecked())
                     list.add("Alpha");
@@ -149,6 +159,14 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
                     list.add("OTHER");
                     list.add(txt_others.getText().toString());
                 }
+                if (list.size() == 0) {
+                    Toast.makeText(this, "Please select at least one class", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (list.contains("OTHER") && (txt_others.getText().toString().length() <= 1)) {
+                    Toast.makeText(this, "Please Enter a valid class-name for \"OTHERS\" category", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 _userSingletonModelClass.setList_classes_attended(list);
                 _userSingletonModelClass.setChurch_name(txt_selected_church_name);
                 _userSingletonModelClass.setChurch_id(txt_selected_church_id);
@@ -156,6 +174,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(intent);
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
         }
@@ -188,6 +207,8 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         try {
             JSONObject jsonObject = new JSONObject(responseStr);
             JSONArray jsonArrayChurchList = jsonObject.getJSONArray("data");
+            _arrListChurchName.add("Select Church");
+            _arrListChurchId.add("-1");
             for (int i = 0; i < jsonArrayChurchList.length(); i++) {
                 JSONObject jsonObjectChurchName = jsonArrayChurchList.getJSONObject(i);
                 String churchName = jsonObjectChurchName.getString("church_name");

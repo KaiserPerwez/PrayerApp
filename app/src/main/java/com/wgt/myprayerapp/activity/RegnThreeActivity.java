@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -55,8 +56,13 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
         txt_chk_new_to_mission.setOnClickListener(this);
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
+        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        imageButtonNextArrow.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
+
 
         spinner_country = (Spinner) findViewById(R.id.spinner_country);
         addItemsOnCountrySpinner();
@@ -181,6 +187,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
 
         switch (item) {
             case R.id.imageButtonNext:
+            case R.id.imageButtonNextArrow:
                 _userSingletonModelClass.setTxt_mission_trip_participation_status(participation_status);
                 _userSingletonModelClass.setTxt_newto_mission(new_to_mission);
                 _userSingletonModelClass.setTxt_mission_trip_countries(country_mission);
@@ -189,6 +196,7 @@ public class RegnThreeActivity extends AppCompatActivity implements View.OnClick
                 startActivity(intent);
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
             case R.id.toggle_switch_rLayoutOuter:

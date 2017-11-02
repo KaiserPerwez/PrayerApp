@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,6 +53,9 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
         btn_signUp.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
+
         TextView tv_AlreadyRegd = (TextView) findViewById(R.id.tv_AlreadyRegd);
         tv_AlreadyRegd.setOnClickListener(this);
         progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
@@ -96,6 +100,7 @@ public class RegnFourActivity extends AppCompatActivity implements View.OnClickL
                 registerUser();
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
             case R.id.tv_AlreadyRegd:

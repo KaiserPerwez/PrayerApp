@@ -62,6 +62,7 @@
                     android:foregroundGravity="center">
 
                     <ImageButton
+                        android:id="@+id/imageButtonNextArrow"
                         android:layout_width="20dp"
                         android:layout_height="15dp"
                         android:layout_gravity="center"

@@ -55,15 +55,49 @@ public class UserSingletonModelClass {
     String device_id;
     String device_type;
     String reg_type; //"normal" or "facebook"
+    boolean profileCompleted;
 
     private UserSingletonModelClass() {
         //to avoid instantiation,it is declared as private
+        txt_fname = "";
+        txt_lname = "";
+        txt_email = "";
+        txt_addr1 = "";
+        txt_addr2 = "";
+        txt_phone = "";
+        txt_state_id = "";
+        txt_state_name = "";
+        txt_country_id = "";
+        txt_country = "";
+        txt_country_sortname = "";
+        txt_city = "";
+
+        church_name = "";
+        church_id = "";
+        txt_mission_trip_countries = "";
+        txt_newto_mission = "";
+        txt_mission_trip_participation_status = "";
+        txt_pswd = "";
+        txt_user_login_id = "";
+        txt_user_access_token = "";
+        device_id = "";
+        device_type = "";
+        reg_type = "";
+        profileCompleted = true;
     }//why private:
 
     public static UserSingletonModelClass get_userSingletonModelClass() {
         if (_userSingletonModelClass == null)
             _userSingletonModelClass = new UserSingletonModelClass();
         return _userSingletonModelClass;
+    }
+
+    public boolean isProfileCompleted() {
+        return profileCompleted;
+    }
+
+    public void setProfileCompleted(boolean profileCompleted) {
+        this.profileCompleted = profileCompleted;
     }
 
     @Override
