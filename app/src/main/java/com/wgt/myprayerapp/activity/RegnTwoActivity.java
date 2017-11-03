@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,7 +28,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
     Context _ctx;
     CheckBox chk_alpha, chk_perspective, chk_men, chk_beth_more, chk_cbs, chk_others;
     EditText txt_others, txt_churchname;
-    UserSingletonModelClass userclass = UserSingletonModelClass.get_userSingletonModelClass();
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +48,21 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         chk_beth_more.setOnClickListener(this);
         chk_cbs.setOnClickListener(this);
 
-        txt_churchname.setText(userclass.getChurch_name());
+        txt_churchname.setText(_userSingletonModelClass.getChurch_name());
 
         setCustomDesign();
         chk_others = (CheckBox) findViewById(R.id.chk_others);
         chk_others.setOnClickListener(this);
+
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
+        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        imageButtonNextArrow.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
+
     }
 
     private void setCustomDesign() {
@@ -91,6 +98,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.imageButtonNext:
+            case R.id.imageButtonNextArrow:
                 List<String> list = new ArrayList();
                 if (chk_alpha.isChecked())
                     list.add("Alpha");
@@ -114,12 +122,13 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                     Toast.makeText(this, "Please Enter a valid class-name for \"OTHERS\" category", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                userclass.setList_classes_attended(list);
-                userclass.setChurch_name(txt_churchname.getText().toString());
+                _userSingletonModelClass.setList_classes_attended(list);
+                _userSingletonModelClass.setChurch_name(txt_churchname.getText().toString());
                 Intent intent = new Intent(RegnTwoActivity.this, RegnThreeActivity.class);
                 startActivity(intent);
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
         }

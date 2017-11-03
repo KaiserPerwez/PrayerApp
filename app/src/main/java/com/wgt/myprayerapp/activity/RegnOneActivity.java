@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -82,8 +83,12 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         fetchCountriesFromServer();
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
+        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        imageButtonNextArrow.setOnClickListener(this);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
 
         txt_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -163,12 +168,14 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         int item = v.getId();
         switch (item) {
             case R.id.imageButtonNext:
+            case R.id.imageButtonNextArrow:
                 if (setFieldDataToUserSingletonObject()) {
                     Intent intent = new Intent(_ctx, RegnTwoActivity.class);
                     startActivity(intent);
                 }
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
         }
@@ -208,21 +215,34 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             return false;
         }
 
+
+        String addr1 = _userSingletonModelClass.getTxt_addr1();
+        if (addr1.equals(null) || addr1.length() == 0 || addr1.equals("null"))
+            addr1 = "";
+
+        String addr2 = _userSingletonModelClass.getTxt_addr2();
+        if (addr2.equals(null) || addr2.length() == 0 || addr2.equals("null"))
+            addr2 = "";
+
+        String phone = _userSingletonModelClass.getTxt_phone();
+        if (phone.equals(null) || phone.length() == 0 || phone.equals(null) || phone.equals("null"))
+            phone = "";
+
         _userSingletonModelClass.setTxt_fname(txt_fname.getText().toString());
         _userSingletonModelClass.setTxt_lname(txt_lname.getText().toString());
         _userSingletonModelClass.setTxt_email(txt_email.getText().toString());
+        _userSingletonModelClass.setTxt_city(txt_city.getText().toString());
         _userSingletonModelClass.setTxt_addr1(txt_addr1.getText().toString());
         _userSingletonModelClass.setTxt_addr2(txt_addr2.getText().toString());
-        _userSingletonModelClass.setTxt_city(txt_city.getText().toString());
         _userSingletonModelClass.setTxt_phone(txt_phone.getText().toString());
-        if (_userSingletonModelClass.getTxt_country_id().equals("-1")) {
-            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if (_userSingletonModelClass.getTxt_state_id().equals("-1")) {
-            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        if (spinner_country.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_country_id().equals("-1")) {
+//            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//        if (spinner_state.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
+//            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
 
         return true;
     }
@@ -416,6 +436,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
         arraylist_country_name.add(countryModel.getCountry_name());
 
         ArrayList<String> arrayList_state_name = new ArrayList<>();
+        arrayList_state_name.add("Select State");
         for (StateModel temp_sModel :
                 countryModel.getStateModelList()) {
             arrayList_state_name.add(temp_sModel.getState_name());
@@ -427,16 +448,20 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
         spinner_state = (Spinner) findViewById(R.id.spinner_state);
         spinner_state.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
-        spinner_state.setSelection(0);
+        //  spinner_state.setSelection(0);
 
 
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String txt_country_id1 = countryModel.getCountry_id();
-                String txt_country_name = countryModel.getCountry_name();
-                String txt_country_sortname = countryModel.getCountry_short_name();
-
+                String txt_country_id1 = "-1";
+                String txt_country_name = "-1";
+                String txt_country_sortname = "-1";
+                if (position != 0) {
+                    txt_country_id1 = countryModel.getCountry_id();
+                    txt_country_name = countryModel.getCountry_name();
+                    txt_country_sortname = countryModel.getCountry_short_name();
+                }
                 _userSingletonModelClass.setTxt_country_id(txt_country_id1);
                 _userSingletonModelClass.setTxt_country(txt_country_name);
                 _userSingletonModelClass.setTxt_country_sortname(txt_country_sortname);
@@ -444,15 +469,19 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
         spinner_state.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String txt_state_id = countryModel.getStateModelList().get(position).getState_id();
-                String txt_state_name = countryModel.getStateModelList().get(position).getState_name();
-                String txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+                String txt_state_id = "-1";
+                String txt_state_name = "-1";
+                String txt_country_id2 = "-1";
+                if (position != 0) {
+                    txt_state_id = countryModel.getStateModelList().get(position).getState_id();
+                    txt_state_name = countryModel.getStateModelList().get(position).getState_name();
+                    txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();
+                }
 
                 _userSingletonModelClass.setTxt_state_id(txt_state_id);
                 _userSingletonModelClass.setTxt_state_name(txt_state_name);

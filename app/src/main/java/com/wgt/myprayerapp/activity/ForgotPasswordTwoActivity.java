@@ -135,7 +135,6 @@ public class ForgotPasswordTwoActivity extends AppCompatActivity implements View
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_CHANGE_PASSWORD_FOR_FORGOT_PASSWORD_USERS, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Toast.makeText(_ctx, response, Toast.LENGTH_SHORT).show();
                 if (_progressDialog.isShowing())
                     _progressDialog.cancel();
                 try {

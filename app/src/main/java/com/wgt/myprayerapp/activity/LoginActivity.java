@@ -139,7 +139,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         _linearLayout_btnFb.setOnClickListener(this);
         setCustomDesign();
 
-
         progressDialog = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Authenticating...");
         progressDialog.setCancelable(false);
@@ -233,6 +232,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(LoginActivity.this, RegnOneActivity.class));
                 break;
             case R.id.linearLayout_btnFb:
+                if (!(progressDialog.isShowing()))
+                    progressDialog.show();
                 loginButtonFB = new LoginButton(this);
                 callbackManager = CallbackManager.Factory.create();
                 accessTokenTracker = new AccessTokenTracker() {
@@ -257,43 +258,20 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void login() {
-        progressDialog.show();
+        if (!(progressDialog.isShowing()))
+            progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                try {
-                    JSONObject json_obj = new JSONObject(response);
-                    String status = json_obj.getString("status");
 
-                    if (status.equals("true")) {
-                        JSONObject json_obj_data = json_obj.getJSONObject("data");
-                        userSingletonModelClass.setTxt_user_login_id(json_obj_data.getString("id"));
-                        userSingletonModelClass.setTxt_user_access_token(json_obj_data.getString("accessToken"));
-                        userSingletonModelClass.setTxt_email(json_obj_data.getString("email"));
-                        userSingletonModelClass.setTxt_fname(json_obj_data.getString("firstName"));
-                        userSingletonModelClass.setTxt_lname(json_obj_data.getString("lastName"));
                         load_LoginDetails_OnPrefs();
                         load_ProfileDetails();
-                    } else {
-                        if (progressDialog.isShowing())
-                            progressDialog.cancel();
-                        Toast.makeText(_ctx, "Incorrect email_id or password", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    if (progressDialog.isShowing())
-                        progressDialog.cancel();
-                    Toast.makeText(_ctx, "Error:" + e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                if (progressDialog.isShowing())
-                    progressDialog.cancel();
-                if (error.toString().toUpperCase().contains("NOCONNECTION"))
-                    Toast.makeText(_ctx, "Please check Your Internet Connectivity", Toast.LENGTH_SHORT).show();
-                else
+
                     Toast.makeText(_ctx, "VolleyErr:" + error.toString(), Toast.LENGTH_SHORT).show();
 
             }
@@ -320,9 +298,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void register_FbUser() {
+        if (!(progressDialog.isShowing()))
+            progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_REGISTER_USER, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String status = jsonObject.getString("status");
@@ -340,6 +322,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
                 Toast.makeText(_ctx, error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
@@ -365,6 +349,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 params.put("device_id", userSingletonModelClass.getDevice_id());
                 params.put("device_type", userSingletonModelClass.getDevice_type());
                 userSingletonModelClass.setReg_type("Facebook");
+
                 params.put("reg_type", userSingletonModelClass.getReg_type());
                 return params;
             }
@@ -390,9 +375,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     * This login() will be called after facebook login
      */
     public void login_FbUser() {
+        if (!(progressDialog.isShowing()))
+            progressDialog.show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String status = jsonObject.getString("status");
@@ -404,16 +393,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         userSingletonModelClass.setTxt_fname(jsonObject_data.getString("firstName"));
                         userSingletonModelClass.setTxt_lname(jsonObject_data.getString("lastName"));
                         userSingletonModelClass.setTxt_email(jsonObject_data.getString("email"));
-                        startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                         load_ProfileDetails();
+
                     } else {
                         Toast.makeText(_ctx, "Error" + response, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if (progressDialog.isShowing())
-                    progressDialog.cancel();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -472,6 +459,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 userSingletonModelClass.setTxt_state_name(jobuser.getString("state_name"));
                                 userSingletonModelClass.setTxt_phone(jobuser.getString("phone"));
                                 userSingletonModelClass.setChurch_id(jobuser.getString("church_id"));
+                                userSingletonModelClass.setChurch_name(jobuser.getString("church_id"));
 
                                 String classes_attended[] = jobuser.getString("classes").split(";");
                                 for (String str :

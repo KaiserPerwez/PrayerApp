@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -63,10 +64,14 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
         //New code...
         txt_chk_new_to_mission = (CheckBox) findViewById(R.id.chk_new_to_mission);
         txt_chk_new_to_mission.setOnClickListener(this);
+
         FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
         imageButtonNext.setVisibility(View.GONE);
         FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
+        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        imageButtonPrevArrow.setOnClickListener(this);
+
         RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutOuter);
         RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
         TextView toggle_switch_text = (TextView) findViewById(R.id.toggle_switch_text);
@@ -222,6 +227,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
                 editprofile();
                 break;
             case R.id.imageButtonPrev:
+            case R.id.imageButtonPrevArrow:
                 finish();
                 break;
             case R.id.toggle_switch_rLayoutOuter:
