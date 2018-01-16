@@ -214,7 +214,10 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
             txt_city.setError("City Field can't be empty");
             return false;
         }
-
+        if (spinner_state.getSelectedItemPosition() == 0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
+            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         String addr1 = _userSingletonModelClass.getTxt_addr1();
         if (addr1.equals(null) || addr1.length() == 0 || addr1.equals("null"))
@@ -239,11 +242,6 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 //            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
 //            return false;
 //        }
-//        if (spinner_state.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
-//            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-
         return true;
     }
 
@@ -448,7 +446,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
 
         spinner_state = (Spinner) findViewById(R.id.spinner_state);
         spinner_state.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, arrayList_state_name));
-        //  spinner_state.setSelection(0);
+        spinner_state.setSelection(0);
 
 
         spinner_country.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -478,6 +476,7 @@ public class RegnOneActivity extends AppCompatActivity implements View.OnClickLi
                 String txt_state_name = "-1";
                 String txt_country_id2 = "-1";
                 if (position != 0) {
+                    position -= 1;
                     txt_state_id = countryModel.getStateModelList().get(position).getState_id();
                     txt_state_name = countryModel.getStateModelList().get(position).getState_name();
                     txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();

@@ -95,7 +95,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
                         }
                     });
             Bundle parameters = new Bundle();
@@ -111,7 +110,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         @Override
         public void onError(FacebookException error) {
-            Toast.makeText(_ctx, "FB Login Error:"+error.toString(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(_ctx, "FB Login Error:" + error.toString(), Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -203,11 +202,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        userSingletonModelClass.setReg_type("normal");
         hideSoftKeyboard();
         int item = v.getId();
         switch (item) {
             case R.id.btn_login:
-
                 if (_txt_email.getText().toString().length() > 0 && _txt_password.getText().toString().length() > 0) {
                     if (!ValidatorUtils.isValidEmail(_txt_email.getText().toString())) {
                         _txt_email.setError("INVALID Email");
@@ -228,12 +227,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(new Intent(LoginActivity.this, ForgotPasswordOneActivity.class));
                 break;
             case R.id.tv_signUp:
-                userSingletonModelClass.setReg_type("normal");
                 startActivity(new Intent(LoginActivity.this, RegnOneActivity.class));
                 break;
             case R.id.linearLayout_btnFb:
-                if (!(progressDialog.isShowing()))
-                    progressDialog.show();
+                userSingletonModelClass.setReg_type("facebook");
+//                if (!(progressDialog.isShowing()))
+//                    progressDialog.show();
                 loginButtonFB = new LoginButton(this);
                 callbackManager = CallbackManager.Factory.create();
                 accessTokenTracker = new AccessTokenTracker() {
@@ -253,6 +252,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 loginButtonFB.setTextLocale(Locale.ENGLISH);
                 loginButtonFB.registerCallback(callbackManager, callback);
                 loginButtonFB.performClick();
+//                if (progressDialog.isShowing())
+//                    progressDialog.cancel();
                 break;
         }
     }
@@ -263,17 +264,36 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         StringRequest stringRequest = new StringRequest(Request.Method.POST, UrlConstants._URL_USER_LOGIN, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    String status = jsonObject.getString("status");
+                    if (status.equals("true")) {
+                        JSONObject jsonDataObject = jsonObject.getJSONObject("data");
+                        String id = jsonDataObject.getString("id");
+                        String accesstoken = jsonDataObject.getString("accessToken");
+                        userSingletonModelClass.setTxt_user_login_id(id);
+                        userSingletonModelClass.setTxt_user_access_token(accesstoken);
 
                         load_LoginDetails_OnPrefs();
                         load_ProfileDetails();
-
+                    } else {
+                        String msg = jsonObject.getString("message");
+                        Toast.makeText(_ctx, msg, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (JSONException e) {
+                    if (progressDialog.isShowing())
+                        progressDialog.cancel();
+                    e.printStackTrace();
+                }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
-                    Toast.makeText(_ctx, "VolleyErr:" + error.toString(), Toast.LENGTH_SHORT).show();
-
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
+                Toast.makeText(_ctx, "VolleyErr:" + error.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -305,19 +325,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             public void onResponse(String response) {
                 if (progressDialog.isShowing())
                     progressDialog.cancel();
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String status = jsonObject.getString("status");
-
-                    if (status.equals("true")) {
                         login_FbUser();
-                    } else if (status.equals("false")) {
-                        Toast.makeText(_ctx, "Already registered.", Toast.LENGTH_SHORT).show();
-                        login_FbUser();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }, new Response.ErrorListener() {
             @Override
@@ -348,7 +356,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 params.put("password", "");
                 params.put("device_id", userSingletonModelClass.getDevice_id());
                 params.put("device_type", userSingletonModelClass.getDevice_type());
-                userSingletonModelClass.setReg_type("Facebook");
+                userSingletonModelClass.setReg_type("facebook");
 
                 params.put("reg_type", userSingletonModelClass.getReg_type());
                 return params;
@@ -476,7 +484,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             LoginActivity.this.finish();
                         }
                     } else if (status.equals("false")) {
-                        Toast.makeText(LoginActivity.this, "Already registered,Please edit your profile", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, "Data could't be fetched.Please re-login", Toast.LENGTH_SHORT).show();
                         // startActivity(new Intent(LoginActivity.this, HomeActivity.class));
                     }
                 } catch (JSONException e) {

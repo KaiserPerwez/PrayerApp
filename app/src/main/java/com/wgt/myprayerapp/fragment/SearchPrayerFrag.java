@@ -95,13 +95,13 @@ public class SearchPrayerFrag extends Fragment implements View.OnClickListener, 
                                 _postPrayerModelClassList) {
                             if (postPrayerModelClass.getPost_description().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
-                            if (postPrayerModelClass.getPost_type().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
+                            else if (postPrayerModelClass.getPost_type().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
 //                            if (postPrayerModelClass.getAnswered_status().contains(txt_search.getText()))
 //                                postPrayerModelClassList.add(postPrayerModelClass);
-                            if (postPrayerModelClass.getPost_priority().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
+                            else if (postPrayerModelClass.getPost_priority().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
-                            if (postPrayerModelClass.getAccessibility().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
+                            else if (postPrayerModelClass.getAccessibility().toLowerCase().contains(txt_search.getText().toString().toLowerCase()))
                                 postPrayerModelClassList.add(postPrayerModelClass);
                         }
                         ListViewPrayerListAdapter listViewPrayerListAdapter = new ListViewPrayerListAdapter((HomeActivity) getActivity(), postPrayerModelClassList);

@@ -1,5 +1,6 @@
 package com.wgt.myprayerapp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -185,17 +186,26 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
     Volley code for spinner
      */
     public void sendRequest() {
+        final ProgressDialog progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
+        progressDialog.setMessage("Fetching list of classes...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         StringRequest stringRequestChurchList = new StringRequest(UrlConstants._URL_CHURCH_LIST, new Response.Listener<String>() {
             @Override
             public void onResponse(String responseStr) {
-                churchList_Json(responseStr);
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
 
+                churchList_Json(responseStr);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_SHORT).show();
+                if (progressDialog.isShowing())
+                    progressDialog.cancel();
 
+                Toast.makeText(_ctx, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
         VolleyUtils.getInstance(_ctx).addToRequestQueue(stringRequestChurchList);

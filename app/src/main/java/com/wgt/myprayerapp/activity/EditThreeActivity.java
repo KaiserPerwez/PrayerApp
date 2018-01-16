@@ -96,8 +96,10 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
         }
 
 
-        if (_userSingletonModelClass.getTxt_newto_mission().equals("1"))
+        if (_userSingletonModelClass.getTxt_newto_mission().equals("1")) {
             txt_chk_new_to_mission.setChecked(true);
+            new_to_mission = "1";
+        }
     }
 
     private void toggleYesNo(int i) {

@@ -80,7 +80,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         nav_header_username.setText(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
 
         //----------------------------------hide change password option for fb users---------//
-        if (_userSingletonModelClass.getTxt_user_access_token() == null) {
+        if (_userSingletonModelClass.getTxt_user_access_token() == null || _userSingletonModelClass.getReg_type().equals("facebook")) {
             Menu nav_Menu = navigationView.getMenu();
             nav_Menu.setGroupVisible(R.id.group_nav_change_pwd, false);
         }
@@ -112,11 +112,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
         if (!_userSingletonModelClass.isProfileCompleted()) {
-            //CustomUtils.alert(_context, "Warning", "Please fill up all mandatory fields via Edit Profile Steps");
-            displaySelectedScreen(R.id.nav_editProfile);
+            if (id == R.id.nav_signOut)
+                displaySelectedScreen(R.id.nav_signOut);
+            else
+                displaySelectedScreen(R.id.nav_editProfile);
         } else {
-            int id = item.getItemId();
             displaySelectedScreen(id);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -157,12 +160,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new ChangePasswordFrag();
                 break;
             case R.id.nav_signOut:
+                //if (_userSingletonModelClass.getReg_type().equals("facebook")) {
                 try {
                     LoginManager.getInstance().logOut();
                 } catch (Exception e) {
                     Toast.makeText(_context, "Err:" + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
-
+                //}
                 SharedPreferences.Editor editor = getSharedPreferences(PrefUtils._PREF_PRAYER_APP, MODE_PRIVATE).edit();
                 editor.putString(PrefUtils._PREF_KEY_LOGIN_ID, null);
                 editor.putString(PrefUtils._PREF_KEY_LOGIN_ACCESS_TOKEN, null);
@@ -180,7 +184,6 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             ft.replace(R.id.content_frame, fragment);
             ft.commit();
         }
-
     }
 
     @Override
@@ -269,16 +272,16 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         _userSingletonModelClass.setTxt_phone(EditOneFrag.txt_phone.getText().toString());
         _userSingletonModelClass.setTxt_country("United States");
         _userSingletonModelClass.setTxt_state_name(state_name);
+        _userSingletonModelClass.setTxt_state_id(state_id);
 
 //        if (spinner_country.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_country_id().equals("-1")) {
 //            Toast.makeText(RegnOneActivity.this, "Please select a country", Toast.LENGTH_SHORT).show();
 //            return false;
 //        }
-//        if (spinner_state.getSelectedItemPosition()==0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
-//            Toast.makeText(RegnOneActivity.this, "Please select a State", Toast.LENGTH_SHORT).show();
-//            return false;
-//        }
-
+        if (EditOneFrag.spinner_state.getSelectedItemPosition() == 0 || _userSingletonModelClass.getTxt_state_id().equals("-1")) {
+            Toast.makeText(this, "Please select a State", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         return true;
     }
 }

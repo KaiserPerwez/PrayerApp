@@ -121,11 +121,12 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         if (country.equals(null) || country.length() == 0 || country.equals("null") || country.equals("Select Country"))
             country = "";
 
-        String state = _userSingletonModelClass.getTxt_state_name();
-        if (state.equals(null) || state.length() == 0 || state.equals("null") || state.equals("Select State"))
-            state = "";
-
         //check for mandatory details
+        String state = _userSingletonModelClass.getTxt_state_name();
+        if (state.equals(null) || state.length() == 0 || state.equals("null") || state.equals("Select State") || state.equals("-1")) {
+            state = "";
+            _userSingletonModelClass.setProfileCompleted(false);
+        }
         String city = _userSingletonModelClass.getTxt_city();
         if (city.equals(null) || city.length() == 0 || city.equals("null")) {
             city = "";
@@ -206,10 +207,12 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         arrayList_state_name.add("Select State");
         final int[] pos_selected_state = {0};
         for (StateModel temp_sModel : countryModel.getStateModelList()) {
+
             if (temp_sModel.getState_name().equals(_userSingletonModelClass.getTxt_state_name()))
                 pos_selected_state[0] = arrayList_state_name.size();
 
             arrayList_state_name.add(temp_sModel.getState_name());
+
         }
         try {
             spinner_country.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_dropdown_item, arraylist_country_name));
@@ -237,6 +240,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
                         txt_state_name = "-1";
                         txt_country_id2 = "-1";
                     } else {
+                        position -= 1;
                         txt_state_id = countryModel.getStateModelList().get(position).getState_id();
                         txt_state_name = countryModel.getStateModelList().get(position).getState_name();
                         txt_country_id2 = countryModel.getStateModelList().get(position).getState_country_id();

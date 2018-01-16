@@ -64,7 +64,7 @@ public class SplashActivity extends AppCompatActivity {
             alertDialog.show();
         } else {
             if (ConnectionDetector.isConnectedToInternet(_ctx)) {
-                logOutFb();
+                logOutFb();//Todo: check
                 loadDataFromPref();
             } else {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(_ctx);// set prompts.xml to alertdialog builder
@@ -160,7 +160,7 @@ public class SplashActivity extends AppCompatActivity {
                             startActivity(new Intent(_ctx, HomeActivity.class));
                         }
                     } else if (status.equals("false")) {
-                        Toast.makeText(_ctx, "NO/PARTIAL DATA FOUND.Please login.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(_ctx, "NO DATA FOUND.Please login.", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(_ctx, LoginActivity.class));
                     }
                     SplashActivity.this.finish();

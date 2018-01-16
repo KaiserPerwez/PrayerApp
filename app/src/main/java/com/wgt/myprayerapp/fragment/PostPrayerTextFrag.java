@@ -273,6 +273,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 .setAction(action)
                 .build();
         ShareDialog.show(getActivity(), content);
+
     }
 
     //----------Volley code for posting text prayer ends------------
