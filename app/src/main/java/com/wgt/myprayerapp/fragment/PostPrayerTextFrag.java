@@ -64,6 +64,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     SwitchCompat toggle_switch;
     LinearLayout linearLayout_btnFb;
     Button btn_post_prayer;
+    private String prayer;
     private String receiver_email;
 
     @Nullable
@@ -144,6 +145,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     Toast.makeText(getContext(), "Minimum 10 characters required", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
+                    prayer=txtPrayer.getText().toString().trim();
                     LayoutInflater li = LayoutInflater.from(getContext());
                     final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
 
@@ -166,6 +168,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     btn_verify.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
                             receiver_email = txt.getText().toString();
                             txt.setError(null);
                             if (receiver_email.length() == 0)
@@ -174,6 +177,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                                 txt.setError("Email Format is invalid");
                             else {
                                 alertDialog.cancel();
+
                                 postTextPrayer();
                             }
                         }
@@ -216,6 +220,12 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                             Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                             postTextPrayerToFb();
                         }
+                        if (postPrayerModelClass.getAccessibility().equals("Private"))
+                        {
+                            Toast.makeText(getActivity(), "Posted Successfully.", Toast.LENGTH_SHORT).show();
+
+                        }
+
                     } else
                         Toast.makeText(getActivity(), "Error", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -256,10 +266,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
 
     private void postTextPrayerToFb() {
         // Create an object
+
         ShareOpenGraphObject object = new ShareOpenGraphObject.Builder()
                 .putString("og:type", "books.book")
                 .putString("og:title", "Text Prayer")
-                .putString("og:description", "Posted via PrayerApp-Android")
+                .putString("og:description", prayer)
                 .putString("books:isbn", "0-553-57340-3")
                 .build();
         // Create an action

@@ -1,5 +1,6 @@
 package com.wgt.myprayerapp.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -22,6 +23,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.StringRequest;
 import com.facebook.login.LoginManager;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.PrefUtils;
@@ -33,6 +38,15 @@ import com.wgt.myprayerapp.fragment.PostPrayerTextFrag;
 import com.wgt.myprayerapp.fragment.PostPrayerVideoFrag;
 import com.wgt.myprayerapp.fragment.SearchPrayerFrag;
 import com.wgt.myprayerapp.model.UserSingletonModelClass;
+import com.wgt.myprayerapp.networking.UrlConstants;
+import com.wgt.myprayerapp.networking.VolleyUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     public static Context _context;
@@ -43,6 +57,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
         _context = HomeActivity.this;
 
         //---------------------adding listeners-------------------//
@@ -284,4 +299,5 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         }
         return true;
     }
+
 }

@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
@@ -30,10 +31,13 @@ import com.wgt.myprayerapp.networking.UrlConstants;
 import com.wgt.myprayerapp.networking.VolleyUtils;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EditTwoActivity extends AppCompatActivity implements View.OnClickListener {
     static String txt_selected_church_name;
@@ -52,7 +56,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_two);
         _ctx = EditTwoActivity.this;
-
+       // load_ProfileDetails();
         chk_alpha = (CheckBox) findViewById(R.id.chk_alpha);
         chk_perspective = (CheckBox) findViewById(R.id.chk_perspective);
         chk_men = (CheckBox) findViewById(R.id.chk_men);
@@ -265,4 +269,6 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         hideSoftKeyboard();
         return super.onTouchEvent(event);
     }
+
+
 }

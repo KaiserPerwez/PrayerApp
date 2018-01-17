@@ -216,11 +216,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     userSingletonModelClass.setTxt_pswd(_txt_password.getText().toString());
                     login();
                 } else {
-                    if (_txt_email.getText().toString().length() == 0)
+                    if (_txt_email.getText().toString().length()==0)
                         _txt_email.setError("Email can't be blank");
 
-                    if (_txt_password.getText().toString().length() == 0)
-                        _txt_email.setError("Password can't be blank");
+                    if (_txt_password.getText().toString().length()==0)
+                        _txt_password.setError("Password can't be blank");
                 }
                 break;
             case R.id.tv_forgot_pwd:
@@ -401,7 +401,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         userSingletonModelClass.setTxt_fname(jsonObject_data.getString("firstName"));
                         userSingletonModelClass.setTxt_lname(jsonObject_data.getString("lastName"));
                         userSingletonModelClass.setTxt_email(jsonObject_data.getString("email"));
+                        load_LoginDetails_OnPrefs();
                         load_ProfileDetails();
+
 
                     } else {
                         Toast.makeText(_ctx, "Error" + response, Toast.LENGTH_SHORT).show();
@@ -452,6 +454,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             JSONArray userjsonarray = jobdata.getJSONArray("user");
                             for (int i = 0; i < userjsonarray.length(); i++) {
                                 JSONObject jobuser = userjsonarray.getJSONObject(i);
+                                Log.e("&&&&&&","chruchnam :"+jobuser);
 
                                 userSingletonModelClass.setTxt_user_login_id(jobuser.getString("id"));
                                 userSingletonModelClass.setTxt_fname(jobuser.getString("first_name"));

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    buildToolsVersion "26.0.1"
     defaultConfig {
         applicationId "com.wgt.myprayerapp"
         minSdkVersion 17
@@ -31,7 +31,7 @@ dependencies {
 
     compile 'com.android.support:appcompat-v7:26.1.0'
     compile 'com.android.support:support-v4:26.1.0'
-    //compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
 
     compile 'com.android.support:design:26.1.0'
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
@@ -43,8 +43,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.github.androidquery:androidquery:0.26.9'
     compile 'dev.dworks.libs:volleyplus:0.1.4'
-    compile 'com.android.support:multidex:1.0.2'
-    compile 'com.android.support:support-annotations:26.1.0'
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support:support-annotations:25.3.1'
     compile('org.apache.httpcomponents:httpmime:4.3.6') {
         exclude module: 'httpclient'
     }

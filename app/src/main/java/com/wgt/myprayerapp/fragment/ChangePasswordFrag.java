@@ -194,7 +194,7 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
                     JSONObject job = new JSONObject(response);
                     String status = job.getString("status");
                     if (status.equals("true")) {
-                        CustomUtils.alert(m_ctx, "Message", "Password changed successfully");
+//                        CustomUtils.alert(m_ctx, "Message", "Password changed successfully");
                         Intent intent = new Intent(m_ctx, ResetPasswordActivity.class);
                         intent.putExtra("verify_mode", "change_pwd");
                         startActivity(intent);

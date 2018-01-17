@@ -129,17 +129,17 @@
                     android:prompt="@string/country_prompt"
                     android:textSize="15sp" />
 
-                <FrameLayout
-                    android:layout_width="15dp"
-                    android:layout_height="5dp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="-30dp">
+                <!--<FrameLayout-->
+                    <!--android:layout_width="15dp"-->
+                    <!--android:layout_height="5dp"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:layout_marginLeft="-30dp">-->
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/dropdown_arrow" />
-                </FrameLayout>
+                    <!--&lt;!&ndash;<ImageView&ndash;&gt;-->
+                        <!--&lt;!&ndash;android:layout_width="match_parent"&ndash;&gt;-->
+                        <!--&lt;!&ndash;android:layout_height="match_parent"&ndash;&gt;-->
+                        <!--&lt;!&ndash;android:background="@drawable/dropdown_arrow" />&ndash;&gt;-->
+                <!--</FrameLayout>-->
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"

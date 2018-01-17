@@ -52,6 +52,7 @@ public class ResetPasswordActivity extends AppCompatActivity {
         m_btn_resetPwd = (Button) findViewById(R.id.btn_resetPwd);
         // btn_resetPwd.setEnabled(false);
 
+
         txt_resetPwd_retype.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
