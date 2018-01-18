@@ -128,6 +128,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        TextView nav_header_username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        nav_header_username.setText(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
 
         if (!_userSingletonModelClass.isProfileCompleted()) {
             if (id == R.id.nav_signOut)

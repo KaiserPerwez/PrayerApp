@@ -113,7 +113,8 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         super.onActivityCreated(savedInstanceState);
 
         load_ProfileDetails();
-        load_ProfileDetails_afterVolley();
+        addItemsOnCountrySpinner();
+
     }
 
     /*
@@ -282,7 +283,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
                             _userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
                             _userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
                             _userSingletonModelClass.setTxt_newto_mission(jobuser.getString("mission_concept"));
-
+                            load_ProfileDetails_afterVolley();
                         }
                     } else if (status.equals("false")) {
                         Toast.makeText(getContext(), "NO DATA UPDATED .", Toast.LENGTH_SHORT).show();
@@ -365,9 +366,10 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         txt_addr2.setText(addr2);
         txt_city.setText(city);
         txt_phone.setText(phone);
+
         if (!_userSingletonModelClass.isProfileCompleted()) {
             CustomUtils.alert(getContext(), "Warning", "Please fill up all mandatory fields via Edit Profile Steps");
         }
-        addItemsOnCountrySpinner();
+//        addItemsOnCountrySpinner();
     }
 }
