@@ -165,7 +165,7 @@
                 android:id="@+id/chk_beth_more"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Beth More"
+                android:text="Beth Moore"
                 android:textColor="@android:color/white"
                 android:textSize="13sp"
                 app:buttonTint="@android:color/white" />

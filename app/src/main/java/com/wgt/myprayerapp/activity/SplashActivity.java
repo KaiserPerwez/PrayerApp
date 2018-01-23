@@ -29,7 +29,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SplashActivity extends AppCompatActivity {
@@ -147,11 +149,14 @@ public class SplashActivity extends AppCompatActivity {
                             _userSingletonModelClass.setChurch_id(jobuser.getString("church_id"));
 
                             String classes_attended[] = jobuser.getString("classes").split(";");
+                            List<String> classes_attended_list = new ArrayList<>();
                             for (String str :
                                     classes_attended) {
                                 if (str.length() > 0)
-                                    _userSingletonModelClass.addClassesAttended(str);
+                                    classes_attended_list.add(str);
                             }
+                            if (classes_attended_list.size() > 0)
+                                _userSingletonModelClass.setList_classes_attended(classes_attended_list);
 
                             _userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
                             _userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));

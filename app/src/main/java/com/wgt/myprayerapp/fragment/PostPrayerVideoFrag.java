@@ -94,12 +94,12 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         // External sdcard location
         File mediaStorageDir = new File(
                 Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                 FileUtils.FILE_DIRECTORY_NAME);
 
         // Create the storage directory if it does not exist
         if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
+            if (mediaStorageDir.mkdirs() || mediaStorageDir.isDirectory()) {
               /*  Log.d(TAG, "Oops! Failed create "
                         + Config.IMAGE_DIRECTORY_NAME + " directory");*/
                 return null;
@@ -130,18 +130,18 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         rootView = inflater.inflate(R.layout.frag_post_prayer_video, container, false);
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
-        img_record_video = (ImageView) rootView.findViewById(R.id.img_record_video);
+        img_record_video = rootView.findViewById(R.id.img_record_video);
         img_record_video.setOnClickListener(this);
         progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
         progressDialog.setCancelable(false);
 
-       final SwitchCompat toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        final SwitchCompat toggle_switch = rootView.findViewById(R.id.toggle_switch);
         toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                TextView tv_OR = rootView.findViewById(R.id.tv_OR);
+                LinearLayout linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
                     postPrayerModelClass.setAccessibility("Public");
@@ -159,17 +159,17 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             }
         });
 
-        txtPrayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
+        txtPrayer = rootView.findViewById(R.id.txt_Prayer);
 
-        txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
+        txt_overflow = rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
-        img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
+        img_overflow = rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        final FrameLayout frame_overflow = rootView.findViewById(R.id.frame_overflow);
         frame_overflow.setOnClickListener(this);
-        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer = rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
-        LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        LinearLayout linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
         postPrayerModelClass.setAccessibility("Private");
@@ -265,7 +265,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 //Toast.makeText(getActivity(),"Video successfully recorded", Toast.LENGTH_SHORT).show();
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
                         MediaStore.Images.Thumbnails.MINI_KIND);
-                ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+                ImageView img_record_video_preview = rootView.findViewById(R.id.img_record_video_preview);
                 img_record_video_preview.setImageBitmap(thumbnail);
 
             } else if (resultCode == getActivity().RESULT_CANCELED) {
@@ -285,7 +285,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
      * Creating file uri to store image/video
      */
     private Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
+        File file = getOutputMediaFile(type);
+        return Uri.fromFile(file);
     }
 
     @Override
@@ -336,14 +337,14 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
                     alertDialog.show();
 
-                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    final TextView txt_title = promptsView.findViewById(R.id.tv_email_dialog_title);
                     txt_title.setText("Enter email id of Church Admin");
                     txt_title.setTextSize(15);
-                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    final EditText txt = promptsView.findViewById(R.id.txt_otp);
                     txt.setHint("Enter Email");
                     txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
-                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    Button btn_verify = promptsView.findViewById(R.id.btn_verify);
                     btn_verify.setText("Submit");
                     btn_verify.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -362,7 +363,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                         }
                     });
 
-                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    Button btn_back = promptsView.findViewById(R.id.btn_back);
                     btn_back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -370,7 +371,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                         }
                     });
                 }
-                ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+                ImageView img_record_video_preview = rootView.findViewById(R.id.img_record_video_preview);
                 img_record_video_preview.setImageBitmap(null);
                 break;
 
@@ -507,7 +508,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 }
             }
             txtPrayer.setText("");
-            ImageView img_record_video_preview = (ImageView) rootView.findViewById(R.id.img_record_video_preview);
+            ImageView img_record_video_preview = rootView.findViewById(R.id.img_record_video_preview);
             img_record_video_preview.setImageBitmap(null);
             super.onPostExecute(result);
 
