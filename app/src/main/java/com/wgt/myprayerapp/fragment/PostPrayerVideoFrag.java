@@ -1,5 +1,6 @@
 package com.wgt.myprayerapp.fragment;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,13 +10,17 @@ import android.graphics.Bitmap;
 import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -68,7 +73,9 @@ import java.util.Locale;
 public class PostPrayerVideoFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     public static final int MEDIA_TYPE_VIDEO = 2;
     // Camera activity request codes
-    private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
+    private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 0;
+    private static final int CAMERA_WRIT_VIDEO_REQUEST_CODE = 1;
+    private static final int VIDEO_PERMISSION = 0;
     static String filepath = null;
     View rootView;
     ImageView img_record_video;
@@ -142,14 +149,13 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 TextView tv_OR = rootView.findViewById(R.id.tv_OR);
                 LinearLayout linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
-                if(toggle_switch.isChecked()){
+                if (toggle_switch.isChecked()) {
                     toggle_switch.setText("Public");
                     postPrayerModelClass.setAccessibility("Public");
                     // tv_OR.setVisibility(View.VISIBLE);
                     linearLayout_btnFb.setVisibility(View.VISIBLE);
                     btn_post_prayer.setVisibility(View.GONE);
-                }
-                else{
+                } else {
                     toggle_switch.setText("Private");
                     postPrayerModelClass.setAccessibility("Public");
                     //tv_OR.setVisibility(View.GONE);
@@ -265,6 +271,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 //Toast.makeText(getActivity(),"Video successfully recorded", Toast.LENGTH_SHORT).show();
                 Bitmap thumbnail = ThumbnailUtils.createVideoThumbnail(filepath,
                         MediaStore.Images.Thumbnails.MINI_KIND);
+                // Bitmap thumbnail=(Bitmap) data.getExtras().get("data");
                 ImageView img_record_video_preview = rootView.findViewById(R.id.img_record_video_preview);
                 img_record_video_preview.setImageBitmap(thumbnail);
 
@@ -304,8 +311,12 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_SHORT).show();
-                recordVideo();
+                if (checkingPermission()) {
+                    Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_SHORT).show();
+                    recordVideo();
+                }
+
+
                 break;
             case R.id.btn_post_prayer:
             case R.id.linearLayout_btnFb:
@@ -378,6 +389,27 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         }
     }
 
+    private boolean checkingPermission() {
+        if (Build.VERSION.SDK_INT >= 23) {//version check
+            if (ActivityCompat.checkSelfPermission(getActivity(),
+                    MediaStore.ACTION_VIDEO_CAPTURE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {//check permison is granted or not
+                // TODO: Consider calling
+                Log.v("@@@@", "Permission is revoked");
+                ActivityCompat.requestPermissions(getActivity(), new String[]{MediaStore.ACTION_VIDEO_CAPTURE,}, CAMERA_CAPTURE_VIDEO_REQUEST_CODE);
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,}, CAMERA_WRIT_VIDEO_REQUEST_CODE);
+                return true;
+            } else {
+                Log.v("@@@@", "Permission is granted");
+
+                return true;
+            }
+        } else {
+            Log.v("@@@@", "Permission is granted");
+            return true;
+        }
+    }
+
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow((null == getActivity().getCurrentFocus()) ? null : getActivity().getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -395,6 +427,29 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 .setQuote("Video: " + txtPrayer.getText().toString())
                 .build();
         ShareDialog.show(getActivity(), content);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CAMERA_CAPTURE_VIDEO_REQUEST_CODE) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    recordVideo();
+                } else {
+                    Toast.makeText(getActivity(), "Please give permission to take video", Toast.LENGTH_SHORT).show();
+                }
+            }
+        } else if (requestCode == 1) {
+            if (grantResults.length > 0) {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    Toast.makeText(getActivity(), "Please give permission to save video", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
     }
 
     /**
@@ -495,8 +550,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             else
                 Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_SHORT).show();
 
-            if (postPrayerModelClass.getAccessibility().equals("Public"))
-            {
+            if (postPrayerModelClass.getAccessibility().equals("Public")) {
                 Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                 JSONObject job = null;
                 try {

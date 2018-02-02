@@ -126,6 +126,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         _ctx = LoginActivity.this;
 
+
         _txt_email = findViewById(R.id.txt_email);
         _txt_password = findViewById(R.id.txt_password);
         _btn_login = findViewById(R.id.btn_login);
@@ -133,12 +134,22 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         _tv_signUp = findViewById(R.id.tv_signUp);
         _linearLayout_btnFb = findViewById(R.id.linearLayout_btnFb);
 
+        _txt_password.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean b) {
+                if (!ValidatorUtils.isValidEmail(_txt_email.getText().toString())) {
+                    _txt_email.setError("INVALID Email");
+
+                }
+            }
+        });
 
         _btn_login.setOnClickListener(this);
         _tv_forgot_pwd.setOnClickListener(this);
         _tv_signUp.setOnClickListener(this);
         _linearLayout_btnFb.setOnClickListener(this);
         setCustomDesign();
+
 
         progressDialog = new ProgressDialog(LoginActivity.this, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Authenticating...");
@@ -209,6 +220,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         int item = v.getId();
         switch (item) {
             case R.id.btn_login:
+
                 if (_txt_email.getText().toString().length() > 0 && _txt_password.getText().toString().length() > 0) {
                     if (!ValidatorUtils.isValidEmail(_txt_email.getText().toString())) {
                         _txt_email.setError("INVALID Email");
