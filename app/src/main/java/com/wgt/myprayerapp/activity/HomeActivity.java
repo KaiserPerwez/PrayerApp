@@ -158,6 +158,9 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 fragment = new EditOneFrag();
                 break;
             case R.id.nav_postPrayer:
+                View v = findViewById(R.id.img_post_txt);
+                Drawable bg = v.getBackground();
+                bg.setAlpha(100);
             case R.id.img_post_txt:
                 fragment = new PostPrayerTextFrag();
                 break;
@@ -220,23 +223,25 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.img_post_audio:
             case R.id.img_post_video:
                 resetBackgroundOpacity();
-                Drawable bg=v.getBackground();
+                Drawable bg = v.getBackground();
                 bg.setAlpha(100);
                 displaySelectedScreen(id);
                 break;
         }
     }
-public void resetBackgroundOpacity(){
-        int[] options_id=new int[]{R.id.img_post_txt,R.id.img_post_audio,R.id.img_post_video};
-    View v;
-    Drawable bg;
-    for (int id :
-            options_id) {
-        v=findViewById(id);
-        bg=v.getBackground();
-        bg.setAlpha(255);
+
+    public void resetBackgroundOpacity() {
+        int[] options_id = new int[]{R.id.img_post_txt, R.id.img_post_audio, R.id.img_post_video};
+        View v;
+        Drawable bg;
+        for (int id :
+                options_id) {
+            v = findViewById(id);
+            bg = v.getBackground();
+            bg.setAlpha(255);
+        }
     }
-}
+
     private boolean setFieldDataToUserSingletonObject() {
         EditOneFrag.txt_fname.setError(null);
         EditOneFrag.txt_lname.setError(null);
