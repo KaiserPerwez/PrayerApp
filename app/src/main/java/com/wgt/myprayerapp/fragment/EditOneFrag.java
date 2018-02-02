@@ -2,11 +2,9 @@ package com.wgt.myprayerapp.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -39,6 +37,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 //import com.android.volley.VolleyError;
@@ -55,13 +54,12 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
     public static String txt_country_id1, txt_country_name, txt_country_shortname, txt_state_id, txt_state_name, txt_country_id2;
     View rootView;
     TextView nav_header_username;
-    private  boolean check=true;
+    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
 
     /*
    *Taking variables and arraylist for spinner
     */
-
-    UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
+    private boolean check = true;
 
     @Nullable
     @Override
@@ -70,17 +68,19 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
 
+        //_userSingletonModelClass.setList_classes_attended(0);
 
-        txt_fname = (EditText) rootView.findViewById(R.id.txt_fname);
-        txt_lname = (EditText) rootView.findViewById(R.id.txt_lname);
-        txt_email = (EditText) rootView.findViewById(R.id.txt_email);
-        txt_addr1 = (EditText) rootView.findViewById(R.id.txt_addr1);
-        txt_addr2 = (EditText) rootView.findViewById(R.id.txt_addr2);
-        txt_city = (EditText) rootView.findViewById(R.id.txt_city);
-        txt_phone = (EditText) rootView.findViewById(R.id.txt_phone);
-        spinner_state = (Spinner) rootView.findViewById(R.id.spinner_state);
-        spinner_country = (Spinner) rootView.findViewById(R.id.spinner_country_name);
+        txt_fname = rootView.findViewById(R.id.txt_fname);
+        txt_lname = rootView.findViewById(R.id.txt_lname);
+        txt_email = rootView.findViewById(R.id.txt_email);
+        txt_addr1 = rootView.findViewById(R.id.txt_addr1);
+        txt_addr2 = rootView.findViewById(R.id.txt_addr2);
+        txt_city = rootView.findViewById(R.id.txt_city);
+        txt_phone = rootView.findViewById(R.id.txt_phone);
+        spinner_state = rootView.findViewById(R.id.spinner_state);
+        spinner_country = rootView.findViewById(R.id.spinner_country_name);
         setCustomDesign();
+
 
         return rootView;
     }
@@ -113,7 +113,8 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         super.onActivityCreated(savedInstanceState);
 
         load_ProfileDetails();
-        load_ProfileDetails_afterVolley();
+        addItemsOnCountrySpinner();
+
     }
 
     /*
@@ -235,6 +236,7 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         hideSoftKeyboard();
         return false;
     }
+
     public void load_ProfileDetails() {
         final ProgressDialog progressDialog = new ProgressDialog(getContext(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Loading data...");
@@ -273,16 +275,19 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
                             _userSingletonModelClass.setChurch_id(jobuser.getString("church_id"));
 
                             String classes_attended[] = jobuser.getString("classes").split(";");
+                            List<String> classes_attended_list = new ArrayList<>();
                             for (String str :
                                     classes_attended) {
                                 if (str.length() > 0)
-                                    _userSingletonModelClass.addClassesAttended(str);
+                                    classes_attended_list.add(str);
                             }
+                            if (classes_attended_list.size() > 0)
+                                _userSingletonModelClass.setList_classes_attended(classes_attended_list);
 
                             _userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
                             _userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
                             _userSingletonModelClass.setTxt_newto_mission(jobuser.getString("mission_concept"));
-
+                            load_ProfileDetails_afterVolley();
                         }
                     } else if (status.equals("false")) {
                         Toast.makeText(getContext(), "NO DATA UPDATED .", Toast.LENGTH_SHORT).show();
@@ -313,8 +318,8 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         };
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
-    public  void load_ProfileDetails_afterVolley()
-    {
+
+    public void load_ProfileDetails_afterVolley() {
         _userSingletonModelClass.setProfileCompleted(true);//default
 
         txt_fname.setText(_userSingletonModelClass.getTxt_fname());
@@ -365,9 +370,10 @@ public class EditOneFrag extends Fragment implements View.OnTouchListener {
         txt_addr2.setText(addr2);
         txt_city.setText(city);
         txt_phone.setText(phone);
+
         if (!_userSingletonModelClass.isProfileCompleted()) {
             CustomUtils.alert(getContext(), "Warning", "Please fill up all mandatory fields via Edit Profile Steps");
         }
-        addItemsOnCountrySpinner();
+//        addItemsOnCountrySpinner();
     }
 }

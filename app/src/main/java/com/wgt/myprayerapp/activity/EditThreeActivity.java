@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -62,32 +63,32 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
 
         setCustomDesign();
         //New code...
-        txt_chk_new_to_mission = (CheckBox) findViewById(R.id.chk_new_to_mission);
+        txt_chk_new_to_mission = findViewById(R.id.chk_new_to_mission);
         txt_chk_new_to_mission.setOnClickListener(this);
 
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
+        FrameLayout imageButtonNext = findViewById(R.id.imageButtonNext);
         imageButtonNext.setVisibility(View.GONE);
-        FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
+        FrameLayout imageButtonPrev = findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
-        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        ImageView imageButtonPrevArrow = findViewById(R.id.imageButtonPrevArrow);
         imageButtonPrevArrow.setOnClickListener(this);
 
-        RelativeLayout toggle_switch_rLayoutOuter = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutOuter);
-        RelativeLayout toggle_switch_rLayoutInner = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
-        TextView toggle_switch_text = (TextView) findViewById(R.id.toggle_switch_text);
-        ImageButton toggle_switch_btn = (ImageButton) findViewById(R.id.toggle_switch_btn);
+        RelativeLayout toggle_switch_rLayoutOuter = findViewById(R.id.toggle_switch_rLayoutOuter);
+        RelativeLayout toggle_switch_rLayoutInner = findViewById(R.id.toggle_switch_rLayoutInner);
+        TextView toggle_switch_text = findViewById(R.id.toggle_switch_text);
+        ImageButton toggle_switch_btn = findViewById(R.id.toggle_switch_btn);
         toggle_switch_rLayoutOuter.setOnClickListener(this);
         toggle_switch_rLayoutInner.setOnClickListener(this);
         toggle_switch_text.setOnClickListener(this);
         toggle_switch_btn.setOnClickListener(this);
         toggle_switch_btn.setOnClickListener(this);
         toggleYesNo(i[0]++);
-        btn_editProfile = (Button) findViewById(R.id.btn_editProfile);
+        btn_editProfile = findViewById(R.id.btn_editProfile);
         btn_editProfile.setOnClickListener(this);
         progressDialog = new ProgressDialog(_ctx, ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Updating data...");
 
-        spinner_country = (Spinner) findViewById(R.id.spinner_country);
+        spinner_country = findViewById(R.id.spinner_country);
         addItemsOnCountrySpinner();
 
         if (_userSingletonModelClass.getTxt_mission_trip_participation_status().toUpperCase().equals("YES")) {
@@ -103,7 +104,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
     }
 
     private void toggleYesNo(int i) {
-        final RelativeLayout toggle_switch_rLayout = (RelativeLayout) findViewById(R.id.toggle_switch_rLayoutInner);
+        final RelativeLayout toggle_switch_rLayout = findViewById(R.id.toggle_switch_rLayoutInner);
         if (i % 2 == 0) {
             toggle_switch_rLayout.setGravity(Gravity.RIGHT | Gravity.CENTER);
             findViewById(R.id.tv_YES).setVisibility(View.VISIBLE);
@@ -261,6 +262,7 @@ public class EditThreeActivity extends AppCompatActivity implements View.OnClick
                     progressDialog.cancel();
                 try {
                     JSONObject job = new JSONObject(response);
+                    Log.e("%%%%%", "respo " + response);
                     String status = job.getString("status");
                     if (status.equals("true")) {
                         Intent intent = new Intent(_ctx, HomeActivity.class);

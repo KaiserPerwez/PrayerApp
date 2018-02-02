@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
@@ -31,13 +30,10 @@ import com.wgt.myprayerapp.networking.UrlConstants;
 import com.wgt.myprayerapp.networking.VolleyUtils;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class EditTwoActivity extends AppCompatActivity implements View.OnClickListener {
     static String txt_selected_church_name;
@@ -57,49 +53,61 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         setContentView(R.layout.activity_edit_two);
         _ctx = EditTwoActivity.this;
        // load_ProfileDetails();
-        chk_alpha = (CheckBox) findViewById(R.id.chk_alpha);
-        chk_perspective = (CheckBox) findViewById(R.id.chk_perspective);
-        chk_men = (CheckBox) findViewById(R.id.chk_men);
-        chk_beth_more = (CheckBox) findViewById(R.id.chk_beth_more);
-        chk_cbs = (CheckBox) findViewById(R.id.chk_cbs);
+        chk_alpha = findViewById(R.id.chk_alpha);
+        chk_perspective = findViewById(R.id.chk_perspective);
+        chk_men = findViewById(R.id.chk_men);
+        chk_beth_more = findViewById(R.id.chk_beth_more);
+        chk_cbs = findViewById(R.id.chk_cbs);
         // chk_others=(CheckBox)findViewById(R.id.chk_others);
-        txt_others = (EditText) findViewById(R.id.txt_others);
-        txt_churchname = (Spinner) findViewById(R.id.txt_church_name);
+        txt_others = findViewById(R.id.txt_others);
+        txt_churchname = findViewById(R.id.txt_church_name);
 
         chk_alpha.setOnClickListener(this);
         chk_perspective.setOnClickListener(this);
         chk_men.setOnClickListener(this);
         chk_beth_more.setOnClickListener(this);
         chk_cbs.setOnClickListener(this);
-        chk_others = (CheckBox) findViewById(R.id.chk_others);
+        chk_others = findViewById(R.id.chk_others);
         chk_others.setOnClickListener(this);
 
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
+
+        FrameLayout imageButtonNext = findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
-        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        ImageView imageButtonNextArrow = findViewById(R.id.imageButtonNextArrow);
         imageButtonNextArrow.setOnClickListener(this);
-        FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
+        FrameLayout imageButtonPrev = findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
-        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        ImageView imageButtonPrevArrow = findViewById(R.id.imageButtonPrevArrow);
         imageButtonPrevArrow.setOnClickListener(this);
+
 
         setCustomDesign();
         //Calling volley method for spinner
-        sendRequest();
+        //sendRequest();
         if (_userSingletonModelClass.getList_classes_attended().contains("Alpha")) {
             chk_alpha.setChecked(true);
+        } else {
+            chk_alpha.setChecked(false);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("Perspective")) {
             chk_perspective.setChecked(true);
+        } else {
+            chk_perspective.setChecked(false);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("Men's Fraternity")) {
             chk_men.setChecked(true);
+        } else {
+            chk_men.setChecked(false);
         }
-        if (_userSingletonModelClass.getList_classes_attended().contains("Beth More")) {
+        if (_userSingletonModelClass.getList_classes_attended().contains("Beth Moore")) {
             chk_beth_more.setChecked(true);
+        } else {
+            chk_beth_more.setChecked(false);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("CBS")) {
             chk_cbs.setChecked(true);
+        } else {
+            chk_cbs.setChecked(false);
         }
         if (_userSingletonModelClass.getList_classes_attended().contains("OTHER")) {
             chk_others.setChecked(true);
@@ -107,6 +115,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
             int pos_other = _userSingletonModelClass.getList_classes_attended().indexOf("OTHER");
             txt_others.setText(_userSingletonModelClass.getList_classes_attended().get(pos_other + 1).toString());
         }
+        sendRequest();
 
     }
 
@@ -136,7 +145,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
         int item = v.getId();
         switch (item) {
             case R.id.chk_others:
-                LinearLayout layout = (LinearLayout) findViewById(R.id.layout_txt_others);
+                LinearLayout layout = findViewById(R.id.layout_txt_others);
                 if (chk_others.isChecked()) {
                     layout.setVisibility(View.VISIBLE);
                 } else {
@@ -157,7 +166,7 @@ public class EditTwoActivity extends AppCompatActivity implements View.OnClickLi
                 if (chk_men.isChecked())
                     list.add("Men's Fraternity");
                 if (chk_beth_more.isChecked())
-                    list.add("Beth More");
+                    list.add("Beth Moore");
                 if (chk_cbs.isChecked())
                     list.add("CBS");
                 if (chk_others.isChecked()) {

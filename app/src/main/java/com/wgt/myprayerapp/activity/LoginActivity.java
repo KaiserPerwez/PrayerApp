@@ -51,9 +51,11 @@ import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -124,12 +126,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         _ctx = LoginActivity.this;
 
-        _txt_email = (EditText) findViewById(R.id.txt_email);
-        _txt_password = (EditText) findViewById(R.id.txt_password);
-        _btn_login = (Button) findViewById(R.id.btn_login);
-        _tv_forgot_pwd = (TextView) findViewById(R.id.tv_forgot_pwd);
-        _tv_signUp = (TextView) findViewById(R.id.tv_signUp);
-        _linearLayout_btnFb = (LinearLayout) findViewById(R.id.linearLayout_btnFb);
+        _txt_email = findViewById(R.id.txt_email);
+        _txt_password = findViewById(R.id.txt_password);
+        _btn_login = findViewById(R.id.btn_login);
+        _tv_forgot_pwd = findViewById(R.id.tv_forgot_pwd);
+        _tv_signUp = findViewById(R.id.tv_signUp);
+        _linearLayout_btnFb = findViewById(R.id.linearLayout_btnFb);
 
 
         _btn_login.setOnClickListener(this);
@@ -473,11 +475,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 userSingletonModelClass.setChurch_name(jobuser.getString("church_id"));
 
                                 String classes_attended[] = jobuser.getString("classes").split(";");
+                                List<String> classes_attended_list = new ArrayList<>();
                                 for (String str :
                                         classes_attended) {
                                     if (str.length() > 0)
-                                        userSingletonModelClass.addClassesAttended(str);
+                                        classes_attended_list.add(str);
                                 }
+                                if (classes_attended_list.size() > 0)
+                                    userSingletonModelClass.setList_classes_attended(classes_attended_list);
 
                                 userSingletonModelClass.setTxt_mission_trip_countries(jobuser.getString("mission_trip"));
                                 userSingletonModelClass.setTxt_mission_trip_participation_status(jobuser.getString("mission_trip_status"));
