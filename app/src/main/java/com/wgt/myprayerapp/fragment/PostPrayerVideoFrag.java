@@ -76,6 +76,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 0;
     private static final int CAMERA_WRIT_VIDEO_REQUEST_CODE = 1;
     private static final int VIDEO_PERMISSION = 0;
+    public static Bitmap photo = null;
     static String filepath = null;
     View rootView;
     ImageView img_record_video;
@@ -91,12 +92,13 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     PostPrayerModelClass postPrayerModelClass = new PostPrayerModelClass();
     FileUtils fileUtils = new FileUtils();
     PopupMenu popup;
+    int type = 0;
     private Uri fileUri; // file url to store image/video
 
     /**
      * returning image / video
      */
-    private static File getOutputMediaFile(int type) {
+    private static File getOutputMediaFile(Bitmap mphoto) {
 
         // External sdcard location
         File mediaStorageDir = new File(
@@ -121,7 +123,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
                     + "IMG_" + timeStamp + ".jpg");
         } */
-        if (type == MEDIA_TYPE_VIDEO) {
+        if (photo == mphoto) {
             mediaFile = new File(mediaStorageDir.getPath() + File.separator
                     + "VID_" + timeStamp + ".mp4");
         } else {
@@ -215,7 +217,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
      */
     private void recordVideo() {
 
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+        fileUri = getOutputMediaFileUri(photo);
         filepath = fileUri.getPath();
         fileUtils.setVideo_filepath(filepath);
 
@@ -291,8 +293,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     /**
      * Creating file uri to store image/video
      */
-    private Uri getOutputMediaFileUri(int type) {
-        File file = getOutputMediaFile(type);
+    private Uri getOutputMediaFileUri(Bitmap photo) {
+        File file = getOutputMediaFile(photo);
         return Uri.fromFile(file);
     }
 
@@ -311,11 +313,16 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     Toast.makeText(getActivity(), "Sorry! Your device doesn't support camera", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                if (checkingPermission()) {
-                    Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_SHORT).show();
-                    recordVideo();
-                }
+                if (checkingPermissionforWrite()) {
+                    if (photo != null) {
+                        getOutputMediaFile(photo);
+                    }
+                    if (checkingPermission()) {
+                        Toast.makeText(getActivity(), "Opening Camera", Toast.LENGTH_SHORT).show();
+                        recordVideo();
+                    }
 
+                }
 
                 break;
             case R.id.btn_post_prayer:
@@ -392,16 +399,35 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private boolean checkingPermission() {
         if (Build.VERSION.SDK_INT >= 23) {//version check
             if (ActivityCompat.checkSelfPermission(getActivity(),
-                    MediaStore.ACTION_VIDEO_CAPTURE) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getActivity(),
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {//check permison is granted or not
+                    MediaStore.ACTION_VIDEO_CAPTURE) != PackageManager.PERMISSION_GRANTED) {//check permison is granted or not
                 // TODO: Consider calling
                 Log.v("@@@@", "Permission is revoked");
                 ActivityCompat.requestPermissions(getActivity(), new String[]{MediaStore.ACTION_VIDEO_CAPTURE,}, CAMERA_CAPTURE_VIDEO_REQUEST_CODE);
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,}, CAMERA_WRIT_VIDEO_REQUEST_CODE);
+                // ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,}, CAMERA_WRIT_VIDEO_REQUEST_CODE);
                 return true;
             } else {
                 Log.v("@@@@", "Permission is granted");
+                return true;
+            }
+        } else {
+            Log.v("@@@@", "Permission is granted");
+            return true;
+        }
+    }
 
+
+    private boolean checkingPermissionforWrite() {
+        if (Build.VERSION.SDK_INT >= 23) {//version check
+            if (ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(),
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {//check permison is granted or not
+                // TODO: Consider calling
+                Log.v("@@@@", "Permission is revoked");
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE}, CAMERA_WRIT_VIDEO_REQUEST_CODE);
+                return true;
+            } else {
+                Log.v("@@@@", "Permission is granted");
                 return true;
             }
         } else {
@@ -440,10 +466,11 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                     Toast.makeText(getActivity(), "Please give permission to take video", Toast.LENGTH_SHORT).show();
                 }
             }
-        } else if (requestCode == 1) {
+        } else if (requestCode == CAMERA_WRIT_VIDEO_REQUEST_CODE) {
             if (grantResults.length > 0) {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
+                    if (photo != null)
+                        getOutputMediaFile(photo);
                 } else {
                     Toast.makeText(getActivity(), "Please give permission to save video", Toast.LENGTH_SHORT).show();
                 }

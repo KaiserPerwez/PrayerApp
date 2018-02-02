@@ -66,6 +66,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     Button btn_post_prayer;
     private String prayer;
     private String receiver_email;
+    private ImageView img_post_txt;
 
     @Nullable
     @Override
@@ -73,25 +74,27 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         rootView = inflater.inflate(R.layout.frag_post_prayer_text, container, false);
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
-        txtPrayer = (EditText) rootView.findViewById(R.id.txtPrayer);
-        txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
+        txtPrayer = rootView.findViewById(R.id.txtPrayer);
+        txt_overflow = rootView.findViewById(R.id.txt_overflow);
+        img_post_txt = rootView.findViewById(R.id.img_post_txt);
         txt_overflow.setOnClickListener(this);
-        img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
+        img_overflow = rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+        final FrameLayout frame_overflow = rootView.findViewById(R.id.frame_overflow);
         frame_overflow.setOnClickListener(this);
 
-        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer = rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
-        linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
-        toggle_switch = (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+
+        toggle_switch = rootView.findViewById(R.id.toggle_switch);
         toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-                linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                TextView tv_OR = rootView.findViewById(R.id.tv_OR);
+                linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
                 if (toggle_switch.isChecked()) {
                     toggle_switch.setText("Public");
                     //tv_OR.setVisibility(View.VISIBLE);
@@ -145,7 +148,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     Toast.makeText(getContext(), "Minimum 10 characters required", Toast.LENGTH_SHORT).show();
                     return;
                 } else {
-                    prayer=txtPrayer.getText().toString().trim();
+                    prayer = txtPrayer.getText().toString().trim();
                     LayoutInflater li = LayoutInflater.from(getContext());
                     final View promptsView = li.inflate(R.layout.verify_email_dialog, null);
 
@@ -156,14 +159,14 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
                     alertDialog.show();
 
-                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    final TextView txt_title = promptsView.findViewById(R.id.tv_email_dialog_title);
                     txt_title.setText("Enter email id of Church Admin");
                     txt_title.setTextSize(15);
-                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    final EditText txt = promptsView.findViewById(R.id.txt_otp);
                     txt.setHint("Enter Email");
                     txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
-                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    Button btn_verify = promptsView.findViewById(R.id.btn_verify);
                     btn_verify.setText("Submit");
                     btn_verify.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -183,7 +186,7 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                         }
                     });
 
-                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    Button btn_back = promptsView.findViewById(R.id.btn_back);
                     btn_back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -215,13 +218,11 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                     if (status.equals("true")) {
 //                        Toast.makeText(getActivity(), "Data posted successfully to database", Toast.LENGTH_SHORT).show();
                         txtPrayer.setText("");
-                        if (postPrayerModelClass.getAccessibility().equals("Public"))
-                        {
+                        if (postPrayerModelClass.getAccessibility().equals("Public")) {
                             Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                             postTextPrayerToFb();
                         }
-                        if (postPrayerModelClass.getAccessibility().equals("Private"))
-                        {
+                        if (postPrayerModelClass.getAccessibility().equals("Private")) {
                             Toast.makeText(getActivity(), "Posted Successfully.", Toast.LENGTH_SHORT).show();
 
                         }

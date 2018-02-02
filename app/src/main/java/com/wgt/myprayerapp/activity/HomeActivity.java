@@ -1,6 +1,5 @@
 package com.wgt.myprayerapp.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,10 +23,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.error.VolleyError;
-import com.android.volley.request.StringRequest;
 import com.facebook.login.LoginManager;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.PrefUtils;
@@ -39,20 +34,14 @@ import com.wgt.myprayerapp.fragment.PostPrayerTextFrag;
 import com.wgt.myprayerapp.fragment.PostPrayerVideoFrag;
 import com.wgt.myprayerapp.fragment.SearchPrayerFrag;
 import com.wgt.myprayerapp.model.UserSingletonModelClass;
-import com.wgt.myprayerapp.networking.UrlConstants;
-import com.wgt.myprayerapp.networking.VolleyUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
     public static Context _context;
     LinearLayout _linearLayout_bar_prayers, _linearLayout_bar_edit;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
+    private ImageView img_post_txt;
+    private ImageView img_post_audio;
+    private ImageView img_post_video;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,37 +51,37 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         _context = HomeActivity.this;
 
         //---------------------adding listeners-------------------//
-        _linearLayout_bar_prayers = (LinearLayout) findViewById(R.id.linearLayout_bar_prayers);
-        _linearLayout_bar_edit = (LinearLayout) findViewById(R.id.linearLayout_bar_edit);
+        _linearLayout_bar_prayers = findViewById(R.id.linearLayout_bar_prayers);
+        _linearLayout_bar_edit = findViewById(R.id.linearLayout_bar_edit);
         _linearLayout_bar_prayers.setVisibility(View.VISIBLE);
         _linearLayout_bar_edit.setVisibility(View.GONE);
 
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
+        FrameLayout imageButtonNext = findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
-        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        ImageView imageButtonNextArrow = findViewById(R.id.imageButtonNextArrow);
         imageButtonNextArrow.setOnClickListener(this);
-        ImageView img_post_txt = (ImageView) findViewById(R.id.img_post_txt);
+        img_post_txt = findViewById(R.id.img_post_txt);
         img_post_txt.setOnClickListener(this);
-        ImageView img_post_audio = (ImageView) findViewById(R.id.img_post_audio);
+        img_post_audio = findViewById(R.id.img_post_audio);
         img_post_audio.setOnClickListener(this);
-        ImageView img_post_video = (ImageView) findViewById(R.id.img_post_video);
+        img_post_video = findViewById(R.id.img_post_video);
         img_post_video.setOnClickListener(this);
         //----------------------------------------------------------------//
 
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        TextView nav_header_username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        TextView nav_header_username = navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
         nav_header_username.setText(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
 
         //----------------------------------hide change password option for fb users---------//
@@ -113,11 +102,13 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             default:
                 displaySelectedScreen(R.id.nav_editProfile);
         }
+
+
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -129,8 +120,8 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        TextView nav_header_username = (TextView) navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        TextView nav_header_username = navigationView.getHeaderView(0).findViewById(R.id.nav_header_username);
         nav_header_username.setText(_userSingletonModelClass.getTxt_fname() + " " + _userSingletonModelClass.getTxt_lname());
 
         if (!_userSingletonModelClass.isProfileCompleted()) {
@@ -141,13 +132,14 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         } else {
             displaySelectedScreen(id);
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
     private void displaySelectedScreen(int id) {
         Fragment fragment = null;
+        Drawable rightArrow;
         _linearLayout_bar_prayers.setVisibility(View.VISIBLE);
         _linearLayout_bar_edit.setVisibility(View.GONE);
         //initializing the fragment object which is selected
@@ -163,9 +155,11 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 bg.setAlpha(100);
             case R.id.img_post_txt:
                 fragment = new PostPrayerTextFrag();
+
                 break;
             case R.id.img_post_audio:
                 fragment = new PostPrayerAudioFrag();
+
                 break;
             case R.id.img_post_video:
                 fragment = new PostPrayerVideoFrag();
