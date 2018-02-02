@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -216,17 +217,26 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
                 }
                 break;
             case R.id.img_post_txt:
-                displaySelectedScreen(R.id.img_post_txt);
-                break;
             case R.id.img_post_audio:
-                displaySelectedScreen(R.id.img_post_audio);
-                break;
             case R.id.img_post_video:
-                displaySelectedScreen(R.id.img_post_video);
+                resetBackgroundOpacity();
+                Drawable bg=v.getBackground();
+                bg.setAlpha(150);
+                displaySelectedScreen(id);
                 break;
         }
     }
-
+public void resetBackgroundOpacity(){
+        int[] options_id=new int[]{R.id.img_post_txt,R.id.img_post_audio,R.id.img_post_video};
+    View v;
+    Drawable bg;
+    for (int id :
+            options_id) {
+        v=findViewById(id);
+        bg=v.getBackground();
+        bg.setAlpha(255);
+    }
+}
     private boolean setFieldDataToUserSingletonObject() {
         EditOneFrag.txt_fname.setError(null);
         EditOneFrag.txt_lname.setError(null);
