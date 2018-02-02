@@ -221,7 +221,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
             case R.id.img_post_video:
                 resetBackgroundOpacity();
                 Drawable bg=v.getBackground();
-                bg.setAlpha(150);
+                bg.setAlpha(100);
                 displaySelectedScreen(id);
                 break;
         }
