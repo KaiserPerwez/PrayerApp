@@ -48,9 +48,9 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgot_password);
         setCustomDesign();
-        btn_getOtp = (Button) findViewById(R.id.btn_getOtp);
-        btn_backToLogin = (TextView) findViewById(R.id.tv_backToLogin);
-        txt_verifyEmail = (EditText) findViewById(R.id.txt_verifyEmail);
+        btn_getOtp = findViewById(R.id.btn_getOtp);
+        btn_backToLogin = findViewById(R.id.tv_backToLogin);
+        txt_verifyEmail = findViewById(R.id.txt_verifyEmail);
         btn_getOtp.setOnClickListener(this);
         btn_backToLogin.setOnClickListener(this);
     }
@@ -120,9 +120,11 @@ public class ForgotPasswordOneActivity extends AppCompatActivity implements View
                         final AlertDialog alertDialog = alertDialogBuilder.create();
                         // show it
                         alertDialog.show();
-                        txt_otp = (EditText) promptsView.findViewById(R.id.txt_otp);
-                        btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
-                        Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                        txt_otp = promptsView.findViewById(R.id.txt_otp);
+                        btn_verify = promptsView.findViewById(R.id.btn_verify);
+                        Button btn_back = promptsView.findViewById(R.id.btn_back);
+                        TextView tv_email_dialog_title = promptsView.findViewById(R.id.tv_email_dialog_title);
+                        tv_email_dialog_title.setText("Verify OTP");
                         btn_back.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {

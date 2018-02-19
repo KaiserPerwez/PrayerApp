@@ -3,6 +3,7 @@ package com.wgt.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -17,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -33,6 +35,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
@@ -72,6 +79,8 @@ import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_AUDIO;
 
 public class PostPrayerAudioFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
     public static final int RequestPermissionCode = 1;
+    public static CallbackManager callbackManager;
+    public static boolean valueOfaudeo = false;
     View rootView;
     ImageView audio_record;
     MediaRecorder mediaRecorder;
@@ -85,12 +94,13 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     long totalSize = 0;
     String receiver_email;
     PopupMenu popup;
-
     TextView tv_audio_timer;
     long timeInMilliseconds = 0L;
     long timeSwapBuff = 0L;
     long updatedTime = 0L;
+    ShareDialog shareDialog;
     boolean recording_status = false;
+    private boolean sucess = false;
     private ProgressDialog progressDialog;
     private Uri fileUri; // file url to store image/video
     private long startHTime = 0L;
@@ -112,6 +122,28 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             customHandler.postDelayed(this, 0);
         }
 
+    };
+    private FacebookCallback<Sharer.Result> callback = new FacebookCallback<Sharer.Result>() {
+        @Override
+        public void onSuccess(Sharer.Result result) {
+            Log.e("aaa@@", "Successfully posted");
+            sucess = true;
+            Toast.makeText(getContext(), "Successfully posted", Toast.LENGTH_SHORT).show();
+            // Write some code to do some operations when you shared content successfully.
+        }
+
+        @Override
+        public void onCancel() {
+            Log.e("aaa@@", "Cancel occurred");
+            Toast.makeText(getContext(), "User Denied", Toast.LENGTH_SHORT).show();
+            // Write some code to do some operations when you cancel sharing content.
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            Log.e("aaa@@", error.getMessage());
+            // Write some code to do some operations when some error occurs while sharing content.
+        }
     };
 
     /**
@@ -158,21 +190,29 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         rootView = inflater.inflate(R.layout.frag_post_prayer_audio, container, false);
         rootView.setOnTouchListener(this);//to detect touch on non-views
 
-        txt_Prayer = (EditText) rootView.findViewById(R.id.txt_Prayer);
-        tv_audio_timer = (TextView) rootView.findViewById(R.id.audio_timer);
-        audio_record = (ImageView) rootView.findViewById(R.id.audio_record);
+        txt_Prayer = rootView.findViewById(R.id.txt_Prayer);
+        tv_audio_timer = rootView.findViewById(R.id.audio_timer);
+        audio_record = rootView.findViewById(R.id.audio_record);
         audio_record.setOnClickListener(this);
+
+        FacebookSdk.sdkInitialize(getActivity());
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(getActivity());
+        shareDialog.registerCallback(callbackManager, callback);
+        valueOfaudeo = true;
+        PostPrayerTextFrag.valueofText = false;
+
 
         progressDialog = new ProgressDialog(getContext(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
         progressDialog.setCancelable(false);
 
-        final SwitchCompat toggle_switch= (SwitchCompat) rootView.findViewById(R.id.toggle_switch);
+        final SwitchCompat toggle_switch = rootView.findViewById(R.id.toggle_switch);
         toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                TextView tv_OR = (TextView) rootView.findViewById(R.id.tv_OR);
-                LinearLayout linearLayout_btnFb = (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+                TextView tv_OR = rootView.findViewById(R.id.tv_OR);
+                LinearLayout linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
                 if(toggle_switch.isChecked()){
                     toggle_switch.setText("Public");
                     postPrayerModelClass.setAccessibility("Public");
@@ -190,16 +230,17 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             }
         });
 
-        txt_overflow = (TextView) rootView.findViewById(R.id.txt_overflow);
+        txt_overflow = rootView.findViewById(R.id.txt_overflow);
         txt_overflow.setOnClickListener(this);
-        img_overflow = (ImageView) rootView.findViewById(R.id.img_overflow);
+        img_overflow = rootView.findViewById(R.id.img_overflow);
         img_overflow.setOnClickListener(this);
-        final FrameLayout frame_overflow = (FrameLayout) rootView.findViewById(R.id.frame_overflow);
+
+        final FrameLayout frame_overflow = rootView.findViewById(R.id.frame_overflow);
         frame_overflow.setOnClickListener(this);
 
-        btn_post_prayer = (Button) rootView.findViewById(R.id.btn_post_prayer);
+        btn_post_prayer = rootView.findViewById(R.id.btn_post_prayer);
         btn_post_prayer.setOnClickListener(this);
-        LinearLayout linearLayout_btnFb= (LinearLayout) rootView.findViewById(R.id.linearLayout_btnFb);
+        LinearLayout linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
 
         postPrayerModelClass.setAccessibility("Private");
@@ -228,6 +269,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
         timeSwapBuff = 0L;
         updatedTime = 0L;
     }
+
     //------------------Code for audio recording----------------
     public void MediaRecorderReady() {
         mediaRecorder = new MediaRecorder();
@@ -349,14 +391,14 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                     final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
                     alertDialog.show();
 
-                    final TextView txt_title = (TextView) promptsView.findViewById(R.id.tv_email_dialog_title);
+                    final TextView txt_title = promptsView.findViewById(R.id.tv_email_dialog_title);
                     txt_title.setText("Enter email id of Church Admin");
                     txt_title.setTextSize(15);
-                    final EditText txt = (EditText) promptsView.findViewById(R.id.txt_otp);
+                    final EditText txt = promptsView.findViewById(R.id.txt_otp);
                     txt.setHint("Enter Email");
                     txt.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
 
-                    Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
+                    Button btn_verify = promptsView.findViewById(R.id.btn_verify);
                     btn_verify.setText("Submit");
                     btn_verify.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -375,7 +417,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
                         }
                     });
 
-                    Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                    Button btn_back = promptsView.findViewById(R.id.btn_back);
                     btn_back.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -411,11 +453,24 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
     }
 
     private void postAudioPrayerToFb(String responseLink) {
-        ShareLinkContent content = new ShareLinkContent.Builder()
-                .setContentUrl(Uri.parse(responseLink))
-                .setQuote("Audio: " + txt_Prayer.getText().toString())
-                .build();
-        ShareDialog.show(getActivity(), content);
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+
+            ShareLinkContent content = new ShareLinkContent.Builder()
+                    .setContentUrl(Uri.parse(responseLink))
+                    .setQuote("Audio: " + txt_Prayer.getText().toString())
+                    .build();
+            shareDialog.show(content);
+
+        }
+
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode,
+                resultCode, data);
+
     }
 
     /**
@@ -435,6 +490,7 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
 
         @Override
         protected String doInBackground(Void... params) {
+            //  Toast.makeText(getActivity(), "Posted Successfully.", Toast.LENGTH_SHORT).show();
             return uploadFile();
         }
 
@@ -508,21 +564,27 @@ public class PostPrayerAudioFrag extends Fragment implements View.OnClickListene
             if (result.startsWith("Err"))
                 Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
             else
-                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_SHORT).show();
-            if (postPrayerModelClass.getAccessibility().equals("Public"))
-            {
+
+            if (postPrayerModelClass.getAccessibility().equals("Public")) {
                 Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                 JSONObject job = null;
                 try {
                     job = new JSONObject(result);
                     String response_url = job.getString("data");
                     postAudioPrayerToFb(response_url);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+            }
+
+            if (postPrayerModelClass.getAccessibility().equals("Private")) {
+                Toast.makeText(getContext(), "Successfully posted", Toast.LENGTH_SHORT).show();
             }
             tv_audio_timer.setText("");
             txt_Prayer.setText("");
+
             super.onPostExecute(result);
 
         }

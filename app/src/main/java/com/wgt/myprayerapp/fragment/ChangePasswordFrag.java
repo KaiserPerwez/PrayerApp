@@ -57,7 +57,7 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
         progressDialog.setMessage("Authenticating...");
         progressDialog.setCancelable(false);
 
-        tv_user_emailid = (TextView) rootView.findViewById(R.id.tv_usermail);
+        tv_user_emailid = rootView.findViewById(R.id.tv_usermail);
         setCustomDesign();
         setCustomClickListeners();
         tv_user_emailid.setText(_userSingletonModelClass.getTxt_email());
@@ -76,7 +76,7 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
     }
 
     private void setCustomClickListeners() {
-        Button btn_getOtp = (Button) rootView.findViewById(R.id.btn_getOtp);
+        Button btn_getOtp = rootView.findViewById(R.id.btn_getOtp);
         btn_getOtp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,9 +116,11 @@ public class ChangePasswordFrag extends Fragment implements View.OnTouchListener
                         alertDialogBuilder.setCancelable(false);// set dialog message
                         final AlertDialog alertDialog = alertDialogBuilder.create();// create alert dialog
                         alertDialog.show();
-                        final EditText txt_otp = (EditText) promptsView.findViewById(R.id.txt_otp);
-                        Button btn_verify = (Button) promptsView.findViewById(R.id.btn_verify);
-                        Button btn_back = (Button) promptsView.findViewById(R.id.btn_back);
+                        final EditText txt_otp = promptsView.findViewById(R.id.txt_otp);
+                        Button btn_verify = promptsView.findViewById(R.id.btn_verify);
+                        Button btn_back = promptsView.findViewById(R.id.btn_back);
+                        TextView tv_email_dialog_title = promptsView.findViewById(R.id.tv_email_dialog_title);
+                        tv_email_dialog_title.setText("Verify OTP");
                         btn_back.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {

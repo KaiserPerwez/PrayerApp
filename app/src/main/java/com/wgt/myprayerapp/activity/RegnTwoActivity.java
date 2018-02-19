@@ -34,14 +34,14 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_regn_two);
-        chk_alpha = (CheckBox) findViewById(R.id.chk_alpha);
-        chk_perspective = (CheckBox) findViewById(R.id.chk_perspective);
-        chk_men = (CheckBox) findViewById(R.id.chk_men);
-        chk_beth_more = (CheckBox) findViewById(R.id.chk_beth_more);
-        chk_cbs = (CheckBox) findViewById(R.id.chk_cbs);
+        chk_alpha = findViewById(R.id.chk_alpha);
+        chk_perspective = findViewById(R.id.chk_perspective);
+        chk_men = findViewById(R.id.chk_men);
+        chk_beth_more = findViewById(R.id.chk_beth_more);
+        chk_cbs = findViewById(R.id.chk_cbs);
 
-        txt_others = (EditText) findViewById(R.id.txt_others);
-        txt_churchname = (EditText) findViewById(R.id.txt_church_name);
+        txt_others = findViewById(R.id.txt_others);
+        txt_churchname = findViewById(R.id.txt_church_name);
         chk_alpha.setOnClickListener(this);
         chk_perspective.setOnClickListener(this);
         chk_men.setOnClickListener(this);
@@ -51,16 +51,16 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         txt_churchname.setText(_userSingletonModelClass.getChurch_name());
 
         setCustomDesign();
-        chk_others = (CheckBox) findViewById(R.id.chk_others);
+        chk_others = findViewById(R.id.chk_others);
         chk_others.setOnClickListener(this);
 
-        FrameLayout imageButtonNext = (FrameLayout) findViewById(R.id.imageButtonNext);
+        FrameLayout imageButtonNext = findViewById(R.id.imageButtonNext);
         imageButtonNext.setOnClickListener(this);
-        ImageView imageButtonNextArrow = (ImageView) findViewById(R.id.imageButtonNextArrow);
+        ImageView imageButtonNextArrow = findViewById(R.id.imageButtonNextArrow);
         imageButtonNextArrow.setOnClickListener(this);
-        FrameLayout imageButtonPrev = (FrameLayout) findViewById(R.id.imageButtonPrev);
+        FrameLayout imageButtonPrev = findViewById(R.id.imageButtonPrev);
         imageButtonPrev.setOnClickListener(this);
-        ImageView imageButtonPrevArrow = (ImageView) findViewById(R.id.imageButtonPrevArrow);
+        ImageView imageButtonPrevArrow = findViewById(R.id.imageButtonPrevArrow);
         imageButtonPrevArrow.setOnClickListener(this);
 
     }
@@ -90,7 +90,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
         int item = v.getId();
         switch (item) {
             case R.id.chk_others:
-                LinearLayout layout = (LinearLayout) findViewById(R.id.layout_txt_others);
+                LinearLayout layout = findViewById(R.id.layout_txt_others);
                 if (chk_others.isChecked()) {
                     layout.setVisibility(View.VISIBLE);
                 } else {
@@ -107,7 +107,7 @@ public class RegnTwoActivity extends AppCompatActivity implements View.OnClickLi
                 if (chk_men.isChecked())
                     list.add("Men's Fraternity");
                 if (chk_beth_more.isChecked())
-                    list.add("Beth More");
+                    list.add("Beth Moore");
                 if (chk_cbs.isChecked())
                     list.add("CBS");
                 if (chk_others.isChecked()) {

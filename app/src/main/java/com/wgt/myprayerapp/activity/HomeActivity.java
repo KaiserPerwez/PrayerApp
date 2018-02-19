@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
 import com.facebook.login.LoginManager;
 import com.wgt.myprayerapp.R;
 import com.wgt.myprayerapp.Utils.PrefUtils;
@@ -39,6 +40,7 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
     public static Context _context;
     LinearLayout _linearLayout_bar_prayers, _linearLayout_bar_edit;
     UserSingletonModelClass _userSingletonModelClass = UserSingletonModelClass.get_userSingletonModelClass();
+    CallbackManager callbackManager;
     private ImageView img_post_txt;
     private ImageView img_post_audio;
     private ImageView img_post_video;
@@ -312,4 +314,20 @@ public class HomeActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (PostPrayerTextFrag.valueofText) {
+            PostPrayerTextFrag.callbackManagertext.onActivityResult(requestCode, resultCode, data);
+        }
+
+        if (PostPrayerAudioFrag.valueOfaudeo) {
+            PostPrayerAudioFrag.callbackManager.onActivityResult(requestCode, resultCode, data);
+        }
+        if (PostPrayerVideoFrag.valueofvideo) {
+            PostPrayerVideoFrag.callbackManagerVideo.onActivityResult(requestCode, requestCode, data);
+        }
+
+    }
 }

@@ -3,11 +3,13 @@ package com.wgt.myprayerapp.fragment;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -28,6 +30,11 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.error.VolleyError;
 import com.android.volley.request.StringRequest;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareOpenGraphAction;
 import com.facebook.share.model.ShareOpenGraphContent;
 import com.facebook.share.model.ShareOpenGraphObject;
@@ -52,6 +59,8 @@ import java.util.Map;
  */
 
 public class PostPrayerTextFrag extends Fragment implements View.OnClickListener, View.OnTouchListener {
+    public static boolean valueofText = false;
+    public static CallbackManager callbackManagertext;
     View rootView;
     TextView txt_overflow;
     ImageView img_overflow;
@@ -64,9 +73,35 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
     SwitchCompat toggle_switch;
     LinearLayout linearLayout_btnFb;
     Button btn_post_prayer;
+    ShareDialog shareDialog;
     private String prayer;
     private String receiver_email;
     private ImageView img_post_txt;
+    private FacebookCallback<Sharer.Result> callback = new FacebookCallback<Sharer.Result>() {
+        @Override
+        public void onSuccess(Sharer.Result result) {
+            Log.e("aaa@@", "Successfully posted");
+
+
+            Toast.makeText(getContext(), "Successfully posted", Toast.LENGTH_SHORT).show();
+
+            // Write some code to do some operations when you shared content successfully.
+        }
+
+        @Override
+        public void onCancel() {
+            Log.e("aaa@@", "User Denied");
+            Toast.makeText(getContext(), "User Denied", Toast.LENGTH_SHORT).show();
+            // Write some code to do some operations when you cancel sharing content.
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            Log.e("aaa@@", error.getMessage());
+            Toast.makeText(getContext(), "Error :" + error, Toast.LENGTH_SHORT).show();
+            // Write some code to do some operations when some error occurs while sharing content.
+        }
+    };
 
     @Nullable
     @Override
@@ -87,6 +122,14 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         btn_post_prayer.setOnClickListener(this);
         linearLayout_btnFb = rootView.findViewById(R.id.linearLayout_btnFb);
         linearLayout_btnFb.setOnClickListener(this);
+
+        FacebookSdk.sdkInitialize(getActivity());
+        callbackManagertext = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(getActivity());
+        shareDialog.registerCallback(callbackManagertext, callback);
+        valueofText = true;
+        PostPrayerAudioFrag.valueOfaudeo = false;
+        PostPrayerVideoFrag.valueofvideo = false;
 
 
         toggle_switch = rootView.findViewById(R.id.toggle_switch);
@@ -265,6 +308,8 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         VolleyUtils.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 
+    //----------Volley code for posting text prayer ends------------
+
     private void postTextPrayerToFb() {
         // Create an object
 
@@ -284,11 +329,10 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
                 .setPreviewPropertyName("book")
                 .setAction(action)
                 .build();
-        ShareDialog.show(getActivity(), content);
+        shareDialog.show(content);
+
 
     }
-
-    //----------Volley code for posting text prayer ends------------
 
     void hideSoftKeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -300,5 +344,16 @@ public class PostPrayerTextFrag extends Fragment implements View.OnClickListener
         hideSoftKeyboard();
         return false;
     }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManagertext.onActivityResult(requestCode,
+                resultCode, data);
+
+    }
+
 }
+
+
 

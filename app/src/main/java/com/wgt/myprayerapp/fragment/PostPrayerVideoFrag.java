@@ -37,6 +37,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
 import com.wgt.myprayerapp.R;
@@ -77,6 +82,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     private static final int CAMERA_WRIT_VIDEO_REQUEST_CODE = 1;
     private static final int VIDEO_PERMISSION = 0;
     public static Bitmap photo = null;
+    public static CallbackManager callbackManagerVideo;
+    public static boolean valueofvideo = false;
     static String filepath = null;
     View rootView;
     ImageView img_record_video;
@@ -85,6 +92,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     int[] i = {0};
     EditText txtPrayer;
     long totalSize = 0;
+    ShareDialog shareDialog;
     Button btn_post_prayer;
     String receiver_email;
     ProgressDialog progressDialog;
@@ -94,6 +102,28 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     PopupMenu popup;
     int type = 0;
     private Uri fileUri; // file url to store image/video
+    private FacebookCallback<Sharer.Result> callbackvidio = new FacebookCallback<Sharer.Result>() {
+        @Override
+        public void onSuccess(Sharer.Result result) {
+            Log.e("aaa@@", "Successfully posted");
+            Toast.makeText(getContext(), "Successfully posted", Toast.LENGTH_SHORT).show();
+
+            // Write some code to do some operations when you shared content successfully.
+        }
+
+        @Override
+        public void onCancel() {
+            Log.e("aaa@@", "Cancel occurred");
+            Toast.makeText(getContext(), "User Denied", Toast.LENGTH_SHORT).show();
+            // Write some code to do some operations when you cancel sharing content.
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            Log.e("aaa@@", error.getMessage());
+            // Write some code to do some operations when some error occurs while sharing content.
+        }
+    };
 
     /**
      * returning image / video
@@ -133,6 +163,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         return mediaFile;
     }
 
+    //----Checking device camera code ends--------
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -144,6 +176,15 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         progressDialog = new ProgressDialog(getActivity(), ProgressDialog.STYLE_SPINNER);
         progressDialog.setMessage("Uploading...");
         progressDialog.setCancelable(false);
+
+        FacebookSdk.sdkInitialize(getActivity());
+        callbackManagerVideo = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(getActivity());
+        shareDialog.registerCallback(callbackManagerVideo, callbackvidio);
+        PostPrayerTextFrag.valueofText = false;
+        PostPrayerAudioFrag.valueOfaudeo = false;
+        valueofvideo = true;
+
 
         final SwitchCompat toggle_switch = rootView.findViewById(R.id.toggle_switch);
         toggle_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -198,8 +239,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         });
         return rootView;
     }
-
-    //----Checking device camera code ends--------
+    //-------Launching camera app to record video ends---------
 
     /**
      * Checking device has camera hardware or not
@@ -210,7 +250,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         return getActivity().getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_CAMERA);
     }
-    //-------Launching camera app to record video ends---------
 
     /**
      * Launching camera app to record video
@@ -244,6 +283,12 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         outState.putParcelable("file_uri", fileUri);
     }
 
+    //-----------Receiving activity result method will be called after closing the camera ends----------------------
+
+    /**
+     * ------------ Helper Methods ----------------------
+     */
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -254,11 +299,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
 
     }
 
-    //-----------Receiving activity result method will be called after closing the camera ends----------------------
-    /**
-     * ------------ Helper Methods ----------------------
-     * */
-
     /**
      * Receiving activity result method will be called after closing the camera
      * *
@@ -266,6 +306,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == CAMERA_CAPTURE_VIDEO_REQUEST_CODE) {
             if (resultCode == getActivity().RESULT_OK) {
 
@@ -287,6 +328,8 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 // failed to record video
                 Toast.makeText(getActivity(), "Sorry! Failed to record video", Toast.LENGTH_SHORT).show();
             }
+            callbackManagerVideo.onActivityResult(requestCode,
+                    resultCode, data);
         }
     }
 
@@ -415,7 +458,6 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
         }
     }
 
-
     private boolean checkingPermissionforWrite() {
         if (Build.VERSION.SDK_INT >= 23) {//version check
             if (ActivityCompat.checkSelfPermission(getActivity(),
@@ -452,7 +494,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 .setContentUrl(Uri.parse(responseLink))
                 .setQuote("Video: " + txtPrayer.getText().toString())
                 .build();
-        ShareDialog.show(getActivity(), content);
+        shareDialog.show(content);
     }
 
     @Override
@@ -574,10 +616,7 @@ public class PostPrayerVideoFrag extends Fragment implements View.OnClickListene
                 progressDialog.cancel();
             if (result.startsWith("Err"))
                 Toast.makeText(getActivity(), result, Toast.LENGTH_SHORT).show();
-            else
-                Toast.makeText(getActivity(), "Upload Completed", Toast.LENGTH_SHORT).show();
-
-            if (postPrayerModelClass.getAccessibility().equals("Public")) {
+            else if (postPrayerModelClass.getAccessibility().equals("Public")) {
                 Toast.makeText(getActivity(), "Opening Facebook...", Toast.LENGTH_SHORT).show();
                 JSONObject job = null;
                 try {
