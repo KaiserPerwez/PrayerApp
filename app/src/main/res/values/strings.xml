@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MyPrayer</string>
-    <string name="facebook_app_id">1988096651458945</string>
-    <string name="fb_login_protocol_scheme">fb114681739153610</string>
+    <string name="facebook_app_id">420092181720851</string>
+    <string name="fb_login_protocol_scheme">fb420092181720851</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="login_txt1">HELLO!</string>
